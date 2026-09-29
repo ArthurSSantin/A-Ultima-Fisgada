@@ -1,0 +1,10 @@
+{
+	"name": "StatusLabel",
+	"plugin-id": "Text",
+	"sid": 837567536060945,
+	"isGlobal": false,
+	"editorNewInstanceIsReplica": true,
+	"instanceVariables": [],
+	"behaviorTypes": [],
+	"effectTypes": []
+}

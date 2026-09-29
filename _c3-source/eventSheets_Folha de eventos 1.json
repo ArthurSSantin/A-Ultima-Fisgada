@@ -1,0 +1,1763 @@
+{
+	"name": "Folha de eventos 1",
+	"events": [
+		{
+			"eventType": "comment",
+			"text": "Estados: 0 parado | 1 lançando | 2 esperando mordida | 3 fisgada | 4 puxando | 5 capturado | 6 falhou | 7 reset"
+		},
+		{
+			"eventType": "variable",
+			"name": "Estado",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 815715297587859
+		},
+		{
+			"eventType": "variable",
+			"name": "Forca",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 510765664731870
+		},
+		{
+			"eventType": "variable",
+			"name": "Resistencia",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 516784324997865
+		},
+		{
+			"eventType": "variable",
+			"name": "Tensao",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 335885424739667
+		},
+		{
+			"eventType": "variable",
+			"name": "direcaoForca",
+			"type": "number",
+			"initialValue": "1",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 400590459558308
+		},
+		{
+			"eventType": "variable",
+			"name": "PosLancamento",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 829623390124760
+		},
+		{
+			"eventType": "variable",
+			"name": "PesoPeixe",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 785820684496727
+		},
+		{
+			"eventType": "variable",
+			"name": "Peixes",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 292683550044131
+		},
+		{
+			"eventType": "variable",
+			"name": "TotalKg",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 920925163201543
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Movimento",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "every-tick",
+							"objectClass": "System",
+							"sid": 283971680611787
+						}
+					],
+					"actions": [
+						{
+							"id": "set-boolean-instvar",
+							"objectClass": "ZonaPesca",
+							"sid": 527226677292914,
+							"parameters": {
+								"instance-variable": "pertoAgua",
+								"value": "false"
+							}
+						},
+						{
+							"id": "set-x",
+							"objectClass": "Player",
+							"sid": 820579227709346,
+							"parameters": {
+								"x": "clamp(Player.X, 40, 590)"
+							}
+						}
+					],
+					"sid": 727072475816388
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "is-overlapping-another-object",
+							"objectClass": "Player",
+							"sid": 870805838951206,
+							"parameters": {
+								"object": "ZonaPesca"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-boolean-instvar",
+							"objectClass": "ZonaPesca",
+							"sid": 973698432135884,
+							"parameters": {
+								"instance-variable": "pertoAgua",
+								"value": "true"
+							}
+						}
+					],
+					"sid": 357882961605389
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 136141384443819,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-enabled",
+							"objectClass": "Player",
+							"sid": 455171483220814,
+							"behaviorType": "8Direções",
+							"parameters": {
+								"state": "enabled"
+							}
+						}
+					],
+					"sid": 401448297626715
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 337542040517761,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 1,
+								"value": "0"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-enabled",
+							"objectClass": "Player",
+							"sid": 454294935665359,
+							"behaviorType": "8Direções",
+							"parameters": {
+								"state": "disabled"
+							}
+						}
+					],
+					"sid": 837957899055471
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "key-is-down",
+							"objectClass": "Teclado",
+							"sid": 545441792384689,
+							"parameters": {
+								"key": 32
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 616622902227122,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						},
+						{
+							"id": "is-boolean-instance-variable-set",
+							"objectClass": "ZonaPesca",
+							"sid": 398225962793859,
+							"parameters": {
+								"instance-variable": "pertoAgua"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-enabled",
+							"objectClass": "Player",
+							"sid": 377674530361373,
+							"behaviorType": "8Direções",
+							"parameters": {
+								"state": "disabled"
+							}
+						}
+					],
+					"sid": 732046292015385
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-key-pressed",
+							"objectClass": "Teclado",
+							"sid": 395822482369128,
+							"parameters": {
+								"key": 37
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 758185471675398,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-mirrored",
+							"objectClass": "Player",
+							"sid": 549685582146032,
+							"parameters": {
+								"state": "mirrored"
+							}
+						}
+					],
+					"sid": 346932109511831
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-key-pressed",
+							"objectClass": "Teclado",
+							"sid": 673675080889732,
+							"parameters": {
+								"key": 39
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 202355485265375,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-mirrored",
+							"objectClass": "Player",
+							"sid": 153050387132554,
+							"parameters": {
+								"state": "not-mirrored"
+							}
+						}
+					],
+					"sid": 223453943397782
+				}
+			],
+			"sid": 806441172261855
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Lancamento",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "comment",
+					"text": "Força vai e volta enquanto segura ESPAÇO"
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "key-is-down",
+							"objectClass": "Teclado",
+							"sid": 991799106524289,
+							"parameters": {
+								"key": 32
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 575309773423700,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						},
+						{
+							"id": "is-boolean-instance-variable-set",
+							"objectClass": "ZonaPesca",
+							"sid": 171526651937588,
+							"parameters": {
+								"instance-variable": "pertoAgua"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 529665885887557,
+							"parameters": {
+								"variable": "Forca",
+								"value": "clamp(Forca + 90*dt*direcaoForca, 0, 100)"
+							}
+						}
+					],
+					"sid": 821660886049507,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "compare-eventvar",
+									"objectClass": "System",
+									"sid": 695731154083330,
+									"parameters": {
+										"variable": "Forca",
+										"comparison": 5,
+										"value": "100"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-eventvar-value",
+									"objectClass": "System",
+									"sid": 112927604303407,
+									"parameters": {
+										"variable": "direcaoForca",
+										"value": "-1"
+									}
+								}
+							],
+							"sid": 911459682962855
+						},
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "compare-eventvar",
+									"objectClass": "System",
+									"sid": 867536917594955,
+									"parameters": {
+										"variable": "Forca",
+										"comparison": 3,
+										"value": "0"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-eventvar-value",
+									"objectClass": "System",
+									"sid": 704576281624317,
+									"parameters": {
+										"variable": "direcaoForca",
+										"value": "1"
+									}
+								}
+							],
+							"sid": 400419007481616
+						}
+					]
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-key-released",
+							"objectClass": "Teclado",
+							"sid": 225594894712175,
+							"parameters": {
+								"key": 32
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 589502978265864,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						},
+						{
+							"id": "is-boolean-instance-variable-set",
+							"objectClass": "ZonaPesca",
+							"sid": 610844089468618,
+							"parameters": {
+								"instance-variable": "pertoAgua"
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 396549107957259,
+							"parameters": {
+								"variable": "Forca",
+								"comparison": 4,
+								"value": "5"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 663611257645195,
+							"parameters": {
+								"variable": "Estado",
+								"value": "1"
+							}
+						}
+					],
+					"sid": 301145181009006
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-key-released",
+							"objectClass": "Teclado",
+							"sid": 436019452046446,
+							"parameters": {
+								"key": 32
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 819393457153143,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 785637874627028,
+							"parameters": {
+								"variable": "Forca",
+								"value": "0"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 272078719030921,
+							"parameters": {
+								"variable": "direcaoForca",
+								"value": "1"
+							}
+						}
+					],
+					"sid": 958509733843308
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 707283299698453,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "1"
+							}
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 976658459971391
+						}
+					],
+					"actions": [
+						{
+							"id": "set-mirrored",
+							"objectClass": "Player",
+							"sid": 697128970019781,
+							"parameters": {
+								"state": "not-mirrored"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 100643895026653,
+							"parameters": {
+								"variable": "PosLancamento",
+								"value": "660 + (Forca/100)*520"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 464967418425012,
+							"parameters": {
+								"variable": "PesoPeixe",
+								"value": "round((random(0.5, 2.5) + (Forca/100)*4.5)*10)/10"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 121927906591621,
+							"parameters": {
+								"variable": "Resistencia",
+								"value": "0"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 446229368736557,
+							"parameters": {
+								"variable": "Tensao",
+								"value": "0"
+							}
+						},
+						{
+							"id": "set-position",
+							"objectClass": "Isca",
+							"sid": 165215811862327,
+							"parameters": {
+								"x": "PosLancamento",
+								"y": "478"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Isca",
+							"sid": 196435238956039,
+							"parameters": {
+								"visibility": "visible"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Linha",
+							"sid": 647177682062287,
+							"parameters": {
+								"visibility": "visible"
+							}
+						},
+						{
+							"id": "set-animation-frame",
+							"objectClass": "Peixe",
+							"sid": 177927096444512,
+							"parameters": {
+								"frame-number": "0"
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 956364844658944,
+							"parameters": {
+								"text": "\"Lançando...\""
+							}
+						},
+						{
+							"id": "wait",
+							"objectClass": "System",
+							"sid": 962251332365926,
+							"parameters": {
+								"seconds": "0.5",
+								"use-timescale": true
+							}
+						}
+					],
+					"sid": 398427921842859,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "compare-eventvar",
+									"objectClass": "System",
+									"sid": 244556254418768,
+									"parameters": {
+										"variable": "Estado",
+										"comparison": 0,
+										"value": "1"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-eventvar-value",
+									"objectClass": "System",
+									"sid": 635121398951436,
+									"parameters": {
+										"variable": "Estado",
+										"value": "2"
+									}
+								}
+							],
+							"sid": 719024818154700
+						}
+					]
+				}
+			],
+			"sid": 576413262675238
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Espera e fisgada",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 338465021148352,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "2"
+							}
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 707196401190494
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 921832351027027,
+							"parameters": {
+								"text": "\"Esperando a mordida... (não aperte ainda!)\""
+							}
+						},
+						{
+							"id": "set-opacity",
+							"objectClass": "Peixe",
+							"sid": 326476588477020,
+							"parameters": {
+								"opacity": "0"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Peixe",
+							"sid": 450962019717862,
+							"parameters": {
+								"visibility": "visible"
+							}
+						},
+						{
+							"id": "wait",
+							"objectClass": "System",
+							"sid": 831697808387385,
+							"parameters": {
+								"seconds": "random(1.5, 4)",
+								"use-timescale": true
+							}
+						}
+					],
+					"sid": 352987523382813,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "compare-eventvar",
+									"objectClass": "System",
+									"sid": 593257122937969,
+									"parameters": {
+										"variable": "Estado",
+										"comparison": 0,
+										"value": "2"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-eventvar-value",
+									"objectClass": "System",
+									"sid": 682740731567051,
+									"parameters": {
+										"variable": "Estado",
+										"value": "3"
+									}
+								}
+							],
+							"sid": 236238301747343
+						}
+					]
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 480650341531740,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "2"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-y",
+							"objectClass": "Isca",
+							"sid": 762374241697881,
+							"parameters": {
+								"y": "478 + 2*sin(time*150)"
+							}
+						},
+						{
+							"id": "set-position",
+							"objectClass": "Peixe",
+							"sid": 359087691271427,
+							"parameters": {
+								"x": "Isca.X + 90*cos(time*70)",
+								"y": "545"
+							}
+						},
+						{
+							"id": "set-opacity",
+							"objectClass": "Peixe",
+							"sid": 347942399394546,
+							"parameters": {
+								"opacity": "min(Peixe.Opacity + 30*dt, 45)"
+							}
+						}
+					],
+					"sid": 179929372262998
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-key-pressed",
+							"objectClass": "Teclado",
+							"sid": 810558134636654,
+							"parameters": {
+								"key": 32
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 357762715130336,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "2"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 179776141735484,
+							"parameters": {
+								"text": "\"Muito cedo! O peixe se assustou.\""
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 367969512848464,
+							"parameters": {
+								"variable": "Estado",
+								"value": "6"
+							}
+						}
+					],
+					"sid": 853201020815675
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 341207448182759,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "3"
+							}
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 248968961686579
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 742938919181155,
+							"parameters": {
+								"text": "\"FISGOU! Aperte ESPAÇO agora!\""
+							}
+						},
+						{
+							"id": "wait",
+							"objectClass": "System",
+							"sid": 632178987555651,
+							"parameters": {
+								"seconds": "0.9",
+								"use-timescale": true
+							}
+						}
+					],
+					"sid": 576906100309727,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "compare-eventvar",
+									"objectClass": "System",
+									"sid": 983402802008360,
+									"parameters": {
+										"variable": "Estado",
+										"comparison": 0,
+										"value": "3"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-text",
+									"objectClass": "StatusLabel",
+									"sid": 314380745921778,
+									"parameters": {
+										"text": "\"Muito lento... o peixe escapou.\""
+									}
+								},
+								{
+									"id": "set-eventvar-value",
+									"objectClass": "System",
+									"sid": 209131229150292,
+									"parameters": {
+										"variable": "Estado",
+										"value": "6"
+									}
+								}
+							],
+							"sid": 585321249855482
+						}
+					]
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 625821726818236,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "3"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-y",
+							"objectClass": "Isca",
+							"sid": 920866449696684,
+							"parameters": {
+								"y": "486 + 3*sin(time*1400)"
+							}
+						},
+						{
+							"id": "set-position",
+							"objectClass": "Peixe",
+							"sid": 858139269818790,
+							"parameters": {
+								"x": "Isca.X + 36",
+								"y": "520"
+							}
+						},
+						{
+							"id": "set-opacity",
+							"objectClass": "Peixe",
+							"sid": 210808636590401,
+							"parameters": {
+								"opacity": "70"
+							}
+						}
+					],
+					"sid": 553308288618479
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "on-key-pressed",
+							"objectClass": "Teclado",
+							"sid": 482023288763563,
+							"parameters": {
+								"key": 32
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 379959322562087,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "3"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 314156482186240,
+							"parameters": {
+								"variable": "Estado",
+								"value": "4"
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 605094752306660,
+							"parameters": {
+								"text": "\"Segure ESPAÇO para puxar. Solte se a tensão subir!\""
+							}
+						}
+					],
+					"sid": 574993920244916
+				}
+			],
+			"sid": 413610710094454
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Puxada",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 381257920350997,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "4"
+							}
+						},
+						{
+							"id": "key-is-down",
+							"objectClass": "Teclado",
+							"sid": 598920904748178,
+							"parameters": {
+								"key": 32
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 719612838339950,
+							"parameters": {
+								"variable": "Resistencia",
+								"value": "Resistencia + 16*dt"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 156955981827045,
+							"parameters": {
+								"variable": "Tensao",
+								"value": "Tensao + (12 + PesoPeixe*9*(0.5 + 0.5*sin(time*170)))*dt"
+							}
+						}
+					],
+					"sid": 287248704445888
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 646781147086970,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "4"
+							}
+						},
+						{
+							"id": "key-is-down",
+							"objectClass": "Teclado",
+							"sid": 340657674948158,
+							"parameters": {
+								"key": 32
+							},
+							"isInverted": true
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 551533625473649,
+							"parameters": {
+								"variable": "Resistencia",
+								"value": "Resistencia - 5*dt"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 166017523302132,
+							"parameters": {
+								"variable": "Tensao",
+								"value": "Tensao - 40*dt"
+							}
+						}
+					],
+					"sid": 526684233132168
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "every-tick",
+							"objectClass": "System",
+							"sid": 398592098233892
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 982787262417359,
+							"parameters": {
+								"variable": "Resistencia",
+								"value": "clamp(Resistencia, 0, 100)"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 612294186269901,
+							"parameters": {
+								"variable": "Tensao",
+								"value": "clamp(Tensao, 0, 100)"
+							}
+						}
+					],
+					"sid": 576261558654962
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 725741444833678,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "4"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-position",
+							"objectClass": "Isca",
+							"sid": 908856853702113,
+							"parameters": {
+								"x": "lerp(PosLancamento, 640, Resistencia/100)",
+								"y": "484 + 3*sin(time*900)"
+							}
+						},
+						{
+							"id": "set-position",
+							"objectClass": "Peixe",
+							"sid": 274287568142201,
+							"parameters": {
+								"x": "Isca.X + 34 + 8*sin(time*500)",
+								"y": "Isca.Y + 36"
+							}
+						}
+					],
+					"sid": 434063371888012
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 752096545800918,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "4"
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 710459746649477,
+							"parameters": {
+								"variable": "Tensao",
+								"comparison": 5,
+								"value": "100"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 942144564308555,
+							"parameters": {
+								"text": "\"A linha arrebentou!\""
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 164361431852986,
+							"parameters": {
+								"variable": "Estado",
+								"value": "6"
+							}
+						}
+					],
+					"sid": 757722917134530
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 666160341782506,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "4"
+							}
+						},
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 277255581475323,
+							"parameters": {
+								"variable": "Resistencia",
+								"comparison": 5,
+								"value": "100"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 190196494322786,
+							"parameters": {
+								"variable": "Estado",
+								"value": "5"
+							}
+						}
+					],
+					"sid": 309220103411152
+				}
+			],
+			"sid": 769946472996137
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Resultado",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 860218093216272,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "5"
+							}
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 364818500054764
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 234979671414191,
+							"parameters": {
+								"variable": "Peixes",
+								"value": "Peixes + 1"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 377212520923000,
+							"parameters": {
+								"variable": "TotalKg",
+								"value": "round((TotalKg + PesoPeixe)*10)/10"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Isca",
+							"sid": 769368844552707,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Linha",
+							"sid": 797361125638782,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "set-animation-frame",
+							"objectClass": "Peixe",
+							"sid": 572004373044564,
+							"parameters": {
+								"frame-number": "1"
+							}
+						},
+						{
+							"id": "set-opacity",
+							"objectClass": "Peixe",
+							"sid": 757158589488018,
+							"parameters": {
+								"opacity": "100"
+							}
+						},
+						{
+							"id": "set-position",
+							"objectClass": "Peixe",
+							"sid": 688601925744179,
+							"parameters": {
+								"x": "Player.X + 70",
+								"y": "420"
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 329975143844450,
+							"parameters": {
+								"text": "\"Capturado! Peixe de \" & PesoPeixe & \" kg\""
+							}
+						},
+						{
+							"id": "wait",
+							"objectClass": "System",
+							"sid": 906361511438683,
+							"parameters": {
+								"seconds": "2.2",
+								"use-timescale": true
+							}
+						}
+					],
+					"sid": 437767590496808,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "compare-eventvar",
+									"objectClass": "System",
+									"sid": 368737453120154,
+									"parameters": {
+										"variable": "Estado",
+										"comparison": 0,
+										"value": "5"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-eventvar-value",
+									"objectClass": "System",
+									"sid": 545612587700241,
+									"parameters": {
+										"variable": "Estado",
+										"value": "7"
+									}
+								}
+							],
+							"sid": 856254108630309
+						}
+					]
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 455981738158965,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "6"
+							}
+						},
+						{
+							"id": "trigger-once-while-true",
+							"objectClass": "System",
+							"sid": 946524864275771
+						}
+					],
+					"actions": [
+						{
+							"id": "wait",
+							"objectClass": "System",
+							"sid": 181677117048923,
+							"parameters": {
+								"seconds": "1.6",
+								"use-timescale": true
+							}
+						}
+					],
+					"sid": 398588299176140,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "compare-eventvar",
+									"objectClass": "System",
+									"sid": 615980231081843,
+									"parameters": {
+										"variable": "Estado",
+										"comparison": 0,
+										"value": "6"
+									}
+								}
+							],
+							"actions": [
+								{
+									"id": "set-eventvar-value",
+									"objectClass": "System",
+									"sid": 182480981368597,
+									"parameters": {
+										"variable": "Estado",
+										"value": "7"
+									}
+								}
+							],
+							"sid": 339992196720779
+						}
+					]
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 516050236189796,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "6"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-opacity",
+							"objectClass": "Peixe",
+							"sid": 277606711635730,
+							"parameters": {
+								"opacity": "max(Peixe.Opacity - 80*dt, 0)"
+							}
+						},
+						{
+							"id": "set-x",
+							"objectClass": "Peixe",
+							"sid": 892114561570060,
+							"parameters": {
+								"x": "Peixe.X + 150*dt"
+							}
+						}
+					],
+					"sid": 788686420312934
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 836311184857617,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "7"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 108806954739791,
+							"parameters": {
+								"variable": "Estado",
+								"value": "0"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 437071415388758,
+							"parameters": {
+								"variable": "Forca",
+								"value": "0"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 846911699538014,
+							"parameters": {
+								"variable": "Resistencia",
+								"value": "0"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 251199505247685,
+							"parameters": {
+								"variable": "Tensao",
+								"value": "0"
+							}
+						},
+						{
+							"id": "set-eventvar-value",
+							"objectClass": "System",
+							"sid": 229958256314863,
+							"parameters": {
+								"variable": "direcaoForca",
+								"value": "1"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Isca",
+							"sid": 220512013678167,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Linha",
+							"sid": 722876525790491,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "set-visible",
+							"objectClass": "Peixe",
+							"sid": 406635562774314,
+							"parameters": {
+								"visibility": "invisible"
+							}
+						},
+						{
+							"id": "set-animation-frame",
+							"objectClass": "Peixe",
+							"sid": 780976864849371,
+							"parameters": {
+								"frame-number": "0"
+							}
+						}
+					],
+					"sid": 907957267469101
+				}
+			],
+			"sid": 329228172214442
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Interface",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "every-tick",
+							"objectClass": "System",
+							"sid": 814088510377938
+						}
+					],
+					"actions": [
+						{
+							"id": "set-position",
+							"objectClass": "Linha",
+							"sid": 397219695083146,
+							"parameters": {
+								"x": "Player.X + 30",
+								"y": "Player.Y - 46"
+							}
+						},
+						{
+							"id": "set-angle",
+							"objectClass": "Linha",
+							"sid": 650037157477617,
+							"parameters": {
+								"angle": "angle(Player.X + 30, Player.Y - 46, Isca.X, Isca.Y - 10)"
+							}
+						},
+						{
+							"id": "set-width",
+							"objectClass": "Linha",
+							"sid": 203916951906319,
+							"parameters": {
+								"width": "distance(Player.X + 30, Player.Y - 46, Isca.X, Isca.Y - 10)"
+							}
+						},
+						{
+							"id": "set-height",
+							"objectClass": "BarraFillForca",
+							"sid": 576903007876899,
+							"parameters": {
+								"height": "(Forca/100)*240"
+							}
+						},
+						{
+							"id": "set-height",
+							"objectClass": "BarraFillTensao",
+							"sid": 411517540001820,
+							"parameters": {
+								"height": "(Tensao/100)*240"
+							}
+						},
+						{
+							"id": "set-height",
+							"objectClass": "BarraFill",
+							"sid": 103990213969197,
+							"parameters": {
+								"height": "(Resistencia/100)*240"
+							}
+						},
+						{
+							"id": "set-opacity",
+							"objectClass": "BarraFillTensao",
+							"sid": 968203301697046,
+							"parameters": {
+								"opacity": "Tensao > 75 ? 55 + 45*abs(sin(time*900)) : 100"
+							}
+						},
+						{
+							"id": "set-text",
+							"objectClass": "Placar",
+							"sid": 817324524807584,
+							"parameters": {
+								"text": "\"Peixes: \" & Peixes & \"   |   Total: \" & TotalKg & \" kg\""
+							}
+						}
+					],
+					"sid": 394939612416482
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 934551494307775,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						},
+						{
+							"id": "is-boolean-instance-variable-set",
+							"objectClass": "ZonaPesca",
+							"sid": 721135773049289,
+							"parameters": {
+								"instance-variable": "pertoAgua"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 581533289209660,
+							"parameters": {
+								"text": "\"Segure ESPAÇO para carregar e solte para lançar\""
+							}
+						}
+					],
+					"sid": 110885856204720
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-eventvar",
+							"objectClass": "System",
+							"sid": 184714415440968,
+							"parameters": {
+								"variable": "Estado",
+								"comparison": 0,
+								"value": "0"
+							}
+						},
+						{
+							"id": "is-boolean-instance-variable-set",
+							"objectClass": "ZonaPesca",
+							"sid": 714279747759099,
+							"parameters": {
+								"instance-variable": "pertoAgua"
+							},
+							"isInverted": true
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "StatusLabel",
+							"sid": 755847386837080,
+							"parameters": {
+								"text": "\"Vá até a ponta do cais  (← →)\""
+							}
+						}
+					],
+					"sid": 266737298475234
+				}
+			],
+			"sid": 243492408311959
+		}
+	],
+	"sid": 706632393638881
+}
