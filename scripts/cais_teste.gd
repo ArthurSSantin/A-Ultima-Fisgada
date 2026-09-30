@@ -1,35 +1,63 @@
 extends Node2D
 
-## Traducao da folha "Folha de eventos 1" do projeto Construct 3 PescaAlfa.
+## Logica do jogo, originalmente traduzida da folha "Folha de eventos 1" do
+## projeto Construct 3 PescaAlfa.
 ##
-## Os grupos e a ordem dos eventos dentro de cada grupo seguem exatamente o
-## original, porque a folha depende dessa ordem. Dois exemplos:
+## Andar, carregar o arremesso, esperar a mordida, fisgar e o resultado seguem o
+## original, inclusive na ordem dos eventos, porque a folha depende dela. Dois
+## exemplos:
 ##
 ## - em "Lancamento", o evento que arremessa (Estado = 1) vem antes do que zera a
 ##   forca, e por isso a forca do arremesso sobrevive ao tick;
 ## - em "Movimento", pertoAgua e zerada todo tick e so volta a valer no evento
 ##   seguinte, quando o Player esta sobre a ZonaPesca.
 ##
+## A fase de puxada NAO segue mais o original: no lugar da dupla tensao e
+## resistencia entrou um minijogo no estilo Stardew Valley (ver _grupo_minijogo).
+##
 ## Estados: 0 parado | 1 lancando | 2 esperando mordida | 3 fisgada
-##          4 puxando | 5 capturado | 6 falhou | 7 reset
+##          4 minijogo | 5 capturado | 6 falhou | 7 reset
 
 const ESQUERDA: StringName = &"mover_esquerda"
 const DIREITA: StringName = &"mover_direita"
 const ESPACO: StringName = &"espaco"
 
+# --- minijogo de captura ---
+## Altura util da trilha e o Y da base dela na tela, iguais aos das barras.
+const TRILHA_ALTURA: float = 240.0
+const TRILHA_BASE_Y: float = 290.0
+## Tamanho da zona verde que o jogador controla.
+const ZONA_ALTURA: float = 64.0
+## Segurando ESPACO a zona sobe; solta, a gravidade puxa de volta.
+const ZONA_EMPUXO: float = 1400.0
+const ZONA_GRAVIDADE: float = 620.0
+const ZONA_VEL_MAX: float = 400.0
+## Progresso comeca parcialmente cheio e some se o peixe ficar fora da zona.
+const PROGRESSO_INICIAL: float = 40.0
+const PROGRESSO_GANHO: float = 24.0
+const PROGRESSO_PERDA: float = 18.0
+
 # --- variaveis globais da folha de eventos ---
 var estado: int = 0
 var forca: float = 0.0
-var resistencia: float = 0.0
-var tensao: float = 0.0
 var direcao_forca: float = 1.0
 var pos_lancamento: float = 0.0
 var peso_peixe: float = 0.0
 var peixes: int = 0
 var total_kg: float = 0.0
 
+# --- estado do minijogo, em coordenadas da trilha (0 = base, 240 = topo) ---
+var progresso: float = 0.0
+## Base da zona verde.
+var zona_pos: float = 0.0
+var zona_vel: float = 0.0
+## Centro do peixe na trilha, e o ponto para onde ele esta indo.
+var peixe_pos: float = 0.0
+var peixe_alvo: float = 0.0
+var peixe_tempo: float = 0.0
+
 ## Variavel de instancia "pertoAgua" da ZonaPesca. Vive aqui porque o layout tem
-## uma unica instancia dela e a folha de eventos inteira le esse valor.
+## uma unica instancia dela e o resto do codigo inteiro le esse valor.
 var perto_agua: bool = false
 
 ## Equivale a expressao System.time do C3: segundos desde o inicio do layout.
@@ -46,10 +74,14 @@ var _gatilhos: Dictionary = {}
 @onready var _linha: Sprite2D = $Jogo/Linha
 @onready var _peixe: AnimatedSprite2D = $Jogo/Peixe
 @onready var _barra_forca: Sprite2D = $UI/BarraFillForca
-@onready var _barra_tensao: Sprite2D = $UI/BarraFillTensao
-@onready var _barra_puxada: Sprite2D = $UI/BarraFill
-@onready var _status: Label = $UI/StatusLabel
+@onready var _zona_captura: Sprite2D = $UI/ZonaCaptura
+@onready var _peixe_marcador: Sprite2D = $UI/PeixeMarcador
+@onready var _barra_progresso: Sprite2D = $UI/BarraFillProgresso
 @onready var _placar: Label = $UI/Placar
+
+
+func _ready() -> void:
+	C3.set_altura(_zona_captura, ZONA_ALTURA)
 
 
 func _process(delta: float) -> void:
@@ -62,7 +94,7 @@ func _process(delta: float) -> void:
 	_grupo_movimento()
 	_grupo_lancamento(delta)
 	_grupo_espera_e_fisgada(delta)
-	_grupo_puxada(delta)
+	_grupo_minijogo(delta)
 	_grupo_resultado(delta)
 	_grupo_interface()
 
@@ -128,13 +160,10 @@ func _grupo_lancamento(delta: float) -> void:
 		_player.flip_h = false
 		pos_lancamento = 660.0 + (forca / 100.0) * 520.0
 		peso_peixe = roundf((randf_range(0.5, 2.5) + (forca / 100.0) * 4.5) * 10.0) / 10.0
-		resistencia = 0.0
-		tensao = 0.0
 		_isca.position = Vector2(pos_lancamento, 478.0)
 		_isca.visible = true
 		_linha.visible = true
 		_peixe.frame = 0
-		_status.text = "Lançando..."
 		_depois_do_lancamento()
 
 
@@ -149,12 +178,11 @@ func _depois_do_lancamento() -> void:
 func _grupo_espera_e_fisgada(delta: float) -> void:
 	# Entrou no Estado 2
 	if estado == 2 and _gatilho_unico(&"espera"):
-		_status.text = "Esperando a mordida... (não aperte ainda!)"
 		C3.set_opacidade(_peixe, 0.0)
 		_peixe.visible = true
 		_depois_da_espera(randf_range(1.5, 4.0))
 
-	# Isca balancando e peixe rondando
+	# Isca balancando de leve e peixe rondando
 	if estado == 2:
 		_isca.position.y = 478.0 + 2.0 * C3.sin_g(_tempo * 150.0)
 		_peixe.position = Vector2(_isca.position.x + 90.0 * C3.cos_g(_tempo * 70.0), 545.0)
@@ -162,24 +190,27 @@ func _grupo_espera_e_fisgada(delta: float) -> void:
 
 	# Apertou ESPACO antes da mordida
 	if Input.is_action_just_pressed(ESPACO) and estado == 2:
-		_status.text = "Muito cedo! O peixe se assustou."
 		estado = 6
 
 	# Entrou no Estado 3
 	if estado == 3 and _gatilho_unico(&"fisgada"):
-		_status.text = "FISGOU! Aperte ESPAÇO agora!"
 		_depois_da_fisgada()
 
-	# Janela da fisgada
+	# Janela da fisgada: a isca chacoalha forte, que e o aviso de que mordeu
 	if estado == 3:
-		_isca.position.y = 486.0 + 3.0 * C3.sin_g(_tempo * 1400.0)
+		_isca.position.y = 486.0 + 8.0 * C3.sin_g(_tempo * 1400.0)
 		_peixe.position = Vector2(_isca.position.x + 36.0, 520.0)
 		C3.set_opacidade(_peixe, 70.0)
 
-	# Fisgou dentro da janela
+	# Fisgou dentro da janela: comeca o minijogo
 	if Input.is_action_just_pressed(ESPACO) and estado == 3:
 		estado = 4
-		_status.text = "Segure ESPAÇO para puxar. Solte se a tensão subir!"
+		progresso = PROGRESSO_INICIAL
+		zona_pos = (TRILHA_ALTURA - ZONA_ALTURA) * 0.5
+		zona_vel = 0.0
+		peixe_pos = TRILHA_ALTURA * 0.5
+		peixe_alvo = peixe_pos
+		peixe_tempo = 0.0
 
 
 func _depois_da_espera(segundos: float) -> void:
@@ -191,46 +222,62 @@ func _depois_da_espera(segundos: float) -> void:
 func _depois_da_fisgada() -> void:
 	await _esperar(0.9)
 	if estado == 3:
-		_status.text = "Muito lento... o peixe escapou."
 		estado = 6
 
 
-# -------------------------------- Puxada --------------------------------
+# ------------------------------- Minijogo -------------------------------
 
-func _grupo_puxada(delta: float) -> void:
-	# Segurando ESPACO: puxa e a tensao sobe pulsando conforme o peso do peixe
-	if estado == 4 and Input.is_action_pressed(ESPACO):
-		resistencia += 16.0 * delta
-		tensao += (12.0 + peso_peixe * 9.0 * (0.5 + 0.5 * C3.sin_g(_tempo * 170.0))) * delta
+## Minijogo no estilo Stardew Valley, na vertical: segure ESPACO para a zona
+## verde subir e solte para ela cair. Enquanto o peixe estiver dentro da zona o
+## progresso sobe; fora dela, desce. Chegou a 100 o peixe e seu, chegou a 0 ele
+## escapa. Peixe mais pesado se move mais rapido.
+func _grupo_minijogo(delta: float) -> void:
+	if estado != 4:
+		return
 
-	# Sem ESPACO: perde puxada devagar e alivia a tensao rapido
-	if estado == 4 and not Input.is_action_pressed(ESPACO):
-		resistencia -= 5.0 * delta
-		tensao -= 40.0 * delta
+	# Zona verde: empuxo enquanto segura, gravidade sempre.
+	if Input.is_action_pressed(ESPACO):
+		zona_vel += ZONA_EMPUXO * delta
+	zona_vel -= ZONA_GRAVIDADE * delta
+	zona_vel = clampf(zona_vel, -ZONA_VEL_MAX, ZONA_VEL_MAX)
+	zona_pos += zona_vel * delta
 
-	# Todo tick
-	resistencia = clampf(resistencia, 0.0, 100.0)
-	tensao = clampf(tensao, 0.0, 100.0)
+	var limite: float = TRILHA_ALTURA - ZONA_ALTURA
+	if zona_pos <= 0.0:
+		zona_pos = 0.0
+		zona_vel = 0.0
+	elif zona_pos >= limite:
+		zona_pos = limite
+		zona_vel = 0.0
 
-	# Isca e peixe se aproximando do cais
-	if estado == 4:
-		_isca.position = Vector2(
-			lerpf(pos_lancamento, 640.0, resistencia / 100.0),
-			484.0 + 3.0 * C3.sin_g(_tempo * 900.0),
-		)
-		_peixe.position = Vector2(
-			_isca.position.x + 34.0 + 8.0 * C3.sin_g(_tempo * 500.0),
-			_isca.position.y + 36.0,
-		)
+	# Peixe: escolhe um ponto novo de tempos em tempos e nada ate ele.
+	peixe_tempo -= delta
+	if peixe_tempo <= 0.0:
+		peixe_alvo = randf_range(8.0, TRILHA_ALTURA - 8.0)
+		peixe_tempo = randf_range(0.35, 1.5)
+	peixe_pos = move_toward(peixe_pos, peixe_alvo, (70.0 + peso_peixe * 18.0) * delta)
 
-	# Tensao no limite: a linha arrebenta
-	if estado == 4 and tensao >= 100.0:
-		_status.text = "A linha arrebentou!"
-		estado = 6
+	# Progresso
+	if peixe_pos >= zona_pos and peixe_pos <= zona_pos + ZONA_ALTURA:
+		progresso += PROGRESSO_GANHO * delta
+	else:
+		progresso -= PROGRESSO_PERDA * delta
+	progresso = clampf(progresso, 0.0, 100.0)
 
-	# Puxada completa: peixe capturado
-	if estado == 4 and resistencia >= 100.0:
+	# A isca e o peixe na agua vem chegando conforme o progresso sobe.
+	_isca.position = Vector2(
+		lerpf(pos_lancamento, 640.0, progresso / 100.0),
+		484.0 + 3.0 * C3.sin_g(_tempo * 900.0),
+	)
+	_peixe.position = Vector2(
+		_isca.position.x + 34.0 + 8.0 * C3.sin_g(_tempo * 500.0),
+		_isca.position.y + 36.0,
+	)
+
+	if progresso >= 100.0:
 		estado = 5
+	elif progresso <= 0.0:
+		estado = 6
 
 
 # ------------------------------- Resultado -------------------------------
@@ -245,7 +292,6 @@ func _grupo_resultado(delta: float) -> void:
 		_peixe.frame = 1
 		C3.set_opacidade(_peixe, 100.0)
 		_peixe.position = Vector2(_player.position.x + 70.0, 420.0)
-		_status.text = "Capturado! Peixe de " + C3.num(peso_peixe) + " kg"
 		_depois_da_captura()
 
 	# Entrou no Estado 6
@@ -261,9 +307,8 @@ func _grupo_resultado(delta: float) -> void:
 	if estado == 7:
 		estado = 0
 		forca = 0.0
-		resistencia = 0.0
-		tensao = 0.0
 		direcao_forca = 1.0
+		progresso = 0.0
 		_isca.visible = false
 		_linha.visible = false
 		_peixe.visible = false
@@ -294,24 +339,16 @@ func _grupo_interface() -> void:
 	C3.set_largura(_linha, mao.distance_to(ponta))
 
 	C3.set_altura(_barra_forca, (forca / 100.0) * 240.0)
-	C3.set_altura(_barra_tensao, (tensao / 100.0) * 240.0)
-	C3.set_altura(_barra_puxada, (resistencia / 100.0) * 240.0)
+	C3.set_altura(_barra_progresso, (progresso / 100.0) * 240.0)
 
-	# Perto de arrebentar, a barra de tensao pisca
-	C3.set_opacidade(
-		_barra_tensao,
-		(55.0 + 45.0 * absf(C3.sin_g(_tempo * 900.0))) if tensao > 75.0 else 100.0,
-	)
+	# A trilha do minijogo so aparece durante o minijogo.
+	_zona_captura.visible = estado == 4
+	_peixe_marcador.visible = estado == 4
+	if estado == 4:
+		_zona_captura.position.y = TRILHA_BASE_Y - zona_pos
+		_peixe_marcador.position.y = TRILHA_BASE_Y - peixe_pos
 
 	_placar.text = "Peixes: " + C3.num(peixes) + "   |   Total: " + C3.num(total_kg) + " kg"
-
-	# Estado 0 e perto da agua
-	if estado == 0 and perto_agua:
-		_status.text = "Segure ESPAÇO para carregar e solte para lançar"
-
-	# Estado 0 e longe da agua
-	if estado == 0 and not perto_agua:
-		_status.text = "Vá até a ponta do cais  (← →)"
 
 
 # --------------------------- Apoio do runtime ---------------------------

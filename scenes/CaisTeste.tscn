@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/cais_teste.gd" id="script_jogo"]
 [ext_resource type="Script" path="res://scripts/eight_dir.gd" id="script_oito_direcoes"]
@@ -14,7 +14,6 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/player-animation 1-000.png" id="tex_player"]
 [ext_resource type="Texture2D" path="res://assets/sprites/barrafundo-animation 1-000.png" id="tex_barrafundo"]
 [ext_resource type="Texture2D" path="res://assets/sprites/barrafillforca-animation 1-000.png" id="tex_barrafillforca"]
-[ext_resource type="Texture2D" path="res://assets/sprites/barrafilltensao-animation 1-000.png" id="tex_barrafilltensao"]
 [ext_resource type="Texture2D" path="res://assets/sprites/barrafill-animation 1-000.png" id="tex_barrafill"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_peixe"]
@@ -103,11 +102,11 @@ deceleration = 500.0
 position = Vector2(60, 170)
 texture = ExtResource("tex_barrafundo")
 
-[node name="BarraFundoTensao" type="Sprite2D" parent="UI"]
+[node name="BarraFundoTrilha" type="Sprite2D" parent="UI"]
 position = Vector2(120, 170)
 texture = ExtResource("tex_barrafundo")
 
-[node name="BarraFundoPuxada" type="Sprite2D" parent="UI"]
+[node name="BarraFundoProgresso" type="Sprite2D" parent="UI"]
 position = Vector2(180, 170)
 texture = ExtResource("tex_barrafundo")
 
@@ -118,30 +117,27 @@ centered = false
 offset = Vector2(-16, -240)
 texture = ExtResource("tex_barrafillforca")
 
-[node name="BarraFillTensao" type="Sprite2D" parent="UI"]
+[node name="ZonaCaptura" type="Sprite2D" parent="UI"]
+visible = false
+modulate = Color(1, 1, 1, 0.8)
 position = Vector2(120, 290)
-scale = Vector2(1, 0.00416667)
+scale = Vector2(1, 0.266667)
 centered = false
 offset = Vector2(-16, -240)
-texture = ExtResource("tex_barrafilltensao")
+texture = ExtResource("tex_barrafill")
 
-[node name="BarraFill" type="Sprite2D" parent="UI"]
+[node name="PeixeMarcador" type="Sprite2D" parent="UI"]
+visible = false
+position = Vector2(120, 170)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("tex_peixe_1")
+
+[node name="BarraFillProgresso" type="Sprite2D" parent="UI"]
 position = Vector2(180, 290)
 scale = Vector2(1, 0.00416667)
 centered = false
 offset = Vector2(-16, -240)
 texture = ExtResource("tex_barrafill")
-
-[node name="StatusLabel" type="Label" parent="UI"]
-offset_left = 290.0
-offset_top = 16.0
-offset_right = 990.0
-offset_bottom = 56.0
-theme_override_colors/font_color = Color(0.07, 0.13, 0.28, 1)
-theme_override_fonts/font = SubResource("SystemFont_negrito")
-theme_override_font_sizes/font_size = 22
-horizontal_alignment = 1
-autowrap_mode = 2
 
 [node name="Placar" type="Label" parent="UI"]
 offset_left = 440.0
@@ -167,7 +163,7 @@ text = "FORÇA"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="TextoTensao" type="Label" parent="UI"]
+[node name="TextoPeixe" type="Label" parent="UI"]
 offset_left = 90.0
 offset_top = 304.0
 offset_right = 150.0
@@ -175,11 +171,11 @@ offset_bottom = 324.0
 theme_override_colors/font_color = Color(0.07, 0.13, 0.28, 1)
 theme_override_fonts/font = SubResource("SystemFont_negrito")
 theme_override_font_sizes/font_size = 12
-text = "TENSÃO"
+text = "PEIXE"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="TextoPuxada" type="Label" parent="UI"]
+[node name="TextoCaptura" type="Label" parent="UI"]
 offset_left = 150.0
 offset_top = 304.0
 offset_right = 210.0
@@ -187,6 +183,6 @@ offset_bottom = 324.0
 theme_override_colors/font_color = Color(0.07, 0.13, 0.28, 1)
 theme_override_fonts/font = SubResource("SystemFont_negrito")
 theme_override_font_sizes/font_size = 12
-text = "PUXADA"
+text = "CAPTURA"
 horizontal_alignment = 1
 autowrap_mode = 2
