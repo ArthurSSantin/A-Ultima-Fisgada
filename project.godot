@@ -10,10 +10,14 @@ config_version=5
 
 [application]
 
-config/name="PescaAlfa"
-run/main_scene="res://scenes/CaisTeste.tscn"
+config/name="A Ultima Fisgada"
+run/main_scene="res://scenes/Hub.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.png"
+
+[autoload]
+
+Partida="*res://scripts/partida.gd"
 
 [display]
 

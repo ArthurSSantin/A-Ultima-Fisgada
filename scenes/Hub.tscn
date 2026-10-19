@@ -1,0 +1,280 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/hub.gd" id="script_hub"]
+[ext_resource type="Script" path="res://scripts/eight_dir.gd" id="script_oito_direcoes"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player-animation 1-000.png" id="tex_player"]
+
+[sub_resource type="SystemFont" id="SystemFont_negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[sub_resource type="SystemFont" id="SystemFont_normal"]
+font_names = PackedStringArray("Arial")
+
+[node name="Hub" type="Node2D"]
+script = ExtResource("script_hub")
+
+[node name="Parede" type="ColorRect" parent="."]
+offset_right = 1280.0
+offset_bottom = 520.0
+color = Color(0.62, 0.46, 0.32, 1)
+
+[node name="Viga" type="ColorRect" parent="."]
+offset_top = 70.0
+offset_right = 1280.0
+offset_bottom = 86.0
+color = Color(0.36, 0.25, 0.16, 1)
+
+[node name="Estragos" type="Node2D" parent="."]
+
+[node name="Ceu" type="ColorRect" parent="Estragos"]
+offset_left = 280.0
+offset_right = 1020.0
+offset_bottom = 86.0
+color = Color(0.75, 0.91, 1, 1)
+
+[node name="CeuFundo" type="ColorRect" parent="Estragos"]
+offset_left = 420.0
+offset_top = 86.0
+offset_right = 880.0
+offset_bottom = 110.0
+color = Color(0.75, 0.91, 1, 1)
+
+[node name="TelhaEsquerda" type="ColorRect" parent="Estragos"]
+offset_left = 280.0
+offset_right = 330.0
+offset_bottom = 46.0
+color = Color(0.45, 0.22, 0.15, 1)
+
+[node name="TelhaDireita" type="ColorRect" parent="Estragos"]
+offset_left = 960.0
+offset_right = 1020.0
+offset_bottom = 30.0
+color = Color(0.45, 0.22, 0.15, 1)
+
+[node name="VigaQuebrada" type="ColorRect" parent="Estragos"]
+offset_left = 290.0
+offset_top = 70.0
+offset_right = 430.0
+offset_bottom = 86.0
+rotation = 0.38
+color = Color(0.36, 0.25, 0.16, 1)
+
+[node name="Telhado" type="ColorRect" parent="."]
+visible = false
+offset_left = 280.0
+offset_right = 1020.0
+offset_bottom = 70.0
+color = Color(0.45, 0.22, 0.15, 1)
+
+[node name="Chao" type="ColorRect" parent="."]
+offset_top = 520.0
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.42, 0.3, 0.2, 1)
+
+[node name="Estacoes" type="Node2D" parent="."]
+
+[node name="Cama" type="Node2D" parent="Estacoes"]
+position = Vector2(130, 520)
+
+[node name="Visual" type="ColorRect" parent="Estacoes/Cama"]
+offset_left = -70.0
+offset_top = -60.0
+offset_right = 70.0
+color = Color(0.35, 0.45, 0.7, 1)
+
+[node name="Nome" type="Label" parent="Estacoes/Cama"]
+offset_left = -90.0
+offset_top = -86.0
+offset_right = 90.0
+offset_bottom = -64.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Cama"
+horizontal_alignment = 1
+
+[node name="Marlene" type="Node2D" parent="Estacoes"]
+position = Vector2(390, 520)
+
+[node name="Visual" type="ColorRect" parent="Estacoes/Marlene"]
+offset_left = -28.0
+offset_top = -110.0
+offset_right = 28.0
+color = Color(0.62, 0.38, 0.6, 1)
+
+[node name="Nome" type="Label" parent="Estacoes/Marlene"]
+offset_left = -90.0
+offset_top = -136.0
+offset_right = 90.0
+offset_bottom = -114.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Dona Marlene"
+horizontal_alignment = 1
+
+[node name="Zeca" type="Node2D" parent="Estacoes"]
+position = Vector2(640, 520)
+
+[node name="Visual" type="ColorRect" parent="Estacoes/Zeca"]
+offset_left = -75.0
+offset_top = -90.0
+offset_right = 75.0
+color = Color(0.25, 0.55, 0.55, 1)
+
+[node name="Nome" type="Label" parent="Estacoes/Zeca"]
+offset_left = -90.0
+offset_top = -116.0
+offset_right = 90.0
+offset_bottom = -94.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Zeca (balcão)"
+horizontal_alignment = 1
+
+[node name="Aldo" type="Node2D" parent="Estacoes"]
+position = Vector2(900, 520)
+
+[node name="Visual" type="ColorRect" parent="Estacoes/Aldo"]
+offset_left = -75.0
+offset_top = -90.0
+offset_right = 75.0
+color = Color(0.85, 0.5, 0.2, 1)
+
+[node name="Nome" type="Label" parent="Estacoes/Aldo"]
+offset_left = -90.0
+offset_top = -116.0
+offset_right = 90.0
+offset_bottom = -94.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Seu Aldo (loja)"
+horizontal_alignment = 1
+
+[node name="Saida" type="Node2D" parent="Estacoes"]
+position = Vector2(1190, 520)
+
+[node name="Visual" type="ColorRect" parent="Estacoes/Saida"]
+offset_left = -40.0
+offset_top = -150.0
+offset_right = 40.0
+color = Color(0.3, 0.2, 0.12, 1)
+
+[node name="Nome" type="Label" parent="Estacoes/Saida"]
+offset_left = -90.0
+offset_top = -176.0
+offset_right = 90.0
+offset_bottom = -154.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Cais >"
+horizontal_alignment = 1
+
+[node name="Quadro" type="Node2D" parent="."]
+position = Vector2(390, 180)
+
+[node name="Fundo" type="ColorRect" parent="Quadro"]
+offset_left = -130.0
+offset_top = -50.0
+offset_right = 130.0
+offset_bottom = 70.0
+color = Color(0.2, 0.32, 0.22, 1)
+
+[node name="Titulo" type="Label" parent="Quadro"]
+offset_left = -120.0
+offset_top = -44.0
+offset_right = 120.0
+offset_bottom = -20.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Reforma da Loja de Pesca"
+horizontal_alignment = 1
+
+[node name="BarraFundo" type="ColorRect" parent="Quadro"]
+offset_left = -110.0
+offset_top = -12.0
+offset_right = 110.0
+offset_bottom = 8.0
+color = Color(0.1, 0.15, 0.1, 1)
+
+[node name="Barra" type="ColorRect" parent="Quadro"]
+offset_left = -110.0
+offset_top = -12.0
+offset_right = -110.0
+offset_bottom = 8.0
+color = Color(1, 0.82, 0.35, 1)
+
+[node name="Texto" type="Label" parent="Quadro"]
+offset_left = -120.0
+offset_top = 14.0
+offset_right = 120.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_fonts/font = SubResource("SystemFont_normal")
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+
+[node name="Player" type="Sprite2D" parent="."]
+position = Vector2(640, 472)
+texture = ExtResource("tex_player")
+
+[node name="OitoDirecoes" type="Node" parent="Player"]
+script = ExtResource("script_oito_direcoes")
+max_speed = 260.0
+acceleration = 900.0
+deceleration = 900.0
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 96.0
+offset_right = 1260.0
+offset_bottom = 122.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+
+[node name="Objetivo" type="Label" parent="UI"]
+offset_left = 760.0
+offset_top = 140.0
+offset_right = 1260.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_normal")
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 2
+autowrap_mode = 2
+
+[node name="Prompt" type="Label" parent="UI"]
+offset_left = 340.0
+offset_top = 560.0
+offset_right = 940.0
+offset_bottom = 590.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1

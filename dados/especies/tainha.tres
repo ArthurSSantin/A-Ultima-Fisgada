@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Especie" format=3]
+
+[ext_resource type="Script" path="res://scripts/dados/especie.gd" id="1_especie"]
+
+[resource]
+script = ExtResource("1_especie")
+nome = "Tainha"
+perfil = &"saltador"
+fase = 1
+raridade = 0
+forca_min = 30.0
+forca_max = 70.0
+peso_min = 1.0
+peso_max = 3.0
+valor_min = 30
+valor_max = 60

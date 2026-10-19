@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Especie" format=3]
+
+[ext_resource type="Script" path="res://scripts/dados/especie.gd" id="1_especie"]
+
+[resource]
+script = ExtResource("1_especie")
+nome = "Robalo"
+perfil = &"mergulhador"
+fase = 1
+raridade = 2
+forca_min = 70.0
+forca_max = 100.0
+peso_min = 3.0
+peso_max = 6.0
+valor_min = 90
+valor_max = 160
