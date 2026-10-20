@@ -1,8 +1,20 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/hub.gd" id="script_hub"]
 [ext_resource type="Script" path="res://scripts/eight_dir.gd" id="script_oito_direcoes"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player-animation 1-000.png" id="tex_player"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiago/tiago.png" id="tex_player"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="script_visual_tiago"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_fundo.png" id="tex_fundo"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_buraco.png" id="tex_buraco"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_luz.png" id="tex_luz"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_balde.png" id="tex_balde"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_telhado.png" id="tex_telhado"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_cama.png" id="tex_cama"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_marlene.png" id="tex_marlene"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_zeca.png" id="tex_zeca"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_aldo.png" id="tex_aldo"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_porta.png" id="tex_porta"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hub/hub_quadro.png" id="tex_quadro"]
 
 [sub_resource type="SystemFont" id="SystemFont_negrito"]
 font_names = PackedStringArray("Arial")
@@ -14,81 +26,49 @@ font_names = PackedStringArray("Arial")
 [node name="Hub" type="Node2D"]
 script = ExtResource("script_hub")
 
-[node name="Parede" type="ColorRect" parent="."]
-offset_right = 1280.0
-offset_bottom = 520.0
-color = Color(0.62, 0.46, 0.32, 1)
-
-[node name="Viga" type="ColorRect" parent="."]
-offset_top = 70.0
-offset_right = 1280.0
-offset_bottom = 86.0
-color = Color(0.36, 0.25, 0.16, 1)
+[node name="Fundo" type="Sprite2D" parent="."]
+texture = ExtResource("tex_fundo")
+centered = false
 
 [node name="Estragos" type="Node2D" parent="."]
 
-[node name="Ceu" type="ColorRect" parent="Estragos"]
-offset_left = 280.0
-offset_right = 1020.0
-offset_bottom = 86.0
-color = Color(0.75, 0.91, 1, 1)
+[node name="Luz" type="Sprite2D" parent="Estragos"]
+position = Vector2(300, 0)
+texture = ExtResource("tex_luz")
+centered = false
 
-[node name="CeuFundo" type="ColorRect" parent="Estragos"]
-offset_left = 420.0
-offset_top = 86.0
-offset_right = 880.0
-offset_bottom = 110.0
-color = Color(0.75, 0.91, 1, 1)
+[node name="Buraco" type="Sprite2D" parent="Estragos"]
+position = Vector2(280, 0)
+texture = ExtResource("tex_buraco")
+centered = false
 
-[node name="TelhaEsquerda" type="ColorRect" parent="Estragos"]
-offset_left = 280.0
-offset_right = 330.0
-offset_bottom = 46.0
-color = Color(0.45, 0.22, 0.15, 1)
+[node name="Balde" type="Sprite2D" parent="Estragos"]
+position = Vector2(465, 464)
+texture = ExtResource("tex_balde")
+centered = false
 
-[node name="TelhaDireita" type="ColorRect" parent="Estragos"]
-offset_left = 960.0
-offset_right = 1020.0
-offset_bottom = 30.0
-color = Color(0.45, 0.22, 0.15, 1)
-
-[node name="VigaQuebrada" type="ColorRect" parent="Estragos"]
-offset_left = 290.0
-offset_top = 70.0
-offset_right = 430.0
-offset_bottom = 86.0
-rotation = 0.38
-color = Color(0.36, 0.25, 0.16, 1)
-
-[node name="Telhado" type="ColorRect" parent="."]
+[node name="Telhado" type="Sprite2D" parent="."]
 visible = false
-offset_left = 280.0
-offset_right = 1020.0
-offset_bottom = 70.0
-color = Color(0.45, 0.22, 0.15, 1)
-
-[node name="Chao" type="ColorRect" parent="."]
-offset_top = 520.0
-offset_right = 1280.0
-offset_bottom = 720.0
-color = Color(0.42, 0.3, 0.2, 1)
+position = Vector2(280, 0)
+texture = ExtResource("tex_telhado")
+centered = false
 
 [node name="Estacoes" type="Node2D" parent="."]
 
 [node name="Cama" type="Node2D" parent="Estacoes"]
 position = Vector2(130, 520)
 
-[node name="Visual" type="ColorRect" parent="Estacoes/Cama"]
-offset_left = -70.0
-offset_top = -60.0
-offset_right = 70.0
-color = Color(0.35, 0.45, 0.7, 1)
+[node name="Visual" type="Sprite2D" parent="Estacoes/Cama"]
+texture = ExtResource("tex_cama")
+centered = false
+offset = Vector2(-76, -72)
+
 
 [node name="Nome" type="Label" parent="Estacoes/Cama"]
 offset_left = -90.0
-offset_top = -86.0
+offset_top = -100.0
 offset_right = 90.0
-offset_bottom = -64.0
+offset_bottom = -78.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
 theme_override_constants/outline_size = 5
@@ -100,11 +80,11 @@ horizontal_alignment = 1
 [node name="Marlene" type="Node2D" parent="Estacoes"]
 position = Vector2(390, 520)
 
-[node name="Visual" type="ColorRect" parent="Estacoes/Marlene"]
-offset_left = -28.0
-offset_top = -110.0
-offset_right = 28.0
-color = Color(0.62, 0.38, 0.6, 1)
+[node name="Visual" type="Sprite2D" parent="Estacoes/Marlene"]
+texture = ExtResource("tex_marlene")
+centered = false
+offset = Vector2(-32, -104)
+
 
 [node name="Nome" type="Label" parent="Estacoes/Marlene"]
 offset_left = -90.0
@@ -122,17 +102,17 @@ horizontal_alignment = 1
 [node name="Zeca" type="Node2D" parent="Estacoes"]
 position = Vector2(640, 520)
 
-[node name="Visual" type="ColorRect" parent="Estacoes/Zeca"]
-offset_left = -75.0
-offset_top = -90.0
-offset_right = 75.0
-color = Color(0.25, 0.55, 0.55, 1)
+[node name="Visual" type="Sprite2D" parent="Estacoes/Zeca"]
+texture = ExtResource("tex_zeca")
+centered = false
+offset = Vector2(-80, -136)
+
 
 [node name="Nome" type="Label" parent="Estacoes/Zeca"]
 offset_left = -90.0
-offset_top = -116.0
+offset_top = -160.0
 offset_right = 90.0
-offset_bottom = -94.0
+offset_bottom = -138.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
 theme_override_constants/outline_size = 5
@@ -144,17 +124,17 @@ horizontal_alignment = 1
 [node name="Aldo" type="Node2D" parent="Estacoes"]
 position = Vector2(900, 520)
 
-[node name="Visual" type="ColorRect" parent="Estacoes/Aldo"]
-offset_left = -75.0
-offset_top = -90.0
-offset_right = 75.0
-color = Color(0.85, 0.5, 0.2, 1)
+[node name="Visual" type="Sprite2D" parent="Estacoes/Aldo"]
+texture = ExtResource("tex_aldo")
+centered = false
+offset = Vector2(-80, -248)
+
 
 [node name="Nome" type="Label" parent="Estacoes/Aldo"]
 offset_left = -90.0
-offset_top = -116.0
+offset_top = -272.0
 offset_right = 90.0
-offset_bottom = -94.0
+offset_bottom = -250.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
 theme_override_constants/outline_size = 5
@@ -166,17 +146,17 @@ horizontal_alignment = 1
 [node name="Saida" type="Node2D" parent="Estacoes"]
 position = Vector2(1190, 520)
 
-[node name="Visual" type="ColorRect" parent="Estacoes/Saida"]
-offset_left = -40.0
-offset_top = -150.0
-offset_right = 40.0
-color = Color(0.3, 0.2, 0.12, 1)
+[node name="Visual" type="Sprite2D" parent="Estacoes/Saida"]
+texture = ExtResource("tex_porta")
+centered = false
+offset = Vector2(-44, -160)
+
 
 [node name="Nome" type="Label" parent="Estacoes/Saida"]
 offset_left = -90.0
-offset_top = -176.0
+offset_top = -184.0
 offset_right = 90.0
-offset_bottom = -154.0
+offset_bottom = -162.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
 theme_override_constants/outline_size = 5
@@ -188,12 +168,11 @@ horizontal_alignment = 1
 [node name="Quadro" type="Node2D" parent="."]
 position = Vector2(390, 180)
 
-[node name="Fundo" type="ColorRect" parent="Quadro"]
-offset_left = -130.0
-offset_top = -50.0
-offset_right = 130.0
-offset_bottom = 70.0
-color = Color(0.2, 0.32, 0.22, 1)
+[node name="Fundo" type="Sprite2D" parent="Quadro"]
+position = Vector2(-132, -92)
+texture = ExtResource("tex_quadro")
+centered = false
+
 
 [node name="Titulo" type="Label" parent="Quadro"]
 offset_left = -120.0
@@ -239,6 +218,9 @@ script = ExtResource("script_oito_direcoes")
 max_speed = 260.0
 acceleration = 900.0
 deceleration = 900.0
+
+[node name="Visual" type="Node" parent="Player"]
+script = ExtResource("script_visual_tiago")
 
 [node name="UI" type="CanvasLayer" parent="."]
 

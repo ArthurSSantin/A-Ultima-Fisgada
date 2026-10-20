@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/cais_teste.gd" id="script_jogo"]
 [ext_resource type="Script" path="res://scripts/eight_dir.gd" id="script_oito_direcoes"]
@@ -11,24 +11,11 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/peixe-animation 1-001.png" id="tex_peixe_1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/linha-animation 1-000.png" id="tex_linha"]
 [ext_resource type="Texture2D" path="res://assets/sprites/isca-animation 1-000.png" id="tex_isca"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player-animation 1-000.png" id="tex_player"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiago/tiago.png" id="tex_player"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="script_visual_tiago"]
 [ext_resource type="Texture2D" path="res://assets/sprites/barrafundo-animation 1-000.png" id="tex_barrafundo"]
 [ext_resource type="Texture2D" path="res://assets/sprites/barrafillforca-animation 1-000.png" id="tex_barrafillforca"]
 [ext_resource type="Texture2D" path="res://assets/sprites/barrafill-animation 1-000.png" id="tex_barrafill"]
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_peixe"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_peixe_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_peixe_1")
-}],
-"loop": false,
-"name": &"Animation 1",
-"speed": 0.0
-}]
 
 [sub_resource type="SystemFont" id="SystemFont_negrito"]
 font_names = PackedStringArray("Arial")
@@ -56,11 +43,11 @@ position = Vector2(640, 594)
 texture = ExtResource("tex_mar")
 
 [node name="Grama" type="Sprite2D" parent="Jogo"]
-position = Vector2(160, 582)
+position = Vector2(160, 550)
 texture = ExtResource("tex_grama")
 
 [node name="Cais" type="Sprite2D" parent="Jogo"]
-position = Vector2(460, 504)
+position = Vector2(460, 472)
 texture = ExtResource("tex_cais")
 
 [node name="ZonaPesca" type="Sprite2D" parent="Jogo"]
@@ -69,11 +56,10 @@ position = Vector2(555, 400)
 scale = Vector2(0.52, 0.36)
 texture = ExtResource("tex_zonapesca")
 
-[node name="Peixe" type="AnimatedSprite2D" parent="Jogo"]
+[node name="Peixe" type="Sprite2D" parent="Jogo"]
 visible = false
 position = Vector2(900, 545)
-sprite_frames = SubResource("SpriteFrames_peixe")
-animation = &"Animation 1"
+texture = ExtResource("tex_peixe_0")
 
 [node name="Linha" type="Sprite2D" parent="Jogo"]
 visible = false
@@ -118,6 +104,9 @@ script = ExtResource("script_oito_direcoes")
 max_speed = 200.0
 acceleration = 600.0
 deceleration = 500.0
+
+[node name="Visual" type="Node" parent="Jogo/Player"]
+script = ExtResource("script_visual_tiago")
 
 [node name="UI" type="CanvasLayer" parent="."]
 

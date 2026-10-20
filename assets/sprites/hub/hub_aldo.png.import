@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkuofgr1dww8a"
-path="res://.godot/imported/player-animation 1-000.png-0154812e99c2b9718634b8a18f00b2ec.ctex"
+uid="uid://7t3yfctpw4um"
+path="res://.godot/imported/hub_aldo.png-a49b80ca2dba392f844cefe0d0c52ab4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/player-animation 1-000.png"
-dest_files=["res://.godot/imported/player-animation 1-000.png-0154812e99c2b9718634b8a18f00b2ec.ctex"]
+source_file="res://assets/sprites/hub/hub_aldo.png"
+dest_files=["res://.godot/imported/hub_aldo.png-a49b80ca2dba392f844cefe0d0c52ab4.ctex"]
 
 [params]
 

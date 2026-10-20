@@ -40,12 +40,10 @@ static func set_altura(sp: Sprite2D, px: float) -> void:
 
 ## Caixa da imagem em coordenadas globais, que e o que o C3 usa para testar
 ## sobreposicao de sprites sem rotacao.
+## get_rect() ja considera offset, centered e um quadro so de hframes/vframes.
 static func caixa(sp: Sprite2D) -> Rect2:
-	var tamanho: Vector2 = sp.texture.get_size()
-	var canto: Vector2 = sp.offset
-	if sp.centered:
-		canto -= tamanho * 0.5
-	return Rect2(sp.global_position + canto * sp.scale, tamanho * sp.scale.abs())
+	var local: Rect2 = sp.get_rect()
+	return Rect2(sp.global_position + local.position * sp.scale, local.size * sp.scale.abs())
 
 
 ## Equivale a condicao "Esta sobrepondo outro objeto" do C3.

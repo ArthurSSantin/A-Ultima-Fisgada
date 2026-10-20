@@ -20,6 +20,10 @@ enum Raridade { COMUM, INCOMUM, RARO, ESPECIAL }
 @export var peso_max: float = 1.0
 @export var valor_min: int = 10
 @export var valor_max: int = 20
+## Peixe revelado na captura (arte 4x, virado para a direita).
+@export var sprite: Texture2D
+## Sombra que aparece na agua antes da captura.
+@export var sombra: Texture2D
 
 
 func alcancavel(forca: float) -> bool:

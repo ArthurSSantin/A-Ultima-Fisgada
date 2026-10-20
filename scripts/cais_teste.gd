@@ -34,6 +34,11 @@ const TRILHA_BASE_Y: float = 290.0
 ## Encostou na borda esquerda do cais: volta para a Loja de Pesca.
 const SAIDA_X: float = 40.0
 
+## Na agua e no minijogo o peixe e sempre a sombra generica, para a especie ser
+## surpresa; so na captura aparece o sprite da especie (ou o peixe generico).
+const SOMBRA_PEIXE: Texture2D = preload("res://assets/sprites/peixe-animation 1-000.png")
+const PEIXE_GENERICO: Texture2D = preload("res://assets/sprites/peixe-animation 1-001.png")
+
 # --- variaveis globais da folha de eventos ---
 var estado: int = 0
 var forca: float = 0.0
@@ -69,11 +74,12 @@ var _gatilhos: Dictionary = {}
 var _caixa: CaixaDialogo
 
 @onready var _player: Sprite2D = $Jogo/Player
+@onready var _visual: VisualTiago = $Jogo/Player/Visual
 @onready var _mover: EightDir = $Jogo/Player/OitoDirecoes
 @onready var _zona_pesca: Sprite2D = $Jogo/ZonaPesca
 @onready var _isca: Sprite2D = $Jogo/Isca
 @onready var _linha: Sprite2D = $Jogo/Linha
-@onready var _peixe: AnimatedSprite2D = $Jogo/Peixe
+@onready var _peixe: Sprite2D = $Jogo/Peixe
 @onready var _alerta: Label = $Jogo/Alerta
 @onready var _barra_forca: Sprite2D = $UI/BarraFillForca
 @onready var _zona_captura: Sprite2D = $UI/ZonaCaptura
@@ -126,6 +132,9 @@ func _grupo_movimento() -> void:
 	# Player esta sobrepondo ZonaPesca
 	if C3.sobrepondo(_player, _zona_pesca):
 		perto_agua = true
+
+	# Na beira (ou pescando) a vara sai das costas e vai para a mao
+	_visual.na_mao = perto_agua or estado != 0
 
 	# Estado = 0
 	if estado == 0:
@@ -195,7 +204,7 @@ func _grupo_lancamento(delta: float) -> void:
 		_isca.position = Vector2(pos_lancamento, 478.0)
 		_isca.visible = true
 		_linha.visible = true
-		_peixe.frame = 0
+		_peixe.texture = SOMBRA_PEIXE
 		_aviso.text = ""
 		_depois_do_lancamento()
 
@@ -223,6 +232,7 @@ func _grupo_espera_e_fisgada(delta: float) -> void:
 		else:
 			_isca.position.y = 478.0 + 2.0 * C3.sin_g(_tempo * 150.0)
 		_peixe.position = Vector2(_isca.position.x + 90.0 * C3.cos_g(_tempo * 70.0), 545.0)
+		_peixe.flip_h = C3.sin_g(_tempo * 70.0) > 0.0  # indo para a esquerda, vira
 		C3.set_opacidade(_peixe, minf(C3.opacidade(_peixe) + 30.0 * delta, 45.0))
 
 	# Apertou ESPACO antes da mordida
@@ -238,6 +248,7 @@ func _grupo_espera_e_fisgada(delta: float) -> void:
 	if estado == 3:
 		_isca.position.y = 486.0 + 8.0 * C3.sin_g(_tempo * 1400.0)
 		_peixe.position = Vector2(_isca.position.x + 36.0, 520.0)
+		_peixe.flip_h = true  # boca virada para a isca
 		C3.set_opacidade(_peixe, 70.0)
 
 	# O Modao destaca a mordida verdadeira; no tutorial ela tambem e marcada.
@@ -247,6 +258,7 @@ func _grupo_espera_e_fisgada(delta: float) -> void:
 	# Fisgou dentro da janela: comeca o minijogo
 	if Input.is_action_just_pressed(ESPACO) and estado == 3:
 		estado = 4
+		_peixe.flip_h = false  # foge para o mar
 		minijogo.iniciar(peso_peixe, especie.perfil if especie else &"padrao")
 
 
@@ -317,13 +329,16 @@ func _grupo_resultado(delta: float) -> void:
 			_anunciar_captura()
 		_isca.visible = false
 		_linha.visible = false
-		_peixe.frame = 1
+		_peixe.texture = especie.sprite if especie and especie.sprite else PEIXE_GENERICO
 		C3.set_opacidade(_peixe, 100.0)
-		_peixe.position = Vector2(_player.position.x + 70.0, 420.0)
+		# A borda do peixe fica no mesmo lugar para qualquer tamanho (96 px -> +70).
+		_peixe.position = Vector2(_player.position.x + 22.0 + _peixe.texture.get_width() * 0.5, 420.0)
+		_peixe.flip_h = false
 		_depois_da_captura()
 
 	# Entrou no Estado 6
 	if estado == 6 and _gatilho_unico(&"falhou"):
+		_peixe.flip_h = false
 		_depois_da_falha()
 
 	# Peixe fugindo
@@ -340,7 +355,7 @@ func _grupo_resultado(delta: float) -> void:
 		_isca.visible = false
 		_linha.visible = false
 		_peixe.visible = false
-		_peixe.frame = 0
+		_peixe.texture = SOMBRA_PEIXE
 
 
 func _anunciar_captura() -> void:
@@ -429,13 +444,15 @@ func _texto_da_dica() -> String:
 		return ""
 	if Partida.dia == 2 and estado == 2:
 		return "Cuidado: se a isca só tremer de leve, é beliscada. Espere a mordida forte."
+	if Partida.dia == 2 and estado == 0:
+		return "Quanto mais longe o lançamento, maiores os peixes."
 	if not Partida.tutorial():
 		return ""
 	match estado:
 		0:
 			if not perto_agua:
 				return "Use as setas para andar até a ponta do cais."
-			return "Segure ESPAÇO para carregar a força e solte para lançar.\nOs paratis ficam perto da beira."
+			return "Segure ESPAÇO para carregar a força e solte para lançar.\nHoje só tem parati na beira. Amanhã, lance mais longe para peixes maiores."
 		1, 2:
 			return "Agora espere... não aperte nada antes de o peixe morder."
 		3:

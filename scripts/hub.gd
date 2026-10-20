@@ -10,7 +10,7 @@ extends Node2D
 ##   Porta         vai para o cais
 ##
 ## A Fase 1 fecha com o telhado pago e um robalo entregue. Os nos sao
-## provisorios (ColorRect) ate a arte do hub chegar.
+## sprites de assets/sprites/hub/
 
 const CENA_CAIS: String = "res://scenes/CaisTeste.tscn"
 const ALCANCE: float = 80.0
@@ -32,7 +32,7 @@ var _concluida: bool = false
 @onready var _player: Sprite2D = $Player
 @onready var _mover: EightDir = $Player/OitoDirecoes
 @onready var _estacoes: Node2D = $Estacoes
-@onready var _telhado: ColorRect = $Telhado
+@onready var _telhado: CanvasItem = $Telhado
 @onready var _estragos: Node2D = $Estragos
 @onready var _quadro_barra: ColorRect = $Quadro/Barra
 @onready var _quadro_texto: Label = $Quadro/Texto
