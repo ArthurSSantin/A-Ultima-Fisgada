@@ -13,7 +13,10 @@ extends Node
 ## movimento) e durante os dialogos (a cena para, mas a velocidade fica).
 ## Usa hframes; C3.caixa mede um quadro so, entao a sobreposicao continua 64x96.
 
-const PASTA: String = "res://assets/sprites/tiago/"
+## De onde vem as folhas e o prefixo do nome. O Tiago adulto usa o padrao; o
+## neto do tutorial usa as folhas dele ("neto_sem_vara.png" e cia).
+@export var pasta: String = "res://assets/sprites/tiago/"
+@export var prefixo: String = "tiago"
 const QUADROS: int = 4
 const CAMINHADA: Array[int] = [1, 2, 3, 2]
 const TEMPO_QUADRO: float = 0.13
@@ -36,7 +39,7 @@ func _process(delta: float) -> void:
 	var pose: String = _pose_atual()
 	if pose != _pose:
 		_pose = pose
-		_sprite.texture = load(PASTA + "tiago_%s.png" % pose)
+		_sprite.texture = load(pasta + "%s_%s.png" % [prefixo, pose])
 		_sprite.hframes = QUADROS
 
 	var x: float = _sprite.position.x

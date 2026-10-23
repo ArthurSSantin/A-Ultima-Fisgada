@@ -2,7 +2,7 @@ class_name EightDir
 extends Node
 
 ## Porte do behavior "8 Direções" (EightDir) do Construct 3, com as propriedades
-## que o Player tem no layout CaisTeste:
+## que o Player tem no layout do cais e do acude:
 ##
 ##   max-speed 200 | acceleration 600 | deceleration 500
 ##   directions "left-right" | set-angle "no" | default-controls true

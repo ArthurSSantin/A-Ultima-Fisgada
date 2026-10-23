@@ -1,7 +1,7 @@
 class_name BarraEnergia
 extends Control
 
-## Barra de energia do Tiago, no canto inferior esquerdo do cais e do hub. Le
+## Barra de energia do pescador, no canto inferior esquerdo do cais e do hub. Le
 ## Partida.energia todo quadro. Desenhada em codigo ate a arte chegar.
 
 const TAMANHO: Vector2 = Vector2(36, 180)

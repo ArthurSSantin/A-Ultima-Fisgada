@@ -1,0 +1,250 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial/cozinha.gd" id="r1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/cenarios/cozinha.png" id="r2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/vo.png" id="r3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/marlene_jovem.png" id="r4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/neto.png" id="r5"]
+[ext_resource type="Script" path="res://scripts/eight_dir.gd" id="r6"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="r7"]
+
+[sub_resource type="SystemFont" id="negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[node name="Cozinha" type="Node2D"]
+script = ExtResource("r1")
+borda = Vector2(80, 1220)
+alcance = 46
+
+[node name="Fundo" type="Sprite2D" parent="."]
+texture = ExtResource("r2")
+centered = false
+
+[node name="VoNaMesa" type="Sprite2D" parent="."]
+texture = ExtResource("r3")
+centered = false
+scale = Vector2(2, 2)
+position = Vector2(670.0, 296)
+
+[node name="Estacoes" type="Node2D" parent="."]
+
+[node name="Fogao" type="Node2D" parent="Estacoes"]
+position = Vector2(112, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Fogao"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Fogão a lenha"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Tigela" type="Node2D" parent="Estacoes"]
+position = Vector2(256, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Tigela"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Tigela do MauMau"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Marlene" type="Node2D" parent="Estacoes"]
+position = Vector2(340, 520)
+
+[node name="Visual" type="Sprite2D" parent="Estacoes/Marlene"]
+texture = ExtResource("r4")
+centered = false
+position = Vector2(-64.0, -176)
+scale = Vector2(2, 2)
+
+[node name="Nome" type="Label" parent="Estacoes/Marlene"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Vó"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Panelas" type="Node2D" parent="Estacoes"]
+position = Vector2(528, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Panelas"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Panelas"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Mesa" type="Node2D" parent="Estacoes"]
+position = Vector2(664, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Mesa"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Mesa do café"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Radio" type="Node2D" parent="Estacoes"]
+position = Vector2(790, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Radio"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Rádio"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Filtro" type="Node2D" parent="Estacoes"]
+position = Vector2(852, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Filtro"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Filtro de barro"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Calendario" type="Node2D" parent="Estacoes"]
+position = Vector2(900, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Calendario"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Folhinha"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Geladeira" type="Node2D" parent="Estacoes"]
+position = Vector2(984, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Geladeira"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Geladeira"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Porta" type="Node2D" parent="Estacoes"]
+position = Vector2(1184, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Porta"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Terreiro"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Player" type="Sprite2D" parent="."]
+position = Vector2(170, 424)
+texture = ExtResource("r5")
+scale = Vector2(2, 2)
+
+[node name="OitoDirecoes" type="Node" parent="Player"]
+script = ExtResource("r6")
+max_speed = 260.0
+acceleration = 900.0
+deceleration = 900.0
+
+[node name="Visual" type="Node" parent="Player"]
+script = ExtResource("r7")
+pasta = "res://assets/sprites/tutorial/personagens/"
+prefixo = "neto"
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Prompt" type="Label" parent="UI"]
+offset_left = 340.0
+offset_top = 600.0
+offset_right = 940.0
+offset_bottom = 640.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="Dica" type="Label" parent="UI"]
+offset_left = 300.0
+offset_top = 24.0
+offset_right = 1260.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 2
+

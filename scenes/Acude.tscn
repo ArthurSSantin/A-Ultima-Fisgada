@@ -1,0 +1,234 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/acude.gd" id="script_jogo"]
+[ext_resource type="Script" path="res://scripts/eight_dir.gd" id="script_oito_direcoes"]
+[ext_resource type="Texture2D" path="res://assets/sprites/acude/ceu.png" id="tex_ceu"]
+[ext_resource type="Texture2D" path="res://assets/sprites/acude/agua.png" id="tex_agua"]
+[ext_resource type="Texture2D" path="res://assets/sprites/acude/barranco.png" id="tex_barranco"]
+[ext_resource type="Texture2D" path="res://assets/sprites/acude/estrutura.png" id="tex_estrutura"]
+[ext_resource type="Texture2D" path="res://assets/sprites/zonapesca-animation 1-000.png" id="tex_zonapesca"]
+[ext_resource type="Texture2D" path="res://assets/sprites/peixe-animation 1-000.png" id="tex_peixe_0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/peixe-animation 1-001.png" id="tex_peixe_1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/linha-animation 1-000.png" id="tex_linha"]
+[ext_resource type="Texture2D" path="res://assets/sprites/isca-animation 1-000.png" id="tex_isca"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiago/tiago.png" id="tex_player"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="script_visual_tiago"]
+[ext_resource type="Texture2D" path="res://assets/sprites/barrafundo-animation 1-000.png" id="tex_barrafundo"]
+[ext_resource type="Texture2D" path="res://assets/sprites/barrafillforca-animation 1-000.png" id="tex_barrafillforca"]
+[ext_resource type="Texture2D" path="res://assets/sprites/barrafill-animation 1-000.png" id="tex_barrafill"]
+
+[sub_resource type="SystemFont" id="SystemFont_negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[sub_resource type="SystemFont" id="SystemFont_normal"]
+font_names = PackedStringArray("Arial")
+
+[node name="Acude" type="Node2D"]
+script = ExtResource("script_jogo")
+
+[node name="Jogo" type="Node2D" parent="."]
+
+[node name="FundoJogo" type="ColorRect" parent="Jogo"]
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.75, 0.91, 1, 1)
+
+[node name="Ceu" type="Sprite2D" parent="Jogo"]
+position = Vector2(640, 240)
+texture = ExtResource("tex_ceu")
+
+[node name="Agua" type="Sprite2D" parent="Jogo"]
+position = Vector2(640, 594)
+texture = ExtResource("tex_agua")
+
+[node name="Barranco" type="Sprite2D" parent="Jogo"]
+position = Vector2(160, 550)
+texture = ExtResource("tex_barranco")
+
+[node name="Estrutura" type="Sprite2D" parent="Jogo"]
+position = Vector2(460, 416)
+texture = ExtResource("tex_estrutura")
+
+[node name="ZonaPesca" type="Sprite2D" parent="Jogo"]
+visible = false
+position = Vector2(572, 400)
+scale = Vector2(0.52, 0.36)
+texture = ExtResource("tex_zonapesca")
+
+[node name="Peixe" type="Sprite2D" parent="Jogo"]
+visible = false
+position = Vector2(900, 545)
+texture = ExtResource("tex_peixe_0")
+
+[node name="Linha" type="Sprite2D" parent="Jogo"]
+visible = false
+centered = false
+offset = Vector2(0, -1)
+texture = ExtResource("tex_linha")
+
+[node name="Isca" type="Sprite2D" parent="Jogo"]
+visible = false
+position = Vector2(900, 478)
+texture = ExtResource("tex_isca")
+
+[node name="Alerta" type="Label" parent="Jogo"]
+visible = false
+offset_right = 24.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 36
+text = "!"
+
+[node name="PlacaSaida" type="Label" parent="Jogo"]
+offset_left = 14.0
+offset_top = 404.0
+offset_right = 174.0
+offset_bottom = 426.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 14
+text = "< Voltar ao cais"
+
+[node name="Player" type="Sprite2D" parent="Jogo"]
+position = Vector2(240, 392)
+texture = ExtResource("tex_player")
+
+[node name="OitoDirecoes" type="Node" parent="Jogo/Player"]
+script = ExtResource("script_oito_direcoes")
+max_speed = 200.0
+acceleration = 600.0
+deceleration = 500.0
+
+[node name="Visual" type="Node" parent="Jogo/Player"]
+script = ExtResource("script_visual_tiago")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="BarraFundoForca" type="Sprite2D" parent="UI"]
+position = Vector2(60, 170)
+texture = ExtResource("tex_barrafundo")
+
+[node name="BarraFundoTrilha" type="Sprite2D" parent="UI"]
+position = Vector2(120, 170)
+texture = ExtResource("tex_barrafundo")
+
+[node name="BarraFundoProgresso" type="Sprite2D" parent="UI"]
+position = Vector2(180, 170)
+texture = ExtResource("tex_barrafundo")
+
+[node name="BarraFillForca" type="Sprite2D" parent="UI"]
+position = Vector2(60, 290)
+scale = Vector2(1, 0.00416667)
+centered = false
+offset = Vector2(-16, -240)
+texture = ExtResource("tex_barrafillforca")
+
+[node name="ZonaCaptura" type="Sprite2D" parent="UI"]
+visible = false
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(120, 290)
+scale = Vector2(1, 0.266667)
+centered = false
+offset = Vector2(-16, -240)
+texture = ExtResource("tex_barrafill")
+
+[node name="PeixeMarcador" type="Sprite2D" parent="UI"]
+visible = false
+position = Vector2(120, 170)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("tex_peixe_1")
+
+[node name="BarraFillProgresso" type="Sprite2D" parent="UI"]
+position = Vector2(180, 290)
+scale = Vector2(1, 0.00416667)
+centered = false
+offset = Vector2(-16, -240)
+texture = ExtResource("tex_barrafill")
+
+[node name="Placar" type="Label" parent="UI"]
+offset_left = 290.0
+offset_top = 30.0
+offset_right = 990.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 16
+text = "Dia 1"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TextoForca" type="Label" parent="UI"]
+offset_left = 30.0
+offset_top = 304.0
+offset_right = 90.0
+offset_bottom = 324.0
+theme_override_colors/font_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 12
+text = "FORÇA"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TextoPeixe" type="Label" parent="UI"]
+offset_left = 90.0
+offset_top = 304.0
+offset_right = 150.0
+offset_bottom = 324.0
+theme_override_colors/font_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 12
+text = "PEIXE"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TextoCaptura" type="Label" parent="UI"]
+offset_left = 150.0
+offset_top = 304.0
+offset_right = 210.0
+offset_bottom = 324.0
+theme_override_colors/font_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 12
+text = "CAPTURA"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="LimiteForca" type="ColorRect" parent="UI"]
+offset_left = 42.0
+offset_right = 78.0
+offset_bottom = 3.0
+color = Color(0.85, 0.2, 0.15, 1)
+
+[node name="Dica" type="Label" parent="UI"]
+offset_left = 290.0
+offset_top = 96.0
+offset_right = 990.0
+offset_bottom = 150.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Aviso" type="Label" parent="UI"]
+offset_left = 290.0
+offset_top = 170.0
+offset_right = 990.0
+offset_bottom = 240.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+autowrap_mode = 2

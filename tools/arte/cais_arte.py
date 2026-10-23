@@ -1,4 +1,11 @@
-"""Cenario do cais (1/4 da resolucao, exportado em 4x)."""
+"""Cenario do cais (1/4 da resolucao, exportado em 4x).
+
+O cais e o ponto de partida da Fase 1: dali o Tiago pega o barco e escolhe
+para onde ir. Nao se pesca aqui, entao o deck e de passagem e de atracar.
+
+    cd tools/arte
+    python cais_arte.py ../../assets/sprites/cais
+"""
 import math, sys
 from px import Tela, faixas, rng, hx, gaivota
 
@@ -109,7 +116,7 @@ def ceu():
     t.rect(ig + 2, 99, 3, 6, "#ffffff"); t.put(ig + 3, 97, "#c0a060"); t.put(ig + 3, 98, "#c0a060"); t.put(ig + 2, 97, "#c0a060"); t.put(ig + 4, 97, "#c0a060")
     t.put(ig + 3, 101, "#3a4a5a"); t.put(ig + 3, 110, "#6b4a2e"); t.put(ig + 3, 111, "#6b4a2e")
     t.hline(ig - 1, ig + 7, 104, "#b9452f")
-    t.salvar(f"{OUT}/ceu-animation 1-000.png")
+    t.salvar(f"{OUT}/ceu.png")
     return t
 
 
@@ -154,7 +161,7 @@ def mar():
         for x in range(80, 86 - yy // 2):
             if R.random() < 0.55 - yy * 0.06:
                 t.put(x, yy, "#ffffff" if R.random() < .5 else "#c9f0fa")
-    t.salvar(f"{OUT}/mar-animation 1-000.png")
+    t.salvar(f"{OUT}/mar.png")
     return t
 
 
@@ -245,7 +252,7 @@ def terra():
         for x in range(70, 80):
             if R.random() < 0.4:
                 t.put(x, yy, "#ffffff" if R.random() < .6 else "#c9f0fa")
-    t.salvar(f"{OUT}/grama-animation 1-000.png")
+    t.salvar(f"{OUT}/costao.png")
     return t
 
 
@@ -319,10 +326,137 @@ def cais():
     for xx, yy in ((30, 15), (31, 14), (32, 14), (33, 14), (34, 14), (35, 15), (31, 15), (34, 15), (32, 13), (33, 13)):
         t.put(xx, yy, "#d9c27a")
     t.put(32, 15, "#a88a48"); t.put(33, 15, "#a88a48"); t.put(32, 14, "#a88a48")
-    t.salvar(f"{OUT}/cais-animation 1-000.png")
+
+    # guarda-corpo correndo ao fundo do deck: fica atras do Tiago e da
+    # profundidade ao cais, que antes era so uma tabua reta
+    for x in range(2, 72, 9):
+        t.vline(x, 9, 15, "#8a5a33")
+        t.vline(x + 1, 9, 15, "#6b4325")
+        t.put(x, 9, "#c2884f")
+    t.hline(2, 71, 10, "#a8743f"); t.hline(2, 71, 11, "#7a4c2b")
+    t.hline(2, 71, 13, "#a8743f"); t.hline(2, 71, 14, "#7a4c2b")
+
+    # caixaria e tambor de oleo encostados no guarda-corpo
+    t.caixa(52, 10, 8, 6, "#b07c45", "#5a3a22")
+    t.hline(53, 58, 12, "#8a5a33"); t.vline(56, 11, 14, "#8a5a33")
+    t.caixa(60, 12, 6, 4, "#9c6c3c", "#5a3a22"); t.hline(61, 64, 13, "#7a4c2b")
+    t.caixa(44, 11, 5, 5, "#4a6a7a", "#24343d")
+    t.hline(45, 47, 12, "#6b8f9e"); t.hline(45, 47, 14, "#36505c")
+
+    # bolardo de amarracao na beira, com a corda caindo para a agua
+    t.rect(66, 12, 3, 4, "#5f6a72"); t.hline(66, 68, 11, "#848f97")
+    t.put(69, 12, "#848f97"); t.put(65, 12, "#848f97")
+    for i, (dx, dy) in enumerate(((3, 1), (4, 2), (5, 4), (6, 6), (7, 9), (7, 12))):
+        t.put(66 + dx, 15 + dy, "#d9c27a" if i % 2 else "#b39a55")
+
+    # gaivota pousada no poste do lampiao
+    t.put(74, -1, "#f2f4f6") if False else None
+    for dx, dy in ((0, 0), (1, 0), (2, 0), (1, -1), (2, -1), (3, 0)):
+        t.put(70 + dx, 7 + dy, "#f2f4f6")
+    t.put(73, 7, "#9aa6ae"); t.put(70, 8, "#e0a24a"); t.put(71, 8, "#e0a24a")
+    t.put(69, 6, "#f2f4f6"); t.put(73, 6, "#3a4a5a")
+
+    t.salvar(f"{OUT}/cais.png")
+    return t
+
+
+# -------------------------------------------------------------- BARCO 40x20
+
+def _linha(pontos, u):
+    """Altura em u (0 a 1), interpolando suave entre os pontos de controle."""
+    for i in range(len(pontos) - 1):
+        u0, h0 = pontos[i]
+        u1, h1 = pontos[i + 1]
+        if u0 <= u <= u1:
+            f = (u - u0) / max(u1 - u0, 1e-6)
+            return h0 + (h1 - h0) * (f * f * (3.0 - 2.0 * f))
+    return pontos[-1][1]
+
+
+def barco():
+    """Bote de madeira atracado na ponta do cais: proa levantada, bancos e remo.
+
+    E o unico objeto com que se interage no cais, entao leva contorno escuro
+    fechado para se destacar do mar. A popa fica a esquerda, virada para o cais.
+    """
+    t = Tela(40, 20)
+    OL = "#2e1b0f"
+    BORDA, TABUA, TABUA_SOMBRA = "#d9a263", "#8a5a33", "#5f3d20"
+    DENTRO, DENTRO_FUNDO = "#6b4325", "#43291440"
+
+    X0, X1 = 3, 37
+    # borda de cima (do costado) e fundo do casco, da popa a proa
+    SHEER = [(0, 6.6), (.14, 8.0), (.46, 8.6), (.74, 7.6), (.90, 5.4), (1, 3.2)]
+    FUNDO = [(0, 11.4), (.12, 13.2), (.42, 14.6), (.70, 14.2), (.90, 12.0), (1, 8.0)]
+    # O bote flutua: tudo abaixo desta linha fica escondido pela agua.
+    AGUA = 13
+
+    for x in range(X0, X1 + 1):
+        u = (x - X0) / (X1 - X0)
+        cima, baixo = _linha(SHEER, u), _linha(FUNDO, u)
+        for y in range(int(round(cima)), int(round(baixo)) + 1):
+            f = (y - cima) / max(baixo - cima, 0.001)
+            if f < 0.16:
+                cor = BORDA
+            elif f < 0.62:
+                cor = TABUA
+            else:
+                cor = TABUA_SOMBRA
+            t.put(x, y, cor)
+        if x % 3 == 0:  # friso das tabuas do costado
+            t.put(x, int(cima) + 3, TABUA_SOMBRA)
+
+    # boca do bote: duas linhas escuras logo abaixo da borda, so no meio
+    for x in range(X0 + 3, X1 - 3):
+        u = (x - X0) / (X1 - X0)
+        cima = int(round(_linha(SHEER, u)))
+        t.put(x, cima, DENTRO)
+        if 0.10 < u < 0.86:
+            t.put(x, cima + 1, DENTRO)
+
+    # bancos atravessados
+    for bx in (12, 23):
+        u = (bx - X0) / (X1 - X0)
+        y = int(round(_linha(SHEER, u)))
+        t.hline(bx, bx + 4, y, "#e8c38a")
+        t.hline(bx, bx + 4, y + 1, "#a8743f")
+
+    # remo apoiado na borda, saindo para cima e para a esquerda
+    for i in range(15):
+        t.put(18 - i, 9 - i * 0.42, "#c9a06a" if i % 4 else "#a8743f")
+    for dx, dy, w in ((0, 0, 3), (-1, 1, 3), (-1, 2, 2)):  # pa do remo
+        t.hline(4 + dx, 4 + dx + w, 2 + dy, "#b38c56")
+    t.put(4, 3, "#d9b47c"); t.put(5, 3, "#d9b47c")
+
+    # faixa clara pintada na popa, como os botes de madeira da regiao
+    for x in range(X0 + 1, X0 + 7):
+        u = (x - X0) / (X1 - X0)
+        t.put(x, int(round(_linha(SHEER, u))) + 3, "#e8dcc0")
+
+    # corta o casco na linha d'agua: o resto fica submerso
+    for y in range(AGUA + 1, t.h):
+        for x in range(t.w):
+            t.px[x, y] = (0, 0, 0, 0)
+
+    t.contorno(OL)
+
+    # marca d'agua: um friso claro no casco e duas marolinhas nas pontas,
+    # em vez de uma fileira de pontos que vira cerca branca
+    for x in range(X0 - 1, X1 + 2):
+        if t.get(x, AGUA)[3]:
+            t.put(x, AGUA, "#8fb6cf" if (x * 5) % 3 else "#bfe7f7")
+    for x, y in ((X0 - 3, AGUA), (X0 - 4, AGUA), (X0 - 5, AGUA + 1),
+                 (X1 + 2, AGUA), (X1 + 3, AGUA), (X1 + 4, AGUA + 1), (X1 + 5, AGUA + 1)):
+        t.put(x, y, "#dff2fb")
+
+    # corda de amarracao saindo da popa em direcao ao cais
+    for i, dy in enumerate((0, -1, -1, -2, -2, -3, -3)):
+        t.put(X0 - i, 9 + dy, "#d9c27a" if i % 2 else "#b39a55")
+
+    t.salvar(f"{OUT}/barco.png")
     return t
 
 
 if __name__ == "__main__":
-    ceu(); mar(); terra(); cais()
+    ceu(); mar(); terra(); cais(); barco()
     print("ok")
