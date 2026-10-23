@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial/passagem.gd" id="r1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/cenarios/rio_de_passagem.png" id="r2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/vo.png" id="r3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/neto.png" id="r4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/bote.png" id="r5"]
+
+[sub_resource type="SystemFont" id="negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[node name="Descida" type="Node2D"]
+script = ExtResource("r1")
+roteiro = &"descida"
+cena_seguinte = "res://scenes/tutorial/MeioDoRio.tscn"
+x_entrada = -300
+x_conversa = 640
+x_saida = 1600
+balanco = 3.0
+
+[node name="Fundo" type="Sprite2D" parent="."]
+texture = ExtResource("r2")
+centered = false
+
+[node name="Comboio" type="Node2D" parent="."]
+
+[node name="VoSentado" type="Sprite2D" parent="Comboio"]
+texture = ExtResource("r3")
+centered = false
+position = Vector2(-104, 424)
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 84)
+
+[node name="NetoSentado" type="Sprite2D" parent="Comboio"]
+texture = ExtResource("r4")
+centered = false
+position = Vector2(28, 438)
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 70)
+
+[node name="Bote" type="Sprite2D" parent="Comboio"]
+texture = ExtResource("r5")
+centered = false
+position = Vector2(-136, 484)
+

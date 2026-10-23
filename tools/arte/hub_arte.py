@@ -364,7 +364,7 @@ def zeca():
     t.salvar(f"{OUT}/hub_zeca.png")
 
 
-def aldo():
+def valdir():
     t = Tela(40, 62)
     # estante ao fundo
     t.rect(2, 0, 36, 38, "#6e4628"); t.caixa(1, 0, 38, 38, None, OL) if False else None
@@ -386,7 +386,7 @@ def aldo():
     for x, c in ((3, "#e0bb5e"), (6, "#c0503a"), (35, "#3f7cc8")):
         t.vline(x, 0, 40, c); t.vline(x + 1, 0, 40, "#4a2e1b") if False else None
         t.put(x, 30, "#2b2b30"); t.put(x, 31, "#2b2b30")
-    # Seu Aldo atras do balcao
+    # Seu Valdir atras do balcao
     pal = {"O": OL, "s": "#f0c39b", "S": "#d9a07a", "z": "#b77d5a", "w": "#f2f2f2", "W": "#cfcfd6",
            "m": "#ffffff", "M": "#d8d8de", "g": "#3a3a4a", "e": "#e8e4d8", "E": "#c9c3b3",
            "v": "#d9822f", "V": "#b06422", "k": "#f2cf63"}
@@ -431,7 +431,7 @@ def aldo():
     t.caixa(4, 31, 6, 5, "#c99a62", "#5a3a22"); t.hline(5, 8, 32, "#8a5a33")
     t.put(6, 30, "#e88fb0"); t.put(7, 29, "#e88fb0")
     t.caixa(30, 32, 6, 4, "#9aa3ab", "#4a5058")
-    t.salvar(f"{OUT}/hub_aldo.png")
+    t.salvar(f"{OUT}/hub_valdir.png")
 
 
 def porta():
@@ -478,5 +478,5 @@ def quadro():
 
 if __name__ == "__main__":
     fundo(); buraco(); luz(); balde_goteira(); telhado_novo()
-    cama(); marlene(); zeca(); aldo(); porta(); quadro()
+    cama(); marlene(); zeca(); valdir(); porta(); quadro()
     print("ok")

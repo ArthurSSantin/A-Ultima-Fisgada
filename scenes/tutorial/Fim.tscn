@@ -1,0 +1,59 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial/fim.gd" id="r1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/cenarios/saida_manha.png" id="r2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/marlene_jovem.png" id="r3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/alexandre.png" id="r4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/apollo.png" id="r5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/alexandre_montado.png" id="r6"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/apollo_montado.png" id="r7"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/neto.png" id="r8"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/vo.png" id="r9"]
+
+[sub_resource type="SystemFont" id="negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[node name="Fim" type="Node2D"]
+script = ExtResource("r1")
+
+[node name="Fundo" type="Sprite2D" parent="."]
+texture = ExtResource("r2")
+centered = false
+
+[node name="Marlene" type="Sprite2D" parent="."]
+texture = ExtResource("r3")
+position = Vector2(330, 476)
+
+[node name="Alexandre" type="Sprite2D" parent="."]
+texture = ExtResource("r4")
+position = Vector2(680, 454)
+flip_h = true
+
+[node name="Apollo" type="Sprite2D" parent="."]
+texture = ExtResource("r5")
+position = Vector2(900, 448)
+flip_h = true
+
+[node name="AlexandreMontado" type="Sprite2D" parent="."]
+texture = ExtResource("r6")
+position = Vector2(1500, 410)
+flip_h = true
+hframes = 4
+
+[node name="ApolloMontado" type="Sprite2D" parent="."]
+texture = ExtResource("r7")
+position = Vector2(1720, 404)
+flip_h = true
+hframes = 4
+
+[node name="Neto" type="Sprite2D" parent="."]
+texture = ExtResource("r8")
+position = Vector2(560, 472)
+flip_h = true
+
+[node name="Vo" type="Sprite2D" parent="."]
+texture = ExtResource("r9")
+position = Vector2(790, 464)
+flip_h = true
+

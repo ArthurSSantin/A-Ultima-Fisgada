@@ -6,7 +6,7 @@ Node, Godot 4.7 e Python 3.
 | Arquivo                        | O que faz                                                                  |
 |--------------------------------|----------------------------------------------------------------------------|
 | `harness.mjs`                  | Réplica do minijogo e simulação da Fase 1 inteira com 3 níveis de jogador, comparando o cenário "proposta" com o "ajustada" |
-| `godot/validar_minijogo.gd`    | Roda um bot no minijogo de verdade (cena CaisTeste) e mede a taxa de captura |
+| `godot/validar_minijogo.gd`    | Roda um bot no minijogo de verdade (cena Acude) e mede a taxa de captura |
 | `godot/verificar_dados.gd`     | Confere `dados/especies/` contra as regras de design                       |
 | `godot/testar_fluxo.gd`        | Joga a Fase 1 de ponta a ponta com o teclado simulado (hub, loja, cais, venda, sono, fechamento) |
 | `comparar.py`                  | Teste estatístico entre dois resultados (Godot × Node, ou antes × depois)  |

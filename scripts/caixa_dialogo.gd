@@ -5,10 +5,13 @@ extends CanvasLayer
 ## para nao depender de cena; troque o visual aqui quando a arte chegar.
 ##
 ##   await caixa.falar("Dona Marlene", ["primeira pagina", "segunda"])
-##   var i: int = await caixa.escolher("Seu Aldo", "O que vai ser?", ["A", "B"])
+##   var i: int = await caixa.escolher("Seu Valdir", "O que vai ser?", ["A", "B"])
 ##
 ## ESPACO avanca e confirma, setas para cima e para baixo escolhem, ESC fecha uma
 ## escolha (devolve -1).
+##
+## Todo texto que passa por aqui vai antes para Partida.nome_em(), entao os
+## dialogos escrevem {nome} e nao precisam saber como o jogador se chama.
 
 signal _respondeu(indice: int)
 
@@ -112,9 +115,9 @@ func _input(evento: InputEvent) -> void:
 func _abrir(quem: String, texto: String) -> void:
 	aberta = true
 	_painel.visible = true
-	_nome.text = quem
+	_nome.text = Partida.nome_em(quem)
 	_nome.visible = not quem.is_empty()
-	_texto.text = texto
+	_texto.text = Partida.nome_em(texto)
 	# O painel cresce com o texto; ancorado embaixo.
 	_painel.reset_size()
 	_painel.position.y = 690.0 - _painel.get_combined_minimum_size().y
@@ -129,7 +132,7 @@ func _fechar() -> void:
 func _desenhar_opcoes() -> void:
 	var linhas: PackedStringArray = []
 	for i in _escolhas.size():
-		linhas.append(("> " if i == _selecionada else "   ") + str(_escolhas[i]))
+		linhas.append(("> " if i == _selecionada else "   ") + Partida.nome_em(str(_escolhas[i])))
 	_opcoes.text = "\n".join(linhas)
 	_painel.reset_size()
 	_painel.position.y = 690.0 - _painel.get_combined_minimum_size().y
