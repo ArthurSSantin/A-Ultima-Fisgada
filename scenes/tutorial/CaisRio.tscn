@@ -1,0 +1,142 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial/cais_rio.gd" id="r1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/cenarios/cais_rio.png" id="r2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/alexandre.png" id="r3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/apollo.png" id="r4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/bote.png" id="r5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/neto.png" id="r6"]
+[ext_resource type="Script" path="res://scripts/eight_dir.gd" id="r7"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="r8"]
+[ext_resource type="Script" path="res://scripts/tutorial/acompanhante.gd" id="r9"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/vo.png" id="r10"]
+
+[sub_resource type="SystemFont" id="negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[node name="CaisRio" type="Node2D"]
+script = ExtResource("r1")
+borda = Vector2(60, 836)
+alcance = 50
+
+[node name="Fundo" type="Sprite2D" parent="."]
+texture = ExtResource("r2")
+centered = false
+
+[node name="Estacoes" type="Node2D" parent="."]
+
+[node name="Alexandre" type="Node2D" parent="Estacoes"]
+position = Vector2(110, 520)
+
+[node name="Visual" type="Sprite2D" parent="Estacoes/Alexandre"]
+texture = ExtResource("r3")
+centered = false
+position = Vector2(-76.0, -132)
+
+[node name="Nome" type="Label" parent="Estacoes/Alexandre"]
+offset_left = -130.0
+offset_top = -172
+offset_right = 130.0
+offset_bottom = -128
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Alexandre"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Apollo" type="Node2D" parent="Estacoes"]
+position = Vector2(262, 520)
+
+[node name="Visual" type="Sprite2D" parent="Estacoes/Apollo"]
+texture = ExtResource("r4")
+centered = false
+position = Vector2(-88.0, -144)
+
+[node name="Nome" type="Label" parent="Estacoes/Apollo"]
+offset_left = -130.0
+offset_top = -184
+offset_right = 130.0
+offset_bottom = -140
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Apollo"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Bote" type="Node2D" parent="Estacoes"]
+position = Vector2(830, 520)
+
+[node name="Visual" type="Sprite2D" parent="Estacoes/Bote"]
+texture = ExtResource("r5")
+centered = false
+position = Vector2(20, -36)
+
+[node name="Nome" type="Label" parent="Estacoes/Bote"]
+offset_left = -130.0
+offset_top = -160
+offset_right = 130.0
+offset_bottom = -116
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Bote do vô"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Player" type="Sprite2D" parent="."]
+position = Vector2(380, 472)
+texture = ExtResource("r6")
+
+[node name="OitoDirecoes" type="Node" parent="Player"]
+script = ExtResource("r7")
+max_speed = 260.0
+acceleration = 900.0
+deceleration = 900.0
+
+[node name="Visual" type="Node" parent="Player"]
+script = ExtResource("r8")
+pasta = "res://assets/sprites/tutorial/personagens/"
+prefixo = "neto"
+
+[node name="Vo" type="Sprite2D" parent="."]
+script = ExtResource("r9")
+position = Vector2(300, 464)
+texture = ExtResource("r10")
+alvo = NodePath("../Player")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Prompt" type="Label" parent="UI"]
+offset_left = 340.0
+offset_top = 600.0
+offset_right = 940.0
+offset_bottom = 640.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="Dica" type="Label" parent="UI"]
+offset_left = 300.0
+offset_top = 24.0
+offset_right = 1260.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 2
+

@@ -16,14 +16,27 @@ var _avisos: int = 0
 
 func _initialize() -> void:
 	var args: PackedStringArray = OS.get_cmdline_user_args()
-	var bambu: float = float(args[0]) if args.size() > 0 else 60.0
+	var bambu: float = float(args[0]) if args.size() > 0 else 45.0
 	var fibra: float = float(args[1]) if args.size() > 1 else 85.0
 
-	var especies: Array[Especie] = []
+	var todas: Array[Especie] = []
 	for arquivo in DirAccess.get_files_at(PASTA):
 		if arquivo.ends_with(".tres"):
-			especies.append(load(PASTA + arquivo))
-	print("Especies carregadas: %d (bambu %d, fibra %d)" % [especies.size(), bambu, fibra])
+			todas.append(load(PASTA + arquivo))
+	# A fase 1 (tutorial do rio) so tem a vara de bambu; a fase 2 vai ate a fibra.
+	for fase in [1, 2]:
+		var especies: Array[Especie] = []
+		for e in todas:
+			if e.fase == fase:
+				especies.append(e)
+		print("Fase %d: %d especies" % [fase, especies.size()])
+		_conferir_fase(especies, bambu if fase == 1 else fibra, bambu)
+
+	print("Resultado: %d erro(s), %d aviso(s)" % [_erros, _avisos])
+	quit(1 if _erros > 0 else 0)
+
+
+func _conferir_fase(especies: Array[Especie], fibra: float, bambu: float) -> void:
 
 	for e in especies:
 		if not Minijogo.PERFIS.has(e.perfil):
@@ -50,8 +63,6 @@ func _initialize() -> void:
 			_erro("nenhuma especie comum alcanca a forca %s" % forca)
 		forca += 1.0
 
-	print("Resultado: %d erro(s), %d aviso(s)" % [_erros, _avisos])
-	quit(1 if _erros > 0 else 0)
 
 
 func _erro(texto: String) -> void:

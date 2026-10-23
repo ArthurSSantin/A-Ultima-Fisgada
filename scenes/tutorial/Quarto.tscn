@@ -1,0 +1,325 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial/quarto.gd" id="r1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/cenarios/quarto.png" id="r2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/bichos/maumau_deitado.png" id="r3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/cenarios/vara_parede.png" id="r4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/neto.png" id="r5"]
+[ext_resource type="Script" path="res://scripts/eight_dir.gd" id="r6"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="r7"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/vo.png" id="r8"]
+
+[sub_resource type="SystemFont" id="negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[node name="Quarto" type="Node2D"]
+script = ExtResource("r1")
+borda = Vector2(60, 1220)
+alcance = 46
+
+[node name="Fundo" type="Sprite2D" parent="."]
+texture = ExtResource("r2")
+centered = false
+
+[node name="Estacoes" type="Node2D" parent="."]
+
+[node name="PosterPai" type="Node2D" parent="Estacoes"]
+position = Vector2(64, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/PosterPai"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Racionais MC's (era do pai)"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Cama" type="Node2D" parent="Estacoes"]
+position = Vector2(152, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Cama"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Janela"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="MauMau" type="Node2D" parent="Estacoes"]
+position = Vector2(232, 520)
+
+[node name="Visual" type="Sprite2D" parent="Estacoes/MauMau"]
+texture = ExtResource("r3")
+centered = false
+position = Vector2(-44, -150)
+scale = Vector2(2, 2)
+
+[node name="Nome" type="Label" parent="Estacoes/MauMau"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "MauMau"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Fotos" type="Node2D" parent="Estacoes"]
+position = Vector2(336, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Fotos"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Fotos"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PosterCriciuma" type="Node2D" parent="Estacoes"]
+position = Vector2(416, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/PosterCriciuma"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Criciúma, campeão de 91"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PosterPele" type="Node2D" parent="Estacoes"]
+position = Vector2(504, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/PosterPele"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Pelé, o Rei"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PosterZeze" type="Node2D" parent="Estacoes"]
+position = Vector2(592, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/PosterZeze"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Zezé Di Camargo & Luciano"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PosterLeonardo" type="Node2D" parent="Estacoes"]
+position = Vector2(680, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/PosterLeonardo"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Leandro & Leonardo"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PosterDjavan" type="Node2D" parent="Estacoes"]
+position = Vector2(768, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/PosterDjavan"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Djavan - Grandes Sucessos"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PosterLebron" type="Node2D" parent="Estacoes"]
+position = Vector2(856, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/PosterLebron"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "LeBron James"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Camisa" type="Node2D" parent="Estacoes"]
+position = Vector2(960, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Camisa"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Camisa do Criciúma de 91"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Prateleira" type="Node2D" parent="Estacoes"]
+position = Vector2(1064, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Prateleira"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Prateleira"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Vara" type="Node2D" parent="Estacoes"]
+position = Vector2(1140, 520)
+
+[node name="Visual" type="Sprite2D" parent="Estacoes/Vara"]
+texture = ExtResource("r4")
+centered = false
+position = Vector2(-8, -416)
+scale = Vector2(2, 2)
+
+[node name="Nome" type="Label" parent="Estacoes/Vara"]
+offset_left = -130.0
+offset_top = -456
+offset_right = 130.0
+offset_bottom = -412
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Vara de bambu"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Porta" type="Node2D" parent="Estacoes"]
+position = Vector2(1200, 520)
+
+[node name="Nome" type="Label" parent="Estacoes/Porta"]
+offset_left = -130.0
+offset_top = -260
+offset_right = 130.0
+offset_bottom = -216
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 15
+text = "Cozinha"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Player" type="Sprite2D" parent="."]
+position = Vector2(300, 424)
+texture = ExtResource("r5")
+scale = Vector2(2, 2)
+
+[node name="OitoDirecoes" type="Node" parent="Player"]
+script = ExtResource("r6")
+max_speed = 260.0
+acceleration = 900.0
+deceleration = 900.0
+
+[node name="Visual" type="Node" parent="Player"]
+script = ExtResource("r7")
+pasta = "res://assets/sprites/tutorial/personagens/"
+prefixo = "neto"
+
+[node name="VoNaPorta" type="Sprite2D" parent="."]
+texture = ExtResource("r8")
+centered = false
+scale = Vector2(2, 2)
+position = Vector2(1182.0, 296)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Prompt" type="Label" parent="UI"]
+offset_left = 340.0
+offset_top = 600.0
+offset_right = 940.0
+offset_bottom = 640.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="Dica" type="Label" parent="UI"]
+offset_left = 300.0
+offset_top = 24.0
+offset_right = 1260.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("negrito")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 2
+

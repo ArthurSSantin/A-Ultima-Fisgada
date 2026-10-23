@@ -1,0 +1,110 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/cais.gd" id="script_cais"]
+[ext_resource type="Script" path="res://scripts/eight_dir.gd" id="script_oito_direcoes"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="script_visual_tiago"]
+[ext_resource type="Texture2D" path="res://assets/sprites/cais/ceu.png" id="tex_ceu"]
+[ext_resource type="Texture2D" path="res://assets/sprites/cais/mar.png" id="tex_mar"]
+[ext_resource type="Texture2D" path="res://assets/sprites/cais/costao.png" id="tex_costao"]
+[ext_resource type="Texture2D" path="res://assets/sprites/cais/cais.png" id="tex_cais"]
+[ext_resource type="Texture2D" path="res://assets/sprites/cais/barco.png" id="tex_barco"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiago/tiago.png" id="tex_player"]
+
+[sub_resource type="SystemFont" id="SystemFont_negrito"]
+font_names = PackedStringArray("Arial")
+font_weight = 700
+
+[node name="Cais" type="Node2D"]
+script = ExtResource("script_cais")
+
+[node name="Jogo" type="Node2D" parent="."]
+
+[node name="FundoJogo" type="ColorRect" parent="Jogo"]
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.75, 0.91, 1, 1)
+
+[node name="Ceu" type="Sprite2D" parent="Jogo"]
+position = Vector2(640, 240)
+texture = ExtResource("tex_ceu")
+
+[node name="Mar" type="Sprite2D" parent="Jogo"]
+position = Vector2(640, 594)
+texture = ExtResource("tex_mar")
+
+[node name="Costao" type="Sprite2D" parent="Jogo"]
+position = Vector2(160, 550)
+texture = ExtResource("tex_costao")
+
+[node name="Deck" type="Sprite2D" parent="Jogo"]
+position = Vector2(460, 472)
+texture = ExtResource("tex_cais")
+
+[node name="Barco" type="Sprite2D" parent="Jogo"]
+position = Vector2(706, 478)
+texture = ExtResource("tex_barco")
+
+[node name="AlertaBarco" type="Label" parent="Jogo"]
+visible = false
+offset_right = 24.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 36
+text = "!"
+
+[node name="PlacaSaida" type="Label" parent="Jogo"]
+offset_left = 14.0
+offset_top = 404.0
+offset_right = 174.0
+offset_bottom = 426.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 14
+text = "< Loja de Pesca"
+
+[node name="Player" type="Sprite2D" parent="Jogo"]
+position = Vector2(150, 392)
+texture = ExtResource("tex_player")
+
+[node name="OitoDirecoes" type="Node" parent="Jogo/Player"]
+script = ExtResource("script_oito_direcoes")
+max_speed = 200.0
+acceleration = 600.0
+deceleration = 500.0
+
+[node name="Visual" type="Node" parent="Jogo/Player"]
+script = ExtResource("script_visual_tiago")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Placar" type="Label" parent="UI"]
+offset_left = 290.0
+offset_top = 30.0
+offset_right = 990.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 16
+text = "Dia 1"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Dica" type="Label" parent="UI"]
+offset_left = 290.0
+offset_top = 96.0
+offset_right = 990.0
+offset_bottom = 150.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 2

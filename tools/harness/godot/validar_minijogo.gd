@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Roda o minijogo de verdade (cena CaisTeste) com um bot e mede a taxa de
+## Roda o minijogo de verdade (cena Acude) com um bot e mede a taxa de
 ## captura por peso. Serve para validar a replica do minijogo em
 ## tools/harness/harness.mjs: os dois usam o mesmo modelo de jogador.
 ##
@@ -104,7 +104,7 @@ class Bot:
 
 func _initialize() -> void:
 	var args: PackedStringArray = OS.get_cmdline_user_args()
-	var cena: Node = load("res://scenes/CaisTeste.tscn").instantiate()
+	var cena: Node = load("res://scenes/Acude.tscn").instantiate()
 	root.add_child(cena)
 	var bot := Bot.new()
 	bot.jogo = cena

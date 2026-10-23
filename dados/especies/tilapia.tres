@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Especie" format=3]
+
+[ext_resource type="Script" path="res://scripts/dados/especie.gd" id="1_especie"]
+[ext_resource type="Texture2D" path="res://assets/sprites/peixes/tilapia.png" id="2_sprite"]
+[ext_resource type="Texture2D" path="res://assets/sprites/peixes/tilapia_sombra.png" id="3_sombra"]
+
+[resource]
+script = ExtResource("1_especie")
+nome = "Tilápia"
+perfil = &"calmo"
+fase = 2
+raridade = 0
+forca_min = 0.0
+forca_max = 40.0
+peso_min = 0.3
+peso_max = 1.2
+valor_min = 12
+valor_max = 28
+desvio_peso = 0.22
+chance_trofeu = 0.05
+bonus_trofeu = 0.45
+sprite = ExtResource("2_sprite")
+sombra = ExtResource("3_sombra")

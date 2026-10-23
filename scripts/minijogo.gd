@@ -28,7 +28,7 @@ const VEL_POR_KG: float = 28.0
 
 ## Nenhum perfil das especies leva o peixe abaixo do PISO. A zona verde parada
 ## no fundo cobre de 0 ate a altura dela; se o peixe ficasse ali, saia sem o
-## jogador apertar nada (o robalo saia assim 97% das vezes).
+## jogador apertar nada (o jundia saia assim 97% das vezes).
 const PISO: float = 64.0
 
 ## Perfis de briga do GDD (secao 1.5). Cada especie usa um deles; "padrao" e o
