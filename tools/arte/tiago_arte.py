@@ -4,7 +4,7 @@ Cada pose vira uma folha 4x com 4 quadros de 64x96:
   0 parado | 1 passo (perna da frente) | 2 pernas cruzando | 3 passo (perna de tras)
 
 A ponta da vara na mao fica no pixel (15, 0), que e onde a linha de pesca
-comeca no cais_teste.gd (+30, -46 a partir do centro do sprite).
+comeca no acude.gd (+30, -46 a partir do centro do sprite).
 """
 import sys
 from PIL import Image

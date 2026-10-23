@@ -103,12 +103,12 @@ function minijogo(peso, perfil, jog, mods = {}) {
 
 // --- dados da Fase 1 (docs/design-fase1.md) ---
 const ESPECIES = [
-	{ nome: 'Parati', perfil: 'calmo', faixa: [0, 40], peso: [0.3, 1.0], rar: 'comum', valor: [12, 25] },
-	{ nome: 'Tainha', perfil: 'saltador', faixa: [30, 70], peso: [1.0, 3.0], rar: 'comum', valor: [30, 60] },
-	{ nome: 'Corvina', perfil: 'pesado', faixa: [55, 100], peso: [2.0, 4.5], rar: 'incomum', valor: [55, 100] },
-	{ nome: 'Robalo', perfil: 'mergulhador', faixa: [70, 100], peso: [3.0, 6.0], rar: 'raro', valor: [90, 160] },
+	{ nome: 'Tilápia', perfil: 'calmo', faixa: [0, 40], peso: [0.3, 1.2], rar: 'comum', valor: [12, 28], desvio: 0.22, trofeu: [0.05, 0.45] },
+	{ nome: 'Cascudo', perfil: 'pesado', faixa: [25, 65], peso: [0.6, 2.2], rar: 'comum', valor: [22, 50], desvio: 0.20, trofeu: [0.05, 0.40] },
+	{ nome: 'Carpa', perfil: 'saltador', faixa: [50, 85], peso: [2.0, 5.5], rar: 'incomum', valor: [60, 120], desvio: 0.18, trofeu: [0.04, 0.35] },
+	{ nome: 'Jundiá', perfil: 'mergulhador', faixa: [68, 85], peso: [3.0, 6.0], rar: 'raro', valor: [95, 170], desvio: 0.16, trofeu: [0.04, 0.15] },
 ]
-const ESPECIAL = { nome: 'Robalo-Flecha', perfil: 'mergulhador', faixa: [75, 85], peso: [6.5, 7.0], rar: 'especial', valor: [300, 300] }
+const ESPECIAL = { nome: 'Jundiá Gigante', perfil: 'mergulhador', faixa: [75, 85], peso: [7.0, 10.0], rar: 'especial', valor: [320, 430], desvio: 0.25, trofeu: [0, 0] }
 const PESO_RAR = { comum: 1, incomum: 0.5, raro: 0.25 }
 // Energia do dia (scripts/partida.gd): lancar gasta 6 + 3 x forca/100 e brigar
 // com o peixe gasta 0.5/s. O cenario "proposta" usa 12 lancamentos fixos.
@@ -119,12 +119,12 @@ const ENERGIA = { max: 100, lancamento: 6, porForca: 3, lutaPorS: 0.5 }
 // e a correcao sugerida pelo harness.
 const CENARIOS = {
 	proposta: { varas: { bambu: 60, fibra: 85 }, telhado: 500, vel: [70, 18], zonaCafe: 96, janela: 0.9, janelaModao: 1.4 },
-	ajustada: { varas: { bambu: 45, fibra: 85 }, telhado: 800, vel: [60, 28], zonaCafe: 72, janela: 0.6, janelaModao: 0.9, exigeRobalo: true, energia: true },
+	ajustada: { varas: { bambu: 45, fibra: 85 }, telhado: 800, vel: [60, 28], zonaCafe: 72, janela: 0.6, janelaModao: 0.9, exigeJundia: true, energia: true },
 }
 let cfg = CENARIOS.proposta
 
-function sortearEspecie(forca, dia, camarao, soParati) {
-	if (soParati) return ESPECIES[0]
+function sortearEspecie(forca, dia, camarao, soTilapia) {
+	if (soTilapia) return ESPECIES[0]
 	if (dia >= 3 && forca >= ESPECIAL.faixa[0] && forca <= ESPECIAL.faixa[1] && rand() < (camarao ? 0.10 : 0.05)) return ESPECIAL
 	const cand = ESPECIES.filter((e) => forca >= e.faixa[0] && forca <= e.faixa[1])
 	const pesos = cand.map((e) => PESO_RAR[e.rar] * (camarao && e.rar !== 'comum' ? 2 : 1))
@@ -133,11 +133,35 @@ function sortearEspecie(forca, dia, camarao, soParati) {
 	return cand[cand.length - 1]
 }
 
-function pesoEValor(esp, forca) {
-	const t = limitar((forca - esp.faixa[0]) / (esp.faixa[1] - esp.faixa[0]) + gauss(0, 0.1), 0, 1)
-	const peso = esp.peso[0] + (esp.peso[1] - esp.peso[0]) * t
-	const valor = Math.round(esp.valor[0] + (esp.valor[1] - esp.valor[0]) * t)
-	return { peso, valor }
+// Mesma conta do scripts/partida.gd: a forca da a tendencia e o desvio da
+// especie espalha o peso em volta dela. No alto da faixa pode sair um trofeu,
+// acima do peso_max, e o valor acompanha porque a interpolacao nao e limitada.
+const FRACAO_TROFEU = 0.6
+
+function pesoEValor(esp, forca, camarao) {
+	const centro = limitar((forca - esp.faixa[0]) / (esp.faixa[1] - esp.faixa[0]), 0, 1)
+	const t = limitar(centro + gauss(0, esp.desvio), 0, 1)
+	let peso = esp.peso[0] + (esp.peso[1] - esp.peso[0]) * t
+	const [chance, bonus] = esp.trofeu
+	if (centro >= FRACAO_TROFEU && rand() < chance * (camarao ? 2 : 1)) {
+		peso = esp.peso[1] * (1 + 0.1 + rand() * Math.max(bonus - 0.1, 0))
+	}
+	const bruto = esp.valor[0] + (esp.valor[1] - esp.valor[0]) * t
+	return { peso, valor: Math.round(bruto * melhorComprador(esp.nome)) }
+}
+
+// A vila tem dois compradores (scripts/partida.gd, COMPRADORES): o Zeca paga a
+// tabela e a Dona Maria Ivone paga 25% acima, menos no cascudo. O jogador
+// atento leva cada peixe a quem paga melhor, que e o que isto modela. O bonus
+// de relacionamento fica de fora de proposito: assim o numero e o piso, nao o
+// melhor caso.
+const COMPRADORES = [
+	{ base: 1.0, especialidade: {} },
+	{ base: 1.25, especialidade: { Cascudo: 0.55 } },
+]
+
+function melhorComprador(nome) {
+	return Math.max(...COMPRADORES.map((c) => c.base * (c.especialidade[nome] ?? 1)))
 }
 
 // --- um lancamento completo; retorna { tempo, peixe?, valor } ---
@@ -156,7 +180,7 @@ function lancamento(jog, alvoForca, cap, dia, b) {
 	if (reacao > janela) return { tempo: tempo + janela + 1.6, motivo: 'fisgada' }
 	tempo += reacao
 	const esp = sortearEspecie(forca, dia, b.camarao, b.tutorial)
-	const { peso, valor } = pesoEValor(esp, forca)
+	const { peso, valor } = pesoEValor(esp, forca, b.camarao)
 	const mods = {}
 	if (b.cafezinho) mods.zona = cfg.zonaCafe
 	const r = minijogo(peso, esp.perfil, jog, mods)
@@ -169,9 +193,9 @@ function lancamento(jog, alvoForca, cap, dia, b) {
 // Modao quando abrem e ha dinheiro.
 function fase(jog, politica) {
 	let dinheiro = 80 - 50, vara = 'bambu', tempo = 60 // prologo
-	// No jogo a fase fecha com o telhado e um robalo entregue a Dona Marlene;
-	// o primeiro robalo fica guardado em vez de vendido.
-	let robalo = !cfg.exigeRobalo
+	// No jogo a fase fecha com o telhado e um jundia entregue a Dona Marlene;
+	// o primeiro jundia fica guardado em vez de vendido.
+	let jundia = !cfg.exigeJundia
 	const log = { capturas: {}, perdas: {}, comprouFibraNoDia: null, dias: 0 }
 	for (let dia = 1; dia <= 10; dia++) {
 		log.dias = dia
@@ -193,7 +217,7 @@ function fase(jog, politica) {
 			energia -= ENERGIA.lancamento + ENERGIA.porForca * forca / 100 + ENERGIA.lutaPorS * (r.luta ?? 0)
 			if (r.peixe && r.valor) {
 				log.capturas[r.peixe] = (log.capturas[r.peixe] ?? 0) + 1
-				if (r.peixe === 'Robalo' && !robalo) robalo = true
+				if (r.peixe.startsWith('Jundiá') && !jundia) jundia = true
 				else renda += r.valor
 			}
 			else log.perdas[r.motivo] = (log.perdas[r.motivo] ?? 0) + 1
@@ -203,7 +227,7 @@ function fase(jog, politica) {
 		dinheiro += renda
 		if (dia === 1) log.dinheiroDia1 = dinheiro
 		tempo += 30 // hub
-		if (dinheiro >= cfg.telhado && robalo) { tempo += 60; return { ...log, tempo, dinheiro: dinheiro - cfg.telhado } }
+		if (dinheiro >= cfg.telhado && jundia) { tempo += 60; return { ...log, tempo, dinheiro: dinheiro - cfg.telhado } }
 		if (dia >= 2 && vara === 'bambu' && dinheiro >= 300) { dinheiro -= 300; vara = 'fibra'; log.comprouFibraNoDia = dia }
 	}
 	return { ...log, tempo, dinheiro, naoFechou: true }
@@ -216,7 +240,7 @@ const q = (arr, p) => arr.slice().sort((a, b) => a - b)[Math.floor(p * (arr.leng
 
 function tabelaMinijogo() {
 	console.log('\n## 1. Minijogo: taxa de captura (duracao media) por peso, perfil atual "padrao"\n')
-	const pesos = [0.5, 1, 2, 3, 4.5, 6, 7]
+	const pesos = [0.5, 1, 2, 3, 4.5, 6, 8, 10]
 	console.log('| Jogador | ' + pesos.map((p) => p + ' kg').join(' | ') + ' |')
 	console.log('|---|' + pesos.map(() => '---').join('|') + '|')
 	for (const [n, j] of Object.entries(JOGADORES)) {
