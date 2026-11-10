@@ -9,6 +9,7 @@ script = ExtResource("1_especie")
 nome = "Tilápia"
 perfil = &"calmo"
 fase = 2
+local = &"acude"
 raridade = 0
 forca_min = 0.0
 forca_max = 40.0

@@ -364,12 +364,299 @@ def jundia_gigante():
     return t
 
 
+# ------------------------------------------------- Foz e Vila e Arvoredo
+# Peixes de estuario e de mar, para os dois pesqueiros rio abaixo. Usam as
+# mesmas pecas dos peixes do acude.
+
+def faixa_lateral(t, x0, cy, colunas, cor, frac, de=0.0, ate=1.0, pontilhada=False):
+    """Linha ao longo do corpo, a uma fracao da altura (0 nas costas, 1 na
+    barriga): a linha lateral do robalo, as listras da tainha."""
+    n = len(colunas)
+    for i, (cima, baixo) in enumerate(colunas):
+        if not (de * n <= i <= ate * n):
+            continue
+        if pontilhada and i % 2:
+            continue
+        y = cy - cima + (cima + baixo) * frac
+        if t.get(x0 + i, int(y))[3]:
+            t.put(x0 + i, y, cor)
+
+
+def pintas(t, x0, cy, L, alt, cores, n, seed, tam=1):
+    """Manchas espalhadas pelo corpo (garoupa, linguado, mero)."""
+    R = rng(seed)
+    for _ in range(n):
+        x, y = R.randrange(x0 + 1, x0 + L - 2), R.randrange(int(cy - alt) + 1, int(cy + alt))
+        cor = R.choice(cores)
+        for dx in range(tam):
+            for dy in range(tam):
+                if t.get(x + dx, y + dy)[3]:
+                    t.put(x + dx, y + dy, cor)
+
+
+def tainha():
+    """Tainha: fusiforme, dorso azul-esverdeado, flanco prateado com listras
+    escuras ao comprido, duas dorsais pequenas e cauda bifurcada."""
+    t = Tela(36, 16)
+    x0, cy, L = 8, 8, 25
+    cols = perfil(L, costas=[(0, 1.3), (.16, 2.8), (.44, 3.9), (.70, 3.8), (.90, 2.8), (1, 1.6)],
+                     barriga=[(0, 1.2), (.18, 2.6), (.48, 3.5), (.76, 3.2), (.92, 2.2), (1, 1.3)])
+    DORSO, MEIO, VENTRE = "#3c5a63", "#a9bcc2", "#eef2f0"
+    FINA, FINA_OL = "#8ea3aa", "#3a4f57"
+    rabo(t, x0 - 1, cy, 7, 5.0, FINA, FINA_OL, fenda=0.62)
+    nadadeira(t, [(x0 + 13, cy - 4), (x0 + 16, cy - 4), (x0 + 15, cy - 7)], FINA, FINA_OL)
+    nadadeira(t, [(x0 + 6, cy - 3), (x0 + 9, cy - 3), (x0 + 7, cy - 5)], FINA, FINA_OL)
+    crista(t, x0, cy, cols, .14, .30, 1.6, FINA, FINA_OL, para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    for f in (.30, .45, .60):
+        faixa_lateral(t, x0, cy, cols, "#6f8790", f, .06, .80)
+    nadadeira(t, [(x0 + 18, cy), (x0 + 14, cy + 3), (x0 + 19, cy + 2)], "#c7d3d6", FINA_OL)
+    t.vline(x0 + 20, cy - 3, cy + 2, "#7d939a")
+    olho(t, x0 + 21, cy - 2)
+    boca(t, x0 + 23, cy, "#3a4f57")
+    t.contorno(OL)
+    return t
+
+
+def robalo():
+    """Robalo: alongado e prateado, a linha lateral preta correndo do opérculo
+    ao rabo, boca grande de queixo saliente e dorsal espinhosa."""
+    t = Tela(42, 18)
+    x0, cy, L = 8, 9, 31
+    cols = perfil(L, costas=[(0, 1.5), (.14, 3.0), (.40, 4.4), (.66, 4.6), (.86, 3.8), (1, 2.0)],
+                     barriga=[(0, 1.3), (.18, 2.8), (.46, 3.9), (.74, 3.8), (.92, 2.6), (1, 1.5)])
+    DORSO, MEIO, VENTRE = "#4b5a4f", "#b8c4bd", "#f1f3ef"
+    FINA, FINA_OL = "#9aa69e", "#3b463f"
+    rabo(t, x0 - 1, cy, 8, 5.6, FINA, FINA_OL, fenda=0.38)
+    crista(t, x0, cy, cols, .50, .70, 3.6, FINA, FINA_OL)  # dorsal espinhosa
+    crista(t, x0, cy, cols, .22, .44, 2.4, FINA, FINA_OL)  # dorsal mole
+    crista(t, x0, cy, cols, .16, .34, 2.0, FINA, FINA_OL, para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    faixa_lateral(t, x0, cy, cols, "#1f2622", .40, .02, .84)
+    nadadeira(t, [(x0 + 23, cy + 1), (x0 + 19, cy + 4), (x0 + 24, cy + 3)], "#cbd3cd", FINA_OL)
+    t.vline(x0 + 24, cy - 4, cy + 3, "#7f8c84")
+    olho(t, x0 + 26, cy - 2)
+    # boca rasgada e o queixo passando da maxila
+    t.hline(x0 + 27, x0 + 30, cy + 1, "#3b463f")
+    t.put(x0 + 31, cy + 1, "#3b463f")
+    t.put(x0 + 31, cy + 2, "#7f8c84")
+    t.contorno(OL)
+    return t
+
+
+def bagre_do_mar():
+    """Bagre de estuario: o mesmo corpo do jundia, mas cinza-azulado, de
+    barriga branca e com o rabo bem bifurcado."""
+    t = Tela(38, 17)
+    _bagre(t, 7, 8, L=27, altura=3.8,
+           cores=("#47545e", "#8c9aa5", "#e7ebee", "#6a7884"), escala=1.0, seed=31)
+    # o rabo bifurcado por cima do leque redondo do jundia
+    for i in range(3):
+        t.put(6 - i, 8, (0, 0, 0, 0))
+        t.put(6 - i, 9, (0, 0, 0, 0))
+    t.contorno(OL)
+    return t
+
+
+def corvina():
+    """Corvina: costas arqueadas e barriga quase reta, prateada com reflexo
+    dourado, linhas obliquas escuras no lombo e cauda reta."""
+    t = Tela(36, 18)
+    x0, cy, L = 7, 9, 26
+    cols = perfil(L, costas=[(0, 1.6), (.16, 3.4), (.46, 5.4), (.70, 5.0), (.88, 3.6), (1, 1.8)],
+                     barriga=[(0, 1.3), (.18, 2.6), (.50, 3.4), (.78, 3.2), (.92, 2.4), (1, 1.4)])
+    DORSO, MEIO, VENTRE = "#6b6747", "#c9bf91", "#f2ecd5"
+    FINA, FINA_OL = "#c2ac6a", "#5a5131"
+    rabo(t, x0 - 1, cy, 6, 4.6, FINA, FINA_OL, fenda=0.0)
+    crista(t, x0, cy, cols, .14, .76, 3.0, FINA, FINA_OL)
+    crista(t, x0, cy, cols, .16, .36, 2.0, FINA, FINA_OL, para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    for i in range(2, L - 6, 3):  # as riscas obliquas da corvina
+        for k in range(4):
+            x, y = x0 + i + k, cy - cols[i][0] + 1 + k
+            if t.get(x, y)[3]:
+                t.put(x, y, "#7a6f44")
+    nadadeira(t, [(x0 + 18, cy + 1), (x0 + 14, cy + 4), (x0 + 19, cy + 3)], "#e0cd8a", FINA_OL)
+    t.vline(x0 + 19, cy - 4, cy + 2, "#a39668")
+    olho(t, x0 + 21, cy - 2)
+    boca(t, x0 + 22, cy + 2, "#5a5131")
+    barbilhao(t, x0 + 21, cy + 3, 2, 1, "#a39668")
+    t.contorno(OL)
+    return t
+
+
+def linguado():
+    """Linguado: peixe chato, de corpo oval e baixo, com a franja das
+    nadadeiras contornando o corpo todo, pele parda de pintas e os dois olhos
+    no lado de cima da cabeca."""
+    t = Tela(38, 18)
+    x0, cy, L = 7, 9, 28
+    cols = perfil(L, costas=[(0, 1.0), (.12, 2.6), (.40, 4.2), (.70, 4.2), (.90, 3.0), (1, 1.4)],
+                     barriga=[(0, 1.0), (.12, 2.4), (.40, 3.8), (.70, 3.8), (.90, 2.6), (1, 1.2)])
+    DORSO, MEIO, VENTRE = "#6b5638", "#9c8158", "#b89a6a"
+    FINA, FINA_OL = "#8a7048", "#4a3b25"
+    rabo(t, x0 - 1, cy, 5, 3.6, FINA, FINA_OL, fenda=0.0)
+    crista(t, x0, cy, cols, .04, .94, 2.2, FINA, FINA_OL)
+    crista(t, x0, cy, cols, .04, .88, 2.0, FINA, FINA_OL, para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    pintas(t, x0, cy, L, 3, ["#4a3b25", "#c9ae7c", "#5b4a2e"], 34, seed=44)
+    olho(t, x0 + L - 5, cy - 3)
+    olho(t, x0 + L - 3, cy - 1)
+    boca(t, x0 + L - 1, cy + 1, "#4a3b25", largura=1)
+    t.contorno(OL)
+    return t
+
+
+def pampo():
+    """Pampo: alto, quase um losango, prateado com o ventre amarelado,
+    dorsal e anal compridas em foice e a cauda funda em V."""
+    t = Tela(34, 22)
+    x0, cy, L = 9, 11, 20
+    cols = perfil(L, costas=[(0, 1.5), (.18, 3.8), (.46, 6.6), (.68, 6.4), (.88, 4.4), (1, 2.0)],
+                     barriga=[(0, 1.4), (.18, 3.6), (.46, 6.0), (.68, 5.8), (.88, 3.8), (1, 1.6)])
+    DORSO, MEIO, VENTRE = "#5b6c76", "#c6d0d4", "#f0e3a4"
+    FINA, FINA_OL = "#c9b765", "#5a5230"
+    rabo(t, x0 - 1, cy, 8, 7.0, FINA, FINA_OL, fenda=0.72)
+    nadadeira(t, [(x0 + 4, cy - 5), (x0 + 11, cy - 6), (x0 + 6, cy - 10)], FINA, FINA_OL)
+    nadadeira(t, [(x0 + 4, cy + 5), (x0 + 11, cy + 6), (x0 + 6, cy + 10)], FINA, FINA_OL)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    nadadeira(t, [(x0 + 14, cy + 1), (x0 + 10, cy + 4), (x0 + 15, cy + 3)], "#e8dc9a", FINA_OL)
+    t.vline(x0 + 15, cy - 4, cy + 3, "#9aa6ab")
+    olho(t, x0 + 16, cy - 2)
+    boca(t, x0 + 18, cy + 1, "#5a5230")
+    t.contorno(OL)
+    return t
+
+
+def anchova():
+    """Anchova: torpedo azul-esverdeado de barriga prateada, boca grande com
+    dentes, nadadeiras escuras e cauda bifurcada."""
+    t = Tela(40, 16)
+    x0, cy, L = 8, 8, 29
+    cols = perfil(L, costas=[(0, 1.2), (.16, 2.8), (.44, 4.2), (.70, 4.2), (.90, 3.2), (1, 1.8)],
+                     barriga=[(0, 1.1), (.18, 2.6), (.48, 3.6), (.76, 3.4), (.92, 2.4), (1, 1.4)])
+    DORSO, MEIO, VENTRE = "#2f5f6a", "#8fb2b8", "#eef4f2"
+    FINA, FINA_OL = "#4a6e73", "#26434a"
+    rabo(t, x0 - 1, cy, 8, 5.4, FINA, FINA_OL, fenda=0.66)
+    crista(t, x0, cy, cols, .54, .70, 2.6, FINA, FINA_OL)
+    crista(t, x0, cy, cols, .20, .46, 2.0, FINA, FINA_OL)
+    crista(t, x0, cy, cols, .18, .40, 1.8, FINA, FINA_OL, para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    nadadeira(t, [(x0 + 21, cy + 1), (x0 + 17, cy + 4), (x0 + 22, cy + 3)], FINA, FINA_OL)
+    t.vline(x0 + 22, cy - 3, cy + 3, "#5f8a90")
+    olho(t, x0 + 24, cy - 2)
+    t.hline(x0 + 25, x0 + 28, cy + 1, "#26434a")  # boca grande
+    t.put(x0 + 26, cy + 2, "#ffffff")            # os dentes
+    t.put(x0 + 28, cy + 2, "#ffffff")
+    t.contorno(OL)
+    return t
+
+
+def olho_de_boi():
+    """Olho-de-boi: robusto e comprido, a faixa amarela do olho ao rabo
+    separando o dorso cor de oliva do ventre claro, olho grande e cauda
+    amarela."""
+    t = Tela(44, 18)
+    x0, cy, L = 9, 9, 32
+    cols = perfil(L, costas=[(0, 1.4), (.14, 3.2), (.42, 4.8), (.68, 4.9), (.88, 3.8), (1, 2.0)],
+                     barriga=[(0, 1.3), (.18, 3.0), (.46, 4.2), (.74, 4.0), (.92, 2.8), (1, 1.4)])
+    DORSO, MEIO, VENTRE = "#6b5a2c", "#c7b88c", "#f3eedb"
+    FINA, FINA_OL = "#e2b935", "#6b5320"
+    rabo(t, x0 - 1, cy, 8, 6.0, FINA, FINA_OL, fenda=0.60)
+    crista(t, x0, cy, cols, .44, .64, 3.2, "#b29a52", FINA_OL)
+    crista(t, x0, cy, cols, .14, .42, 2.0, "#b29a52", FINA_OL)
+    crista(t, x0, cy, cols, .14, .34, 2.0, FINA, FINA_OL, para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    faixa_lateral(t, x0, cy, cols, "#e8c23a", .44, .02, .96)
+    faixa_lateral(t, x0, cy, cols, "#d4ab26", .50, .02, .90)
+    nadadeira(t, [(x0 + 24, cy + 1), (x0 + 20, cy + 4), (x0 + 25, cy + 3)], FINA, FINA_OL)
+    t.vline(x0 + 25, cy - 4, cy + 3, "#a39266")
+    t.rect(x0 + 26, cy - 3, 3, 3, OL)  # o olho grande que da o nome
+    t.put(x0 + 26, cy - 3, "#ffffff")
+    t.put(x0 + 27, cy - 2, "#e8c23a")
+    boca(t, x0 + 29, cy + 1, "#6b5320", largura=3)
+    t.contorno(OL)
+    return t
+
+
+def garoupa():
+    """Garoupa: corpo grosso de peixe de toca, marrom-avermelhado salpicado de
+    manchas claras, cabeca grande de boca larga, cauda e nadadeiras redondas
+    com a borda clara."""
+    t = Tela(42, 22)
+    x0, cy, L = 8, 11, 30
+    cols = perfil(L, costas=[(0, 2.2), (.14, 4.2), (.40, 6.2), (.66, 6.6), (.86, 5.6), (1, 3.2)],
+                     barriga=[(0, 2.0), (.18, 4.0), (.46, 5.6), (.74, 5.6), (.92, 4.4), (1, 2.6)])
+    DORSO, MEIO, VENTRE = "#5e2f22", "#9c5a3c", "#d29a74"
+    FINA, FINA_OL = "#86462e", "#3e1f15"
+    rabo(t, x0 - 1, cy, 6, 6.0, FINA, "#e3b48c", fenda=0.0)
+    crista(t, x0, cy, cols, .06, .78, 3.4, FINA, "#e3b48c")
+    crista(t, x0, cy, cols, .10, .38, 2.6, FINA, "#e3b48c", para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    pintas(t, x0, cy, L, 5, ["#e0b08a", "#c9946c", "#f0c9a2"], 46, seed=57, tam=1)
+    nadadeira(t, [(x0 + 21, cy + 1), (x0 + 16, cy + 6), (x0 + 22, cy + 5)], FINA, "#e3b48c")
+    t.vline(x0 + 22, cy - 5, cy + 4, "#7a3d28")
+    olho(t, x0 + 24, cy - 3)
+    # boca larga, de beico grosso
+    t.hline(x0 + 25, x0 + 29, cy + 2, "#3e1f15")
+    t.hline(x0 + 26, x0 + 29, cy + 3, "#b06a4a")
+    t.contorno(OL)
+    return t
+
+
+def mero():
+    """O Velho do Arvoredo: um mero enorme, de cabeca larga e corpo de barril,
+    escuro de idade e manchado, com as nadadeiras redondas gastas. No canto
+    da boca ainda tem o anzol e a ponta da linha que o avo nao cortou."""
+    t = Tela(68, 34)
+    x0, cy, L = 11, 17, 50
+    cols = perfil(L, costas=[(0, 3.4), (.12, 6.6), (.36, 10.6), (.62, 11.4), (.84, 10.0), (1, 6.0)],
+                     barriga=[(0, 3.0), (.16, 6.2), (.44, 9.6), (.72, 9.8), (.90, 8.0), (1, 4.6)])
+    DORSO, MEIO, VENTRE = "#2e2f23", "#5d5a3f", "#9d9670"
+    FINA, FINA_OL = "#45432f", "#7c7656"
+    rabo(t, x0 - 1, cy, 9, 9.0, FINA, FINA_OL, fenda=0.0)
+    crista(t, x0, cy, cols, .06, .74, 4.6, FINA, FINA_OL)
+    crista(t, x0, cy, cols, .08, .34, 3.6, FINA, FINA_OL, para_cima=False)
+    pintar_corpo(t, x0, cy, cols, DORSO, MEIO, VENTRE)
+    pintas(t, x0, cy, L, 9, ["#1f2018", "#7d7752", "#3b3a2a"], 120, seed=71, tam=2)
+    # cicatrizes de briga, riscos claros no lombo
+    for x, y in ((x0 + 18, cy - 7), (x0 + 30, cy - 5)):
+        for k in range(5):
+            t.put(x + k, y + k // 2, "#b3ac86")
+    nadadeira(t, [(x0 + 35, cy + 2), (x0 + 27, cy + 10), (x0 + 37, cy + 8)], FINA, FINA_OL)
+    t.vline(x0 + 37, cy - 8, cy + 7, "#4d4a34")
+    t.vline(x0 + 38, cy - 7, cy + 6, "#66624a")
+    olho(t, x0 + 41, cy - 5)
+    t.put(x0 + 40, cy - 6, "#9d9670")
+    # boca enorme, de beico pesado
+    t.hline(x0 + 42, x0 + 49, cy + 3, "#16170f")
+    t.hline(x0 + 43, x0 + 49, cy + 4, "#8a7d5c")
+    t.hline(x0 + 44, x0 + 48, cy + 2, "#45432f")
+    # o anzol enferrujado e a ponta da linha do avo
+    t.put(x0 + 47, cy + 5, "#9a5a2a"); t.put(x0 + 47, cy + 6, "#b86d33")
+    t.put(x0 + 48, cy + 6, "#9a5a2a"); t.put(x0 + 49, cy + 5, "#9a5a2a")
+    for k in range(7):
+        t.put(x0 + 50 + k, cy + 6 + k // 2, "#d9e2e6")
+    t.contorno(OL)
+    return t
+
+
 ESPECIES = {
     "tilapia": tilapia,
     "cascudo": cascudo,
     "carpa": carpa,
     "jundia": jundia,
     "jundia_gigante": jundia_gigante,
+    "tainha": tainha,
+    "robalo": robalo,
+    "bagre": bagre_do_mar,
+    "corvina": corvina,
+    "linguado": linguado,
+    "pampo": pampo,
+    "anchova": anchova,
+    "olho_de_boi": olho_de_boi,
+    "garoupa": garoupa,
+    "mero": mero,
 }
 
 

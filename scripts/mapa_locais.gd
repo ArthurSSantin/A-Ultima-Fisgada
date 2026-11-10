@@ -91,9 +91,9 @@ func _ready() -> void:
 		_pinos.append(pino)
 
 		var nome := _label(negrito, 16, COR_TINTA)
-		nome.text = local.nome
-		nome.position = ponto + Vector2(-60.0, 8.0)
-		nome.size = Vector2(120.0, 20.0)
+		nome.text = Partida.nome_em(local.nome)
+		nome.position = ponto + Vector2(-90.0, 8.0)
+		nome.size = Vector2(180.0, 20.0)
 		nome.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		add_child(nome)
 
@@ -151,8 +151,8 @@ func _selecionar(indice: int) -> void:
 	_selecionado = indice
 	for i in _pinos.size():
 		_pinos[i].texture = PINO_ATIVO if i == indice else PINO
-	_nome.text = _locais[indice].nome
-	_descricao.text = _locais[indice].descricao
+	_nome.text = Partida.nome_em(_locais[indice].nome)
+	_descricao.text = Partida.nome_em(_locais[indice].descricao)
 
 
 func _confirmar() -> void:

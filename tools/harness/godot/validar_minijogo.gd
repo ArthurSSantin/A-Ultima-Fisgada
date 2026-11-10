@@ -4,7 +4,10 @@ extends SceneTree
 ## captura por peso. Serve para validar a replica do minijogo em
 ## tools/harness/harness.mjs: os dois usam o mesmo modelo de jogador.
 ##
-## Uso: godot --headless --fixed-fps 60 --path . -s tools/harness/godot/validar_minijogo.gd -- [tentativas] [perfil]
+## Uso: godot --headless --fixed-fps 60 --path . -s tools/harness/godot/validar_minijogo.gd -- [tentativas] [perfil] [pesos]
+##
+## "pesos" troca a lista PESOS, separada por virgula (ex.: 7,9,11), para medir
+## os peixes grandes do mar.
 ##
 ## Imprime uma linha JSON comecando com "RESULTADO ".
 
@@ -24,6 +27,7 @@ class Bot:
 	var jogo: Node
 	var tentativas: int = 200
 	var perfil: StringName = &"padrao"
+	var pesos: Array[float] = PESOS
 	var resultado: Dictionary = {}
 	var fila: Array = []
 
@@ -40,7 +44,7 @@ class Bot:
 	func _ready() -> void:
 		process_priority = -100
 		for nome in JOGADORES:
-			for peso in PESOS:
+			for peso in pesos:
 				for i in tentativas:
 					fila.append([nome, peso])
 
@@ -112,4 +116,9 @@ func _initialize() -> void:
 		bot.tentativas = int(args[0])
 	if args.size() > 1:
 		bot.perfil = StringName(args[1])
+	if args.size() > 2:
+		var lista: Array[float] = []
+		for p in args[2].split(","):
+			lista.append(float(p))
+		bot.pesos = lista
 	root.add_child(bot)

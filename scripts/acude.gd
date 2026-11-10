@@ -287,7 +287,10 @@ func _grupo_espera_e_fisgada(delta: float) -> void:
 		estado = 4
 		_som("fisgada")
 		_peixe.flip_h = false  # foge para o fundo do açude
-		minijogo.iniciar(peso_peixe, especie.perfil if especie else &"padrao")
+		minijogo.iniciar(
+			especie.peso_de_luta(peso_peixe) if especie else peso_peixe,
+			especie.perfil if especie else &"padrao",
+		)
 
 
 func _depois_da_espera(segundos: float) -> void:
@@ -369,6 +372,8 @@ func _grupo_resultado(delta: float) -> void:
 		)
 		_peixe.flip_h = false
 		_depois_da_captura()
+		if especie:
+			_ao_capturar()
 
 	# Entrou no Estado 6
 	if estado == 6 and _gatilho_unico(&"falhou"):
@@ -403,6 +408,8 @@ func _anunciar_captura() -> void:
 		if not Partida.teimoso_reencontrado:
 			Partida.teimoso_reencontrado = true
 			texto += "\n...Teimoso?"
+	elif especie.nome == Partida.NOME_VELHO:
+		texto = "%s, %s\nO maior peixe que {nome} já viu." % [especie.nome, Partida.texto_peso(peso_peixe)]
 	elif especie.raridade == Especie.Raridade.ESPECIAL:
 		texto += "\nPEIXE ESPECIAL!"
 	elif especie.e_trofeu(peso_peixe):
@@ -411,7 +418,13 @@ func _anunciar_captura() -> void:
 		texto += "\nEspécie nova na coleção!"
 	elif recorde:
 		texto += "\nNovo recorde!"
-	_aviso.text = texto
+	_aviso.text = Partida.nome_em(texto)
+
+
+## Gancho para os pesqueiros com historia (scripts/pesqueiro.gd): roda depois
+## que o peixe ja entrou no balde e na colecao.
+func _ao_capturar() -> void:
+	pass
 
 
 func _depois_da_captura() -> void:
@@ -488,6 +501,9 @@ func _grupo_interface() -> void:
 ## beliscada, que e a novidade do dia.
 func _texto_da_dica() -> String:
 	if Partida.cansado() and estado == 0:
+		return ""
+	# As dicas sao do tutorial do acude; rio abaixo o neto ja sabe pescar.
+	if Partida.local != &"acude":
 		return ""
 	if Partida.dia == 2 and estado == 2:
 		return "Cuidado: se a isca só tremer de leve, é beliscada. Espere a mordida forte."

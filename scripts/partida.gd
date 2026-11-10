@@ -42,6 +42,9 @@ const PESO_RARIDADE: Array[float] = [1.0, 0.5, 0.25, 0.0]
 const VARAS: Dictionary = {
 	&"bambu": {"nome": "Vara de Bambu", "forca": 45.0, "preco": 50, "dia": 1},
 	&"fibra": {"nome": "Vara de Fibra", "forca": 85.0, "preco": 300, "dia": 2},
+	# A vara do avo nao se compra: a Dona Marlene devolve quando a casa fica
+	# pronta, como prometeu no prologo. So ela alcanca o fundo do Arvoredo.
+	&"vo": {"nome": "Vara do {avo}", "forca": 100.0, "preco": 0, "dia": 1, "presente": true},
 }
 
 ## Consumiveis da loja do Seu Valdir. "quantidade" e quanto vem por compra.
@@ -143,38 +146,47 @@ const ESPECIES_DO_RIO: Array[String] = ["Lambari", "Cará", "Joaninha", "Jundiá
 const PEIXES_DO_RIO: int = 8
 
 ## Locais de pesca, escolhidos no barco do cais. "pino" e onde o alfinete cai
-## no mapa, em fracao da imagem (ver assets/sprites/ui/mapa.png). Um local com
-## "oculto" nao aparece no mapa: e so virar a chave quando a fase liberar.
+## no mapa, em fracao da imagem (ver assets/sprites/ui/mapa.png). "libera" diz
+## o que abre o local no mapa (ver local_liberado()); antes disso ele nao vira
+## alfinete nenhum.
+##   acude ...... aberto desde o inicio da fase 2
+##   foz ........ abre com o caderno do avo, achado na obra da casa
+##   arvoredo ... abre com a boia do avo, pescada na foz
 const LOCAIS: Dictionary = {
 	&"acude": {
-		"nome": "Açude do Seu Bento",
+		"nome": "Açude do Seu {avo}",
 		"cena": "res://scenes/Acude.tscn",
 		"descricao": "Água parada e esverdeada, represada no rio. Tilápia e cascudo na beira, carpa e jundiá no fundo. Dizem que tem um jundiá bem maior lá embaixo.",
 		"pino": Vector2(0.29, 0.47),
-		"oculto": false,
-	},
-	&"rio": {
-		"nome": "Volta do Rio",
-		"cena": "",
-		"descricao": "Correnteza forte entre as pedras.",
-		"pino": Vector2(0.59, 0.65),
-		"oculto": true,
+		"libera": &"",
 	},
 	&"foz": {
 		"nome": "Foz e Vila",
-		"cena": "",
-		"descricao": "Onde a água doce encontra o mar.",
+		"cena": "res://scenes/Foz.tscn",
+		"descricao": "Onde a água doce encontra o mar, o primeiro ponto do caderno. Tainha e bagre na beira, corvina e linguado mais longe, e o robalo lá fora.",
 		"pino": Vector2(0.70, 0.79),
-		"oculto": true,
+		"libera": &"caderno",
 	},
 	&"arvoredo": {
 		"nome": "Arvoredo",
-		"cena": "",
-		"descricao": "As ilhas do caderno do avô.",
+		"cena": "res://scenes/Arvoredo.tscn",
+		"descricao": "As ilhas do caderno do avô, em mar aberto. Pampo e anchova perto da pedra; olho-de-boi e garoupa no fundo.",
 		"pino": Vector2(0.93, 0.28),
-		"oculto": true,
+		"libera": &"boia",
 	},
 }
+
+## Quantas especies de cada pesqueiro o neto precisa conhecer para a historia
+## andar: na foz, para a boia do avo enroscar na linha; no Arvoredo, para o
+## Velho do Arvoredo aparecer.
+const FOZ_PARA_BOIA: int = 3
+const ARVOREDO_PARA_VELHO: int = 3
+## Chance do Velho do Arvoredo morder, por lancamento, depois de liberado. A
+## isca de camarao dobra.
+const CHANCE_VELHO: float = 0.3
+const NOME_VELHO: String = "Velho do Arvoredo"
+## Ordem dos pesqueiros na tela de colecao; o rio e o do tutorial.
+const ORDEM_COLECAO: Array[StringName] = [&"rio", &"acude", &"foz", &"arvoredo"]
 
 var nome: String = NOME_PADRAO
 var nome_avo: String = NOME_AVO_PADRAO
@@ -194,6 +206,15 @@ var jundia_entregue: bool = false
 var relacao: Dictionary = {&"zeca": 0, &"ivone": 0}
 ## Para a fala de abertura so aparecer uma vez.
 var prologo_visto: bool = false
+
+## A historia depois da casa, seguindo o caderno do avo rio abaixo.
+var caderno_achado: bool = false
+var juca_conhecido: bool = false
+var boia_achada: bool = false
+var radio_ouvido: bool = false
+var velho_pescado: bool = false
+## O neto cortou a linha e devolveu o Velho do Arvoredo ao mar.
+var velho_devolvido: bool = false
 
 ## Memorias do tutorial que a fase 2 le de volta.
 var tomou_cafe: bool = false
@@ -261,11 +282,22 @@ func iniciar_fase(nova: int) -> void:
 	jundia_entregue = false
 	relacao = {&"zeca": 0, &"ivone": 0}
 	prologo_visto = false
+	_zerar_historia()
+	local = &"acude"
 	hub_x = 640.0
 	vila_x = 400.0
 	cais_x = 150.0
 	inicio_ms = Time.get_ticks_msec()
 	carregar_especies()
+
+
+func _zerar_historia() -> void:
+	caderno_achado = false
+	juca_conhecido = false
+	boia_achada = false
+	radio_ouvido = false
+	velho_pescado = false
+	velho_devolvido = false
 
 
 ## Guarda o nome escolhido, ja aparado. Em branco volta para o padrao.
@@ -303,27 +335,40 @@ func tutorial() -> bool:
 	return fase == 2 and dia == 1
 
 
+## Especies que mordem no pesqueiro de agora.
+func especies_do_local() -> Array[Especie]:
+	var lista: Array[Especie] = []
+	for e in especies:
+		if e.local.is_empty() or e.local == local:
+			lista.append(e)
+	return lista
+
+
 func sortear_especie(forca: float, camarao: bool) -> Especie:
-	if tutorial():
+	if tutorial() and local == &"acude":
 		return especie(&"Tilápia")
 
+	var daqui: Array[Especie] = especies_do_local()
+	# A vara do avo lanca ate 100, mas o acude acaba antes disso: la longe o
+	# peixe e o mesmo do fundo, como se a linha tivesse batido na margem.
+	forca = minf(forca, alcance_do_local(daqui))
 	var especial: Especie = null
-	for e in especies:
+	for e in daqui:
 		if e.raridade == Especie.Raridade.ESPECIAL and e.alcancavel(forca):
 			especial = e
-	var chance: float = CHANCE_ESPECIAL * (2.0 if camarao else 1.0)
-	if especial and dia >= DIA_ESPECIAL and randf() < chance:
+	if especial and _especial_liberado(especial) \
+			and randf() < _chance_especial(especial) * (2.0 if camarao else 1.0):
 		return especial
 
 	var candidatas: Array[Especie] = []
 	var pesos: Array[float] = []
-	for e in especies:
+	for e in daqui:
 		if e.raridade != Especie.Raridade.ESPECIAL and e.alcancavel(forca):
 			candidatas.append(e)
 			var mult: float = 2.0 if camarao and e.raridade != Especie.Raridade.COMUM else 1.0
 			pesos.append(PESO_RARIDADE[e.raridade] * mult)
 	if candidatas.is_empty():
-		return especie(&"Tilápia")
+		return _peixe_de_reserva(daqui)
 
 	var total: float = 0.0
 	for p in pesos:
@@ -334,6 +379,65 @@ func sortear_especie(forca: float, camarao: bool) -> Especie:
 		if r <= 0.0:
 			return candidatas[i]
 	return candidatas[-1]
+
+
+## O Jundia Gigante do acude espera o dia 3. O Velho do Arvoredo so aparece
+## depois do radio e de o neto conhecer os peixes da ilha, e uma vez so.
+func _especial_liberado(e: Especie) -> bool:
+	if e.nome == NOME_VELHO:
+		return radio_ouvido and not velho_pescado \
+			and especies_pegas_em(&"arvoredo") >= ARVOREDO_PARA_VELHO
+	return dia >= DIA_ESPECIAL
+
+
+func _chance_especial(e: Especie) -> float:
+	return CHANCE_VELHO if e.nome == NOME_VELHO else CHANCE_ESPECIAL
+
+
+## A maior forca que ainda alcanca algum peixe comum ou raro deste pesqueiro.
+static func alcance_do_local(daqui: Array[Especie]) -> float:
+	var alcance: float = 0.0
+	for e in daqui:
+		if e.raridade != Especie.Raridade.ESPECIAL:
+			alcance = maxf(alcance, e.forca_max)
+	return alcance if alcance > 0.0 else 100.0
+
+
+## Quando nenhuma especie alcanca a forca (nao deveria acontecer com os dados
+## de agora), sai o comum mais perto da beira.
+func _peixe_de_reserva(daqui: Array[Especie]) -> Especie:
+	var melhor: Especie = null
+	for e in daqui:
+		if e.raridade == Especie.Raridade.COMUM and (melhor == null or e.forca_min < melhor.forca_min):
+			melhor = e
+	return melhor if melhor else especie(&"Tilápia")
+
+
+## Quantas especies diferentes deste pesqueiro ja estao na colecao, sem
+## contar o peixe especial.
+func especies_pegas_em(id_local: StringName) -> int:
+	var n: int = 0
+	for e in especies:
+		if e.local == id_local and e.raridade != Especie.Raridade.ESPECIAL and colecao.has(e.nome):
+			n += 1
+	return n
+
+
+## Todas as especies do jogo, de todas as fases, para a tela de colecao.
+func todas_especies() -> Array[Especie]:
+	var todas: Array[Especie] = []
+	for arquivo in DirAccess.get_files_at(ESPECIES_DIR):
+		var caminho: String = ESPECIES_DIR + arquivo.trim_suffix(".remap")
+		if caminho.ends_with(".tres"):
+			todas.append(load(caminho))
+	return todas
+
+
+## Pesqueiro de uma especie para agrupar na colecao: as da fase 1 sao do rio.
+static func local_da_especie(e: Especie) -> StringName:
+	if e.fase == 1:
+		return &"rio"
+	return e.local
 
 
 ## Peso do peixe. A forca do arremesso so da a tendencia: o peso sai sorteado
@@ -380,11 +484,22 @@ func locais_abertos() -> Array[Dictionary]:
 	var abertos: Array[Dictionary] = []
 	for id: StringName in LOCAIS:
 		var dados: Dictionary = LOCAIS[id]
-		if not dados.oculto:
+		if local_liberado(id):
 			var item: Dictionary = dados.duplicate()
 			item["id"] = id
 			abertos.append(item)
 	return abertos
+
+
+func local_liberado(id: StringName) -> bool:
+	if not LOCAIS.has(id):
+		return false
+	match LOCAIS[id].libera:
+		&"caderno":
+			return caderno_achado
+		&"boia":
+			return boia_achada
+	return true
 
 
 func cena_do_local(id: StringName) -> String:
@@ -512,6 +627,23 @@ func disponivel(dia_minimo: int) -> bool:
 
 ## Zera o que o tutorial anota, para quem comeca de novo pela tela inicial.
 func comecar_tutorial() -> void:
+	# Quem joga de novo sem fechar o jogo chega aqui com a partida anterior
+	# inteira na memoria: volta tudo para a Fase 1.
+	if fase != 1:
+		fase = 1
+		carregar_especies()
+	dia = 1
+	energia = ENERGIA_MAX
+	dinheiro = DINHEIRO_INICIAL
+	total_vendido = 0
+	cais_visitado = false
+	local = &"acude"
+	varas_compradas.clear()
+	obras_pagas.clear()
+	jundia_entregue = false
+	relacao = {&"zeca": 0, &"ivone": 0}
+	prologo_visto = false
+	_zerar_historia()
 	objetivos_feitos.clear()
 	volta_do_rio = false
 	tomou_cafe = false
@@ -566,8 +698,17 @@ func texto_objetivo(o: Dictionary) -> String:
 	return o.texto
 
 
+## Vara que nao se compra (a do avo): entra na mao direto.
+func ganhar_vara(id: StringName) -> void:
+	if not id in varas_compradas:
+		varas_compradas.append(id)
+	vara = id
+
+
 func comprar_vara(id: StringName) -> bool:
 	var v: Dictionary = VARAS[id]
+	if v.get("presente", false):
+		return false
 	if id in varas_compradas or dinheiro < v.preco or not disponivel(v.dia):
 		return false
 	_somar_dinheiro(-v.preco)

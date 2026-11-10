@@ -134,7 +134,7 @@ func _interagir(estacao: StringName) -> void:
 			if PORTAS.has(estacao):
 				_entrar(PORTAS[estacao])
 	_ocupado = false
-	if Partida.fase_concluida() and not _concluida and abre_o_dia:
+	if Partida.fase_concluida() and not Partida.caderno_achado and not _concluida and abre_o_dia:
 		_fechar_fase()
 
 
@@ -206,7 +206,17 @@ func _bom_dia() -> void:
 				"Dizem que ele fica a meia distância, longe das tilápias mas antes do fundo. Quem sabe hoje?",
 			])
 		_:
-			await _caixa.falar("Dona Marlene", ["Bom dia, {nome}! " + _o_que_falta()])
+			var fala: String = _proximo_ponto() if Partida.caderno_achado else _o_que_falta()
+			await _caixa.falar("Dona Marlene", ["Bom dia, {nome}! " + fala])
+
+
+## Depois da casa, o que a Dona Marlene lembra e o proximo ponto do caderno.
+func _proximo_ponto() -> String:
+	if not Partida.boia_achada:
+		return "O Juca ainda pesca lá na foz. Se alguém sabe do caderno do {avo}, é ele."
+	if not Partida.velho_pescado:
+		return "Tu vai mesmo até o Arvoredo? Leva casaco, que o vento lá fora é outro."
+	return "Tá tudo pronto!"
 
 
 func _o_que_falta() -> String:
@@ -221,6 +231,10 @@ func _o_que_falta() -> String:
 	return "Pelas minhas contas, " + " e ".join(partes) + "."
 
 
+## A casa de pe e o jundia na mesa nao fecham mais o jogo: na obra aparece o
+## caderno do avo, a Dona Marlene devolve a vara dele e a historia segue rio
+## abaixo, pela Foz e Vila ate o Arvoredo (scripts/pesqueiro.gd), onde fica a
+## tela final.
 func _fechar_fase() -> void:
 	_concluida = true
 	await _caixa.falar("Dona Marlene", [
@@ -230,51 +244,16 @@ func _fechar_fase() -> void:
 		"Enquanto os pedreiros tiram as últimas telhas velhas, {nome} encontra um embrulho de lona preso na viga.",
 		"É o caderno do avô. Nas páginas, pontos marcados rio abaixo, até o mar... e um nome sublinhado duas vezes: Arvoredo.",
 	])
-	_tela_final()
-
-
-func _tela_final() -> void:
-	var camada := CanvasLayer.new()
-	camada.layer = 20
-	add_child(camada)
-	var fundo := ColorRect.new()
-	fundo.color = Color(0.07, 0.13, 0.28, 0.96)
-	fundo.size = Vector2(1280, 720)
-	camada.add_child(fundo)
-
-	var linhas: PackedStringArray = [
-		"FASE 2 CONCLUÍDA",
-		"",
-		"Dias de pesca: %d" % Partida.dia,
-		"Tempo de jogo: %d min" % roundi(Partida.minutos_jogados()),
-		"Peixes pescados: %d" % Partida.total_peixes,
-		"Total vendido: R$ %d" % Partida.total_vendido,
-		"",
-	]
-	for id: StringName in Partida.COMPRADORES:
-		linhas.append("%s: relação nível %d (+%d%% no preço)" % [
-			Partida.COMPRADORES[id].nome, Partida.relacao[id], Partida.bonus_em_porcento(id),
-		])
-	linhas.append("Venda do %s: %s" % [
-		Partida.nome_avo, "reaberta!" if Partida.obra_paga(&"venda") else "ainda de pé só na lembrança",
+	await _caixa.falar("Dona Marlene", [
+		"Eu te prometi, lembra? Toma. A vara do {avo}.",
+		"Ela lança mais longe que qualquer uma do Seu Valdir. Se tu vai atrás desse caderno, vai com ela.",
 	])
-	linhas.append_array(["", "Coleção (recorde de peso):"])
-	for e in Partida.especies:
-		if Partida.colecao.has(e.nome):
-			var r: Dictionary = Partida.colecao[e.nome]
-			linhas.append("%s: %d  (%s kg)" % [e.nome, r.quantidade, C3.num(r.recorde_kg)])
-		else:
-			linhas.append("%s: ???" % ("Peixe especial" if e.raridade == Especie.Raridade.ESPECIAL else e.nome))
-	linhas.append_array(["", "Os pontos do caderno descem o rio até o litoral. A história continua na Fase 3."])
-
-	var texto := Label.new()
-	texto.text = Partida.nome_em("\n".join(linhas))
-	texto.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	texto.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	texto.size = Vector2(1280, 720)
-	texto.add_theme_font_size_override("font_size", 20)
-	texto.add_theme_color_override("font_color", Color(0.96, 0.94, 0.86))
-	camada.add_child(texto)
+	await _caixa.falar("{nome}", [
+		"O primeiro ponto é a Foz, onde o rio encontra o mar. O barco já sabe o caminho.",
+	])
+	Partida.caderno_achado = true
+	Partida.ganhar_vara(&"vo")
+	_concluida = false
 
 
 # ------------------------------ Estacoes ------------------------------
@@ -346,6 +325,8 @@ func _pagar_obra(id: StringName) -> void:
 
 
 func _conselho() -> String:
+	if Partida.caderno_achado:
+		return _proximo_ponto()
 	if not Partida.tem_vara():
 		return "Passa na venda do Seu Valdir e compra a vara de bambu. Sem vara não tem pescaria."
 	if not Partida.cansado():
@@ -505,6 +486,8 @@ func _valdir() -> void:
 		var acoes: Array = []
 		for id: StringName in Partida.VARAS:
 			var v: Dictionary = Partida.VARAS[id]
+			if v.get("presente", false):
+				continue
 			if id in Partida.varas_compradas:
 				opcoes.append("%s (já tem)" % v.nome)
 			elif not Partida.disponivel(v.dia):
@@ -583,7 +566,19 @@ func _atualizar_interface() -> void:
 		]
 
 	if _objetivo:
-		_objetivo.text = "Objetivos da Fase 2\n%s Reconstruir a casa (R$ %d)\n%s Entregar um jundiá à Dona Marlene" % [
+		_objetivo.text = Partida.nome_em(_texto_objetivos(casa_pronta))
+
+
+func _texto_objetivos(casa_pronta: bool) -> String:
+	if not Partida.caderno_achado:
+		return "Objetivos da Fase 2\n%s Reconstruir a casa (R$ %d)\n%s Entregar um jundiá à Dona Marlene" % [
 			"[x]" if casa_pronta else "[  ]", Partida.OBRAS[&"casa"].preco,
 			"[x]" if Partida.jundia_entregue else "[  ]",
 		]
+	var foz: int = mini(Partida.especies_pegas_em(&"foz"), Partida.FOZ_PARA_BOIA)
+	var ilha: int = mini(Partida.especies_pegas_em(&"arvoredo"), Partida.ARVOREDO_PARA_VELHO)
+	return "O caderno do {avo}\n%s Conhecer os peixes da Foz (%d/%d)\n%s Conhecer os peixes do Arvoredo (%d/%d)\n%s O Velho do Arvoredo" % [
+		"[x]" if Partida.boia_achada else "[  ]", foz, Partida.FOZ_PARA_BOIA,
+		"[x]" if ilha >= Partida.ARVOREDO_PARA_VELHO else "[  ]", ilha, Partida.ARVOREDO_PARA_VELHO,
+		"[x]" if Partida.velho_pescado else "[  ]",
+	]

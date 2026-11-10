@@ -9,6 +9,7 @@ script = ExtResource("1_especie")
 nome = "Carpa"
 perfil = &"saltador"
 fase = 2
+local = &"acude"
 raridade = 1
 forca_min = 50.0
 forca_max = 85.0

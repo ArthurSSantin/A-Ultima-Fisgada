@@ -15,6 +15,9 @@ enum Raridade { COMUM, INCOMUM, RARO, ESPECIAL }
 ## Perfil de briga, uma das chaves de Minijogo.PERFIS.
 @export var perfil: StringName = &"padrao"
 @export var fase: int = 1
+## Pesqueiro onde a especie vive, uma chave de Partida.LOCAIS. Vazio vale para
+## qualquer lugar da fase (o rio do tutorial nao usa).
+@export var local: StringName = &""
 @export var raridade: Raridade = Raridade.COMUM
 @export_range(0, 100) var forca_min: float = 0.0
 @export_range(0, 100) var forca_max: float = 100.0
@@ -32,6 +35,11 @@ enum Raridade { COMUM, INCOMUM, RARO, ESPECIAL }
 @export_range(0.0, 1.0) var chance_trofeu: float = 0.04
 ## Quanto um trofeu passa do peso_max, no maximo, como fracao dele.
 @export_range(0.0, 1.0) var bonus_trofeu: float = 0.35
+## Peso que o minijogo usa para a velocidade do peixe, no maximo. Peixe de mar
+## pesa muito mais que os do acude, e a velocidade cresce com o peso: sem esse
+## teto uma garoupa de 14 kg nadaria mais rapido que a zona verde. Zero deixa
+## o peso real.
+@export var peso_luta_max: float = 0.0
 
 ## Peixe revelado na captura (arte 4x, virado para a direita).
 @export var sprite: Texture2D
@@ -60,6 +68,11 @@ func sprite_da_captura() -> Texture2D:
 		todas.append(sprite)
 	todas.append_array(variantes)
 	return todas.pick_random()
+
+
+## Peso que vai para o minijogo (ver peso_luta_max).
+func peso_de_luta(peso: float) -> float:
+	return minf(peso, peso_luta_max) if peso_luta_max > 0.0 else peso
 
 
 func alcancavel(forca: float) -> bool:

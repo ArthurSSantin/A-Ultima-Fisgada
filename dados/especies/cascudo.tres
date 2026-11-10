@@ -9,6 +9,7 @@ script = ExtResource("1_especie")
 nome = "Cascudo"
 perfil = &"pesado"
 fase = 2
+local = &"acude"
 raridade = 0
 forca_min = 25.0
 forca_max = 65.0

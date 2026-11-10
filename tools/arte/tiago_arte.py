@@ -27,6 +27,8 @@ VARAS = {
     # cor principal, cor de detalhe (no do bambu / passador da fibra), cabo
     "bambu": {"cor": "#e6c266", "det": "#9a742f", "cabo": "#c99a62", "molinete": False},
     "fibra": {"cor": "#1f2f52", "det": "#c9ced4", "cabo": "#c99a62", "molinete": True},
+    # a vara do avo: madeira escura e envernizada, com o molinete antigo dele
+    "vo": {"cor": "#6b3f22", "det": "#d9b26a", "cabo": "#3e2414", "molinete": True},
 }
 
 HEAD = [

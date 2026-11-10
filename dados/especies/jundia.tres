@@ -9,6 +9,7 @@ script = ExtResource("1_especie")
 nome = "Jundiá"
 perfil = &"mergulhador"
 fase = 2
+local = &"acude"
 raridade = 2
 forca_min = 68.0
 forca_max = 85.0

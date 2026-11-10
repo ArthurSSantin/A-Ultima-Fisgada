@@ -5,7 +5,8 @@ Os cenários do cais e do hub são desenhados em 1/4 da resolução e exportados
     cd tools/arte
     python cais_arte.py   ../../assets/sprites/cais    # ceu, mar, costao, cais e barco
     python acude_arte.py  ../../assets/sprites/acude   # ceu, agua, barranco e estrutura
-    python peixes_arte.py ../../assets/sprites/peixes  # as 5 especies da Fase 1
+    python peixes_arte.py ../../assets/sprites/peixes  # as especies do acude, da foz e do Arvoredo
+    python pesqueiros_arte.py ../../assets/sprites     # cenarios da Foz e Vila e do Arvoredo
     python mapa_arte.py   ../../assets/sprites/ui      # o mapa de escolher o pesqueiro
     python hub_arte.py ../../assets/sprites/hub     # loja de pesca
     python tiago_arte.py ../../assets/sprites/tiago # Tiago: sem vara, vara nas costas e na mao
