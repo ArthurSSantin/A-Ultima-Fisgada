@@ -280,12 +280,14 @@ func _tela_final() -> void:
 # ------------------------------ Estacoes ------------------------------
 
 func _cama() -> void:
+	# Os dois avisos podem valer juntos; os dois vao na mesma pergunta.
+	var avisos: PackedStringArray = []
 	if Partida.tem_vara() and not Partida.cansado():
-		var i: int = await _caixa.escolher("", "{nome} ainda tem energia para pescar hoje. Dormir mesmo assim?", ["Dormir", "Ainda não"])
-		if i != 0:
-			return
-	elif not Partida.balde.is_empty():
-		var i: int = await _caixa.escolher("", "Ainda tem peixe no balde. Ninguém compra peixe de ontem! Dormir mesmo assim?", ["Dormir", "Ainda não"])
+		avisos.append("{nome} ainda tem energia para pescar hoje.")
+	if not Partida.balde.is_empty():
+		avisos.append("Ainda tem peixe no balde: melhor vender antes.")
+	if not avisos.is_empty():
+		var i: int = await _caixa.escolher("", " ".join(avisos) + " Dormir mesmo assim?", ["Dormir", "Ainda não"])
 		if i != 0:
 			return
 	Partida.dormir()
