@@ -10,8 +10,9 @@ Abra a pasta do projeto no Godot 4.7 e aperte F5. O jogo começa no hub da
 tela inicial (`scenes/Inicio.tscn`), onde se escolhe o nome do personagem e o
 do avô. Dali a história começa na casa do avô e se abre na rua da vila
 (`scenes/Vila.tscn`), que liga os quatro interiores, e no fim da rua está o
-cais (`scenes/Cais.tscn`). Pelo barco se chega ao pesqueiro escolhido no mapa —
-por enquanto só o açude (`scenes/Acude.tscn`).
+cais (`scenes/Cais.tscn`). Pelo barco se chega ao pesqueiro escolhido no mapa:
+o açude (`scenes/Acude.tscn`) desde o começo, e depois da casa a Foz e Vila
+(`scenes/Foz.tscn`) e o Arvoredo (`scenes/Arvoredo.tscn`).
 
 ## Controles
 
@@ -20,7 +21,9 @@ arremesso e solte para lançar, aperte de novo quando a boia chacoalhar para
 fisgar, e no minijogo segure para a zona verde subir e solte para ela descer.
 
 No hub, espaço fala com quem estiver perto. Nas listas, as setas para cima e
-para baixo escolhem e o ESC sai.
+para baixo escolhem e o ESC sai. A partir da Fase 2, a tecla C abre a coleção
+(`scripts/colecao.gd`): todas as espécies do jogo, com quantidade e recorde, e
+as que faltam só como sombra.
 
 ## Fase 1: o tutorial
 
@@ -43,10 +46,11 @@ perto (cenário em 8x, personagens com escala 2).
 O personagem (o nome sai da tela inicial; o padrão é Tiago) tem uma barra de
 energia (canto inferior esquerdo). Lançar gasta energia,
 mais quanto mais longe, e brigar com o peixe também. Quando ela acaba, ele cansa
-e volta para a Loja de Pesca, vende o balde para o Zeca, compra com o Seu Valdir e
-dorme, o que enche a energia de novo. A fase fecha quando a reforma da casa
-(R$ 800) está paga e um jundiá foi entregue à Dona Marlene. Reconstruir também
-a venda do avô (R$ 1200) é extra: libera depois da casa e conta na tela final. O dia 1 é o
+e volta para a vila, vende o balde para o Zeca, compra com o Seu Valdir e
+dorme, o que enche a energia de novo. A primeira parte fecha quando a reforma da casa
+(R$ 800) está paga e um jundiá foi entregue à Dona Marlene: na obra aparece o
+caderno do avô, a Dona Marlene devolve a vara dele (força 100) e a Foz entra no
+mapa. Reconstruir também a venda do avô (R$ 1200) é extra e conta na tela final. O dia 1 é o
 tutorial, só com tilápia; a partir do dia 2 entram as beliscadas falsas e o
 resto da loja.
 
@@ -54,6 +58,25 @@ As cinco espécies do açude, da beira para o fundo: **tilápia** (comum),
 **cascudo** (comum), **carpa** (incomum), **jundiá** (raro) e o **Jundiá
 Gigante**, o especial da fase, que só aparece a partir do dia 3, numa faixa
 estreita de força, e pesa de 7 a 10 kg.
+
+## Rio abaixo: Foz e Vila e Arvoredo
+
+Os dois pesqueiros do caderno usam a mesma pesca do açude, sem mecânica nova;
+a história fica em `scripts/pesqueiro.gd`.
+
+- **Foz e Vila**: o Velho Juca, que pescava com o avô, conversa na chegada.
+  Peixes: **tainha** e **bagre** (comuns), **corvina** e **linguado**
+  (incomuns) e **robalo** (raro). Com 3 espécies daqui, a boia do avô vem
+  enroscada na linha e o Arvoredo abre no mapa.
+- **Arvoredo**: mar aberto, as ilhas e o farol. Na chegada, o rádio conta que o
+  avô fisgou o Velho do Arvoredo e não cortou a linha. Peixes: **pampo** e
+  **anchova** (comuns), **olho-de-boi** (incomum) e **garoupa** (rara). Com 3
+  espécies daqui, o **Velho do Arvoredo**, um mero, pode morder no fundo
+  (força 80 ou mais). Pescado, o jogador escolhe devolvê-lo ao mar ou levá-lo
+  para a vila, e o jogo termina na tela final.
+
+Peixe de mar pesa mais que os do açude; `peso_luta_max` (em
+`scripts/dados/especie.gd`) limita o peso que o minijogo usa para a velocidade.
 
 ## Como funciona a pesca
 

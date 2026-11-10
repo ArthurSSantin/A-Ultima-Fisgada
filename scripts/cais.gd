@@ -68,6 +68,8 @@ func _process(delta: float) -> void:
 
 	if _perto_do_barco() and Input.is_action_just_pressed(ESPACO):
 		_embarcar()
+	elif Input.is_action_just_pressed(&"colecao"):
+		_abrir_colecao()
 
 	_atualizar_interface()
 
@@ -120,6 +122,12 @@ func _embarcar() -> void:
 	get_tree().change_scene_to_file.call_deferred(cena)
 
 
+func _abrir_colecao() -> void:
+	_ocupado = true
+	await Colecao.abrir_em(self)
+	_ocupado = false
+
+
 func _voltar_a_vila() -> void:
 	if _saindo:
 		return
@@ -130,7 +138,7 @@ func _voltar_a_vila() -> void:
 
 
 func _atualizar_interface() -> void:
-	_placar.text = "Dia %d   |   R$ %d   |   Balde: %d peixes" % [
+	_placar.text = "Dia %d   |   R$ %d   |   Balde: %d peixes   |   C: coleção" % [
 		Partida.dia, Partida.dinheiro, Partida.balde.size(),
 	]
 	if Partida.cansado():

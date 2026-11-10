@@ -127,6 +127,17 @@ func _process(delta: float) -> void:
 	_grupo_fim_do_dia()
 	_grupo_interface()
 
+	# A colecao abre parado, nunca no meio de um lancamento.
+	if estado == 0 and Input.is_action_just_pressed(&"colecao") and Partida.fase >= 2:
+		_abrir_colecao()
+
+
+
+func _abrir_colecao() -> void:
+	_saindo = true  # pausa o _process enquanto a tela esta aberta
+	await Colecao.abrir_em(self)
+	_saindo = false
+
 
 # ------------------------------- Movimento -------------------------------
 
@@ -487,6 +498,8 @@ func _grupo_interface() -> void:
 	_placar.text = "Dia %d   |   R$ %d   |   Balde: %d peixes" % [
 		Partida.dia, Partida.dinheiro, Partida.balde.size(),
 	]
+	if Partida.fase >= 2:
+		_placar.text += "   |   C: coleção"
 	var bonus: PackedStringArray = []
 	for item in Partida.estoque:
 		if Partida.estoque[item] > 0:

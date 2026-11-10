@@ -103,6 +103,9 @@ func _process(delta: float) -> void:
 
 	_atualizar_interface()
 	_prompt.visible = livre and _perto != null
+	if livre and Input.is_action_just_pressed(&"colecao"):
+		_abrir_colecao()
+		return
 	if not livre or _perto == null:
 		return
 	_prompt.text = Partida.nome_em("[ESPAÇO] " + ACOES[_perto.name])
@@ -136,6 +139,12 @@ func _interagir(estacao: StringName) -> void:
 	_ocupado = false
 	if Partida.fase_concluida() and not Partida.caderno_achado and not _concluida and abre_o_dia:
 		_fechar_fase()
+
+
+func _abrir_colecao() -> void:
+	_ocupado = true
+	await Colecao.abrir_em(self)
+	_ocupado = false
 
 
 # ------------------------------ Navegacao ------------------------------
@@ -547,9 +556,9 @@ func _escurecer() -> void:
 
 func _atualizar_interface() -> void:
 	var vara: String = Partida.VARAS[Partida.vara].nome if Partida.tem_vara() else "sem vara"
-	_hud.text = "Dia %d   |   R$ %d   |   Balde: %d peixes   |   %s" % [
+	_hud.text = Partida.nome_em("Dia %d   |   R$ %d   |   Balde: %d peixes   |   %s   |   C: coleção" % [
 		Partida.dia, Partida.dinheiro, Partida.balde.size(), vara,
-	]
+	])
 
 	var casa_pronta: bool = Partida.obra_paga(&"casa")
 	if _telhado:

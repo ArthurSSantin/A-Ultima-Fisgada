@@ -159,7 +159,14 @@ func _rodar() -> void:
 	await _apertar(&"espaco")      # entregar o jundia
 	await _fechar_dialogos(casa)
 	_conferir(partida.fase_concluida(), "fase concluida")
-	_conferir(casa._concluida, "tela final apareceu")
+	# A casa nao fecha mais o jogo: o caderno abre a Foz e a vo devolve a vara.
+	_conferir(partida.caderno_achado, "achou o caderno do avo na obra")
+	_conferir(partida.vara == &"vo", "a Dona Marlene devolveu a vara do avo")
+	_conferir(partida.forca_maxima() == 100.0, "a vara do avo lanca ate 100")
+	_conferir(partida.local_liberado(&"foz") and not partida.local_liberado(&"arvoredo"),
+		"o caderno abre a Foz, ainda nao o Arvoredo")
+	_conferir(not casa._concluida, "o jogo segue depois da casa")
+	_conferir(casa.get_node("UI/Objetivo").text.contains("Foz"), "os objetivos passam a ser o caderno")
 
 	# Sorteio: com a fibra no dia 3 aparecem carpa e jundia
 	partida.dia = 3
@@ -176,6 +183,74 @@ func _rodar() -> void:
 		vistos[e.nome] = vistos.get(e.nome, 0) + 1
 	print("sorteio com o bambu, dia 3: ", vistos)
 	_conferir(not vistos.has("Carpa") and not vistos.has("Jundiá"), "bambu nao alcanca carpa nem jundia")
+
+	# Colecao: todas as especies do jogo, de todas as fases
+	var tela: Node = load("res://scripts/colecao.gd").new()
+	root.add_child(tela)
+	await _quadros(2)
+	var total: int = partida.todas_especies().size()
+	_conferir(total == 19, "a colecao tem as 19 especies (tem %d)" % total)
+	_conferir(_tem_texto(tela, "de %d espécies" % total), "a colecao mostra a contagem")
+	tela.queue_free()
+	await _quadros(2)
+
+	# Foz e Vila: o Velho Juca na chegada e a boia com 3 especies daqui
+	partida.energia = partida.ENERGIA_MAX
+	partida.local = &"foz"
+	change_scene_to_file("res://scenes/Foz.tscn")
+	await _quadros(6)
+	var foz: Node = current_scene
+	_conferir(foz.name == "Foz", "o barco chega na Foz")
+	_conferir(foz._caixa.aberta and partida.juca_conhecido, "o Velho Juca conversa na chegada")
+	await _fechar_dialogos(foz)
+	vistos.clear()
+	for i in 3000:
+		var e: Especie = partida.sortear_especie(randf_range(6.0, 100.0), false)
+		vistos[e.nome] = vistos.get(e.nome, 0) + 1
+	print("sorteio na foz: ", vistos)
+	for nome in ["Tainha", "Bagre", "Corvina", "Linguado", "Robalo"]:
+		_conferir(vistos.has(nome), "a foz tem " + nome)
+	_conferir(not vistos.has("Tilápia") and not vistos.has("Jundiá Gigante"), "peixe do acude nao aparece na foz")
+	partida.registrar_captura(partida.especie(&"Tainha"), 0.8)
+	partida.registrar_captura(partida.especie(&"Bagre"), 1.2)
+	_conferir(not partida.boia_achada, "com 2 especies a boia ainda nao veio")
+	await _pescar(foz, &"Corvina", 2.0)
+	await _fechar_dialogos(foz)
+	_conferir(partida.boia_achada and partida.local_liberado(&"arvoredo"), "a terceira especie traz a boia e abre o Arvoredo")
+
+	# Arvoredo: o radio na chegada e o Velho do Arvoredo no fim
+	partida.local = &"arvoredo"
+	change_scene_to_file("res://scenes/Arvoredo.tscn")
+	await _quadros(6)
+	var ilha: Node = current_scene
+	_conferir(ilha.name == "Arvoredo", "o barco chega no Arvoredo")
+	_conferir(ilha._caixa.aberta and partida.radio_ouvido, "o radio toca na chegada")
+	await _fechar_dialogos(ilha)
+	vistos.clear()
+	for i in 3000:
+		var e: Especie = partida.sortear_especie(randf_range(6.0, 100.0), false)
+		vistos[e.nome] = vistos.get(e.nome, 0) + 1
+	print("sorteio no arvoredo: ", vistos)
+	for nome in ["Pampo", "Anchova", "Olho-de-boi", "Garoupa"]:
+		_conferir(vistos.has(nome), "o Arvoredo tem " + nome)
+	_conferir(not vistos.has(partida.NOME_VELHO), "o Velho nao aparece antes de conhecer a ilha")
+	partida.registrar_captura(partida.especie(&"Pampo"), 0.8)
+	partida.registrar_captura(partida.especie(&"Anchova"), 2.0)
+	partida.registrar_captura(partida.especie(&"Olho-de-boi"), 6.0)
+	vistos.clear()
+	for i in 500:
+		var e: Especie = partida.sortear_especie(90.0, false)
+		vistos[e.nome] = vistos.get(e.nome, 0) + 1
+	_conferir(vistos.has(partida.NOME_VELHO), "conhecendo a ilha, o Velho morde no fundo")
+	partida.balde.clear()
+	await _pescar(ilha, &"Velho do Arvoredo", 160.0)
+	await _fechar_dialogos(ilha)   # ESC na escolha: devolve ao mar
+	_conferir(partida.velho_pescado and partida.velho_devolvido, "pescou e devolveu o Velho do Arvoredo")
+	_conferir(partida.balde.is_empty(), "o Velho nao vai para o balde")
+	var final: bool = false
+	for filho in ilha.get_children():
+		final = final or (filho.get_script() != null and filho.get_script().resource_path == "res://scripts/tela_final.gd")
+	_conferir(final, "a tela final aparece depois do Velho")
 
 	print("FALHAS ", _falhas)
 	quit(1 if _falhas > 0 else 0)
@@ -198,6 +273,33 @@ func _ir_e_apertar(cena: Node, estacao: String) -> void:
 	cena.get_node("Player").position.x = cena.get_node("Estacoes/" + estacao).position.x
 	await _quadros(2)
 	await _apertar(&"espaco")
+
+
+## Um lancamento ate a captura, trocando o peixe sorteado pelo que o teste
+## quer. Espera a historia do pesqueiro abrir a conversa depois da captura.
+func _pescar(cena: Node, nome_especie: StringName, peso: float) -> void:
+	cena.get_node("Jogo/Player").position.x = 572.0
+	await _quadros(2)
+	Input.action_press(&"espaco")
+	await _quadros(20)
+	Input.action_release(&"espaco")
+	await _esperar_estado(cena, 3, 10.0)
+	cena.especie = root.get_node("Partida").especie(nome_especie)
+	cena.peso_peixe = peso
+	await _apertar(&"espaco")
+	cena.minijogo.progresso = 99.9
+	cena.minijogo.peixe_pos = cena.minijogo.zona_pos + 10.0
+	await _esperar_estado(cena, 5, 5.0)
+	await _quadros(100)
+
+
+func _tem_texto(no: Node, trecho: String) -> bool:
+	if no is Label and no.text.contains(trecho):
+		return true
+	for filho in no.get_children():
+		if _tem_texto(filho, trecho):
+			return true
+	return false
 
 
 func _esperar_estado(cena: Node, estado: int, limite: float) -> void:
