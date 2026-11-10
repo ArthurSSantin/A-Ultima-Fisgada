@@ -15,12 +15,15 @@ func _ready() -> void:
 		$Player.flip_h = true
 		$Vo.position.x = 820.0
 	super._ready()
+	if Partida.volta_do_rio:
+		add_child(Temporal.new())  # o temporal ja passou pela estrada e ainda pinga
 
 
 func _ao_entrar() -> void:
 	await escurecer(false, 0.8)
 	if Partida.volta_do_rio:
 		Partida.concluir(&"cais")
+		await falar("Vô", ["Ainda pingando. O grosso do temporal passou lá pro lado da estrada."])
 		await falar("Vô", ["Desamarra o Alexandre. Ele já tá com fome também."])
 	else:
 		await falar("Vô", ["Amarra o Alexandre ali no moirão. Nó bem dado, senão ele volta pra casa sozinho."])

@@ -73,6 +73,8 @@ func _rodar() -> void:
 	Partida.concluir(&"casa")
 	await get_tree().create_timer(0.5).timeout
 
+	await _caixa.falar("Vó", ["Olha o estado de vocês! Ensopados. Pegaram o temporal na estrada?"])
+	await _caixa.falar("Vô", ["Pegamos. O Alexandre pulou árvore que nem cavalo de rodeio."])
 	await _caixa.falar("Vó", ["E aí, pegaram alguma coisa?"])
 	await _caixa.falar("{nome}", ["Peguei um monte, vó! Um jundiá com o rabo comido, e uma joaninha, e..."])
 	await _caixa.falar("Vô", ["Pegou mais que eu. Vou me aposentar."])

@@ -181,9 +181,13 @@ func _rodar() -> void:
 	_conferir(estrada.name == "Estrada" and estrada.get_node("Fundo").texture.resource_path.ends_with("manha.png"),
 		"montou de novo e pegou a estrada de manha")
 	await _fechar_falas(estrada)
-	await _cavalgar(&"mover_esquerda", "Fim")
+	var corrida: Dictionary = await _cavalgar_com_troncos(estrada)
+	_conferir(corrida.largou, "o relampago assusta o Alexandre e ele dispara")
+	_conferir(corrida.batidas == 1, "bater no tronco so faz o cavalo parar e tentar de novo (%d batida)" % corrida.batidas)
+	_conferir(corrida.pulos == 5, "pulou os 5 troncos (%d)" % corrida.pulos)
+	_conferir(not corrida.falou_correndo, "nenhuma fala no meio da corrida")
 	_conferir(current_scene != null and current_scene.name == "Fim", "voltou a cavalo pra casa")
-	_conferir(partida.diario.size() == 2, "pegou as bergamotas do Seu Arlindo")
+	_conferir(partida.diario.size() == 3, "pegou as bergamotas e passou pelos troncos")
 	await _quadros(320)
 	_conferir(partida.feito(&"casa"), "chegou em casa com os cavalos")
 	await _passar_ate("CasaAvo", 90.0)
@@ -309,6 +313,41 @@ func _cavalgar(seta: StringName, destino: String) -> void:
 			gasto += 1.0 / 60.0
 	Input.action_release(seta)
 	await _quadros(3)
+
+
+## A volta pela estrada depois do temporal: segura a seta e pula os troncos.
+## No primeiro ele nao pula de proposito, para conferir que bater nao perde
+## nada. Devolve o que aconteceu na corrida.
+func _cavalgar_com_troncos(estrada: Node) -> Dictionary:
+	var r: Dictionary = {"largou": false, "batidas": 0, "pulos": 0, "falou_correndo": false}
+	var gasto: float = 0.0
+	Input.action_press(&"mover_esquerda")
+	while gasto < 90.0 and not (current_scene and current_scene.name == "Fim"):
+		var c: Node = current_scene
+		var correndo: bool = c == estrada and estrada._corrida == 1
+		if correndo:
+			r.largou = true
+			r.batidas = estrada._batidas
+			r.pulos = estrada._passados
+			r.falou_correndo = r.falou_correndo or estrada._caixa.aberta
+			if estrada._passados < estrada._troncos.size() and estrada._batidas >= 1 \
+					and estrada._pulo <= 0.0 and estrada._tropeco <= 0.0:
+				var dx: float = estrada._player.position.x - estrada._troncos[estrada._passados].position.x
+				if dx > 70.0 and dx < 130.0:
+					await _apertar(&"espaco")
+					gasto += 4.0 / 60.0
+					continue
+		elif c == estrada and estrada._corrida == 2:
+			r.pulos = estrada._passados
+		if c and c.get(&"_caixa") and c._caixa.aberta and not c._caixa._modo_escolha:
+			await _apertar(&"espaco")
+			gasto += 4.0 / 60.0
+		else:
+			await process_frame
+			gasto += 1.0 / 60.0
+	Input.action_release(&"mover_esquerda")
+	await _quadros(3)
+	return r
 
 
 ## Um lance inteiro: lanca, espera morder, fisga, ganha o minijogo e passa as

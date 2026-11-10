@@ -259,7 +259,7 @@ func _fim_da_pescaria() -> void:
 	if i == 1:
 		_saindo = true
 		Partida.volta_do_rio = true
-		await _caixa.falar("Vô", ["Bora."])
+		await _caixa.falar("Vô", ["Bora. Olha o céu pro lado de casa, tá fechando. Choveu feio lá."])
 		get_tree().change_scene_to_file.call_deferred(CENA_SUBIDA)
 	elif _perguntou_casa:
 		await _caixa.falar("Vô", ["Só mais um, então."])
