@@ -10,10 +10,10 @@
 [ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="r8"]
 [ext_resource type="Script" path="res://scripts/tutorial/acompanhante.gd" id="r9"]
 [ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/vo.png" id="r10"]
+[ext_resource type="FontFile" path="res://assets/fontes/Jersey10.ttf" id="fonte_retro"]
 
-[sub_resource type="SystemFont" id="negrito"]
-font_names = PackedStringArray("Arial")
-font_weight = 700
+[sub_resource type="FontVariation" id="negrito"]
+base_font = ExtResource("fonte_retro")
 
 [node name="CaisRio" type="Node2D"]
 script = ExtResource("r1")
@@ -41,7 +41,7 @@ offset_right = 130.0
 offset_bottom = -128
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
+theme_override_constants/outline_size = 2
 theme_override_fonts/font = SubResource("negrito")
 theme_override_font_sizes/font_size = 15
 text = "Alexandre"
@@ -63,7 +63,7 @@ offset_right = 130.0
 offset_bottom = -140
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
+theme_override_constants/outline_size = 2
 theme_override_fonts/font = SubResource("negrito")
 theme_override_font_sizes/font_size = 15
 text = "Apollo"
@@ -85,7 +85,7 @@ offset_right = 130.0
 offset_bottom = -116
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
+theme_override_constants/outline_size = 2
 theme_override_fonts/font = SubResource("negrito")
 theme_override_font_sizes/font_size = 15
 text = "Bote do vô"
@@ -122,7 +122,7 @@ offset_right = 940.0
 offset_bottom = 640.0
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 6
+theme_override_constants/outline_size = 3
 theme_override_fonts/font = SubResource("negrito")
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
@@ -134,7 +134,7 @@ offset_right = 1260.0
 offset_bottom = 80.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
-theme_override_constants/outline_size = 6
+theme_override_constants/outline_size = 3
 theme_override_fonts/font = SubResource("negrito")
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1

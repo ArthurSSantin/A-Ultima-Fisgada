@@ -9,6 +9,7 @@ Node, Godot 4.7 e Python 3.
 | `godot/validar_minijogo.gd`    | Roda um bot no minijogo de verdade (cena Acude) e mede a taxa de captura |
 | `godot/verificar_dados.gd`     | Confere `dados/especies/` contra as regras de design                       |
 | `godot/testar_fluxo.gd`        | Joga a Fase 1 de ponta a ponta com o teclado simulado (hub, loja, cais, venda, sono, fechamento) |
+| `godot/testar_save.gd`         | Save e load da Fase 2, menu inicial, mapa de continuar, pausa e configurações (em arquivos próprios, sem mexer no save de quem joga) |
 | `comparar.py`                  | Teste estatístico entre dois resultados (Godot × Node, ou antes × depois)  |
 
 ## Comandos
@@ -30,6 +31,9 @@ Node, Godot 4.7 e Python 3.
 
     # fluxo da fase inteira; sai com código 1 se algo quebrar
     godot --headless --fixed-fps 60 --path . -s tools/harness/godot/testar_fluxo.gd
+
+    # save, menu, pausa e configurações
+    godot --headless --fixed-fps 60 --path . -s tools/harness/godot/testar_save.gd
 
 O `--validar` do harness usa o cenário "ajustada", que é o que o jogo usa. Para
 comparar com o antigo: `node tools/harness/harness.mjs 3000 --validar padrao proposta`.

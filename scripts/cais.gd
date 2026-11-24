@@ -38,6 +38,7 @@ func _ready() -> void:
 	_caixa = CaixaDialogo.new()
 	add_child(_caixa)
 	$UI.add_child(BarraEnergia.new())
+	Hud.vestir(_placar)
 	_player.position.x = Partida.cais_x
 	_visual.na_mao = false
 	Partida.cais_visitado = true
@@ -149,3 +150,4 @@ func _atualizar_interface() -> void:
 		_dica.text = "Ande até o barco, na ponta do cais, e aperte ESPAÇO."
 	else:
 		_dica.text = ""
+	Hud.empilhar([_placar, _dica])

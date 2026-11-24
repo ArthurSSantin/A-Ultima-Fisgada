@@ -188,6 +188,38 @@ const NOME_VELHO: String = "Velho do Arvoredo"
 ## Ordem dos pesqueiros na tela de colecao; o rio e o do tutorial.
 const ORDEM_COLECAO: Array[StringName] = [&"rio", &"acude", &"foz", &"arvoredo"]
 
+## O save da Fase 2. A Fase 1 e curta e nao salva: quem sai no meio dela
+## comeca de novo pelo quarto.
+const ARQUIVO_SAVE: String = "user://save.json"
+const VERSAO_SAVE: int = 1
+
+## Lugares do mapa do menu inicial. So aparecem os que o neto ja visitou na
+## partida salva; escolher um leva direto para a cena dele. Os pesqueiros usam
+## o mesmo "pino" do mapa do barco.
+const LUGARES: Dictionary = {
+	&"vila": {
+		"nome": "Vila do {avo}",
+		"cena": "res://scenes/Vila.tscn",
+		"descricao": "A rua da vila, com a casa do {avo}, a venda, a pescaria do Zeca, o restaurante e o cais.",
+		"pino": Vector2(0.17, 0.66),
+	},
+	&"acude": LOCAIS[&"acude"],
+	&"foz": LOCAIS[&"foz"],
+	&"arvoredo": LOCAIS[&"arvoredo"],
+}
+## Qual lugar do mapa cada cena da Fase 2 marca como visitado.
+const LUGAR_DA_CENA: Dictionary = {
+	"res://scenes/Vila.tscn": &"vila",
+	"res://scenes/CasaAvo.tscn": &"vila",
+	"res://scenes/Venda.tscn": &"vila",
+	"res://scenes/Pescaria.tscn": &"vila",
+	"res://scenes/Restaurante.tscn": &"vila",
+	"res://scenes/Cais.tscn": &"vila",
+	"res://scenes/Acude.tscn": &"acude",
+	"res://scenes/Foz.tscn": &"foz",
+	"res://scenes/Arvoredo.tscn": &"arvoredo",
+}
+
 var nome: String = NOME_PADRAO
 var nome_avo: String = NOME_AVO_PADRAO
 var dinheiro: int = DINHEIRO_INICIAL
@@ -248,10 +280,38 @@ var inicio_ms: int = 0
 
 var especies: Array[Especie] = []
 
+## Lugares da Fase 2 por onde o neto ja passou; so eles aparecem no mapa do
+## menu inicial (ver LUGARES).
+var lugares_visitados: Array[StringName] = []
+## Onde o save fica. Os testes trocam por outro arquivo.
+var arquivo_save: String = ARQUIVO_SAVE
+var _cena_atual: Node = null
+
 
 func _ready() -> void:
 	inicio_ms = Time.get_ticks_msec()
 	carregar_especies()
+
+
+## Cada cena da Fase 2 que abre conta como visita e salva o jogo. Entrar numa
+## cena nunca acontece no meio do minijogo, entao o save fica sempre inteiro.
+func _process(_delta: float) -> void:
+	var cena: Node = get_tree().current_scene
+	if cena == _cena_atual or cena == null:
+		return
+	_cena_atual = cena
+	if fase < 2:
+		return
+	var lugar: StringName = LUGAR_DA_CENA.get(cena.scene_file_path, &"")
+	if not lugar.is_empty():
+		visitar(lugar)
+		salvar()
+
+
+## Fechar a janela no meio da Fase 2 nao perde nada.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and fase >= 2:
+		salvar()
 
 
 ## Especies da fase atual (cada .tres diz a fase dele).
@@ -283,6 +343,7 @@ func iniciar_fase(nova: int) -> void:
 	relacao = {&"zeca": 0, &"ivone": 0}
 	prologo_visto = false
 	_zerar_historia()
+	lugares_visitados.clear()
 	local = &"acude"
 	hub_x = 640.0
 	vila_x = 400.0
@@ -644,6 +705,7 @@ func comecar_tutorial() -> void:
 	relacao = {&"zeca": 0, &"ivone": 0}
 	prologo_visto = false
 	_zerar_historia()
+	lugares_visitados.clear()
 	objetivos_feitos.clear()
 	volta_do_rio = false
 	tomou_cafe = false
@@ -744,6 +806,7 @@ func pagar_obra(id: StringName) -> bool:
 		return false
 	_somar_dinheiro(-obra.preco)
 	obras_pagas.append(id)
+	salvar()
 	return true
 
 
@@ -775,6 +838,7 @@ func fase_concluida() -> bool:
 func dormir() -> void:
 	dia += 1
 	energia = ENERGIA_MAX
+	salvar()
 
 
 func minutos_jogados() -> float:
@@ -784,3 +848,176 @@ func minutos_jogados() -> float:
 func _somar_dinheiro(valor: int) -> void:
 	dinheiro += valor
 	dinheiro_mudou.emit(dinheiro)
+
+
+# ------------------------------- Save -------------------------------
+
+func visitar(lugar: StringName) -> void:
+	if not lugar in lugares_visitados:
+		lugares_visitados.append(lugar)
+
+
+## Lugares do mapa do menu por onde o neto ja passou, cada um com o id junto,
+## na ordem de LUGARES.
+func lugares_abertos() -> Array[Dictionary]:
+	var abertos: Array[Dictionary] = []
+	for id: StringName in LUGARES:
+		if id in lugares_visitados:
+			var item: Dictionary = LUGARES[id].duplicate()
+			item["id"] = id
+			abertos.append(item)
+	return abertos
+
+
+## Prepara a partida para entrar num lugar escolhido no mapa do menu: o neto
+## chega pela rua (ou pelo barco, nos pesqueiros) e nao no meio do caminho.
+func entrar_em(lugar: StringName) -> String:
+	hub_x = 640.0
+	vila_x = 400.0
+	cais_x = 150.0
+	if LOCAIS.has(lugar):
+		local = lugar
+	return LUGARES[lugar].cena
+
+
+func tem_save() -> bool:
+	return FileAccess.file_exists(arquivo_save)
+
+
+## Os testes ligam Engine.set_meta(&"sem_save", true) para nao mexer no save de
+## quem esta jogando na mesma maquina (ou trocam arquivo_save).
+func _save_desligado() -> bool:
+	return Engine.get_meta(&"sem_save", false)
+
+
+## Grava a partida em JSON. So a Fase 2 salva.
+func salvar() -> bool:
+	if fase < 2 or _save_desligado():
+		return false
+	var arquivo: FileAccess = FileAccess.open(arquivo_save, FileAccess.WRITE)
+	if arquivo == null:
+		push_warning("Nao deu para salvar: %s" % error_string(FileAccess.get_open_error()))
+		return false
+	arquivo.store_string(JSON.stringify(para_dicionario(), "\t"))
+	return true
+
+
+## Le o save, se houver. Devolve false quando nao tem ou quando o arquivo nao
+## presta, e nesse caso a partida fica como estava.
+func carregar() -> bool:
+	if not tem_save():
+		return false
+	var dados: Variant = JSON.parse_string(FileAccess.get_file_as_string(arquivo_save))
+	if not dados is Dictionary or int(dados.get("versao", 0)) != VERSAO_SAVE:
+		push_warning("Save ilegivel ou de outra versao: %s" % arquivo_save)
+		return false
+	de_dicionario(dados)
+	return true
+
+
+func apagar_save() -> void:
+	if tem_save():
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(arquivo_save))
+
+
+func para_dicionario() -> Dictionary:
+	var peixes: Array = []
+	for peixe in balde:
+		peixes.append({"especie": peixe.especie.nome, "peso": peixe.peso, "valor": peixe.valor})
+	return {
+		"versao": VERSAO_SAVE,
+		"nome": nome,
+		"nome_avo": nome_avo,
+		"fase": fase,
+		"dia": dia,
+		"energia": energia,
+		"dinheiro": dinheiro,
+		"vara": vara,
+		"varas_compradas": varas_compradas,
+		"estoque": estoque,
+		"obras_pagas": obras_pagas,
+		"jundia_entregue": jundia_entregue,
+		"relacao": relacao,
+		"prologo_visto": prologo_visto,
+		"caderno_achado": caderno_achado,
+		"juca_conhecido": juca_conhecido,
+		"boia_achada": boia_achada,
+		"radio_ouvido": radio_ouvido,
+		"velho_pescado": velho_pescado,
+		"velho_devolvido": velho_devolvido,
+		"tomou_cafe": tomou_cafe,
+		"teimoso_solto": teimoso_solto,
+		"teimoso_reencontrado": teimoso_reencontrado,
+		"diario": diario,
+		"cais_visitado": cais_visitado,
+		"local": local,
+		"balde": peixes,
+		"colecao": colecao,
+		"total_peixes": total_peixes,
+		"total_vendido": total_vendido,
+		"ms_jogados": Time.get_ticks_msec() - inicio_ms,
+		"lugares_visitados": lugares_visitados,
+	}
+
+
+func de_dicionario(d: Dictionary) -> void:
+	nome = str(d.get("nome", NOME_PADRAO))
+	nome_avo = str(d.get("nome_avo", NOME_AVO_PADRAO))
+	fase = int(d.get("fase", 2))
+	carregar_especies()
+	dia = int(d.get("dia", 1))
+	energia = float(d.get("energia", ENERGIA_MAX))
+	dinheiro = int(d.get("dinheiro", DINHEIRO_INICIAL))
+	vara = StringName(d.get("vara", ""))
+	varas_compradas = _nomes(d.get("varas_compradas", []))
+	estoque = {&"camarao": 0, &"cafezinho": 0, &"modao": 0}
+	for item: String in d.get("estoque", {}):
+		estoque[StringName(item)] = int(d.estoque[item])
+	obras_pagas = _nomes(d.get("obras_pagas", []))
+	jundia_entregue = bool(d.get("jundia_entregue", false))
+	relacao = {&"zeca": 0, &"ivone": 0}
+	for comprador: String in d.get("relacao", {}):
+		relacao[StringName(comprador)] = int(d.relacao[comprador])
+	prologo_visto = bool(d.get("prologo_visto", true))
+	caderno_achado = bool(d.get("caderno_achado", false))
+	juca_conhecido = bool(d.get("juca_conhecido", false))
+	boia_achada = bool(d.get("boia_achada", false))
+	radio_ouvido = bool(d.get("radio_ouvido", false))
+	velho_pescado = bool(d.get("velho_pescado", false))
+	velho_devolvido = bool(d.get("velho_devolvido", false))
+	tomou_cafe = bool(d.get("tomou_cafe", false))
+	teimoso_solto = bool(d.get("teimoso_solto", false))
+	teimoso_reencontrado = bool(d.get("teimoso_reencontrado", false))
+	diario.clear()
+	for linha in d.get("diario", []):
+		diario.append(str(linha))
+	cais_visitado = bool(d.get("cais_visitado", false))
+	local = StringName(d.get("local", "acude"))
+	balde.clear()
+	for peixe: Dictionary in d.get("balde", []):
+		var e: Especie = especie(StringName(peixe.get("especie", "")))
+		if e:
+			balde.append({"especie": e, "peso": float(peixe.peso), "valor": int(peixe.valor)})
+	colecao = {}
+	for nome_especie: String in d.get("colecao", {}):
+		var registro: Dictionary = d.colecao[nome_especie]
+		colecao[nome_especie] = {
+			"quantidade": int(registro.get("quantidade", 0)),
+			"recorde_kg": float(registro.get("recorde_kg", 0.0)),
+		}
+	total_peixes = int(d.get("total_peixes", 0))
+	total_vendido = int(d.get("total_vendido", 0))
+	inicio_ms = Time.get_ticks_msec() - int(d.get("ms_jogados", 0))
+	lugares_visitados = _nomes(d.get("lugares_visitados", []))
+	objetivos_feitos.clear()
+	volta_do_rio = false
+	hub_x = 640.0
+	vila_x = 400.0
+	cais_x = 150.0
+
+
+static func _nomes(lista: Array) -> Array[StringName]:
+	var nomes: Array[StringName] = []
+	for item in lista:
+		nomes.append(StringName(item))
+	return nomes

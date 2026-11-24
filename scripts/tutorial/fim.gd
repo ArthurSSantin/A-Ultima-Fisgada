@@ -37,13 +37,7 @@ func _rodar() -> void:
 	_vo.visible = false
 	_alexandre_parado.visible = false
 	_apollo_parado.visible = false
-	var trote := AudioStreamPlayer.new()
-	var faixa: AudioStreamMP3 = load("res://assets/sons/cavalo_trote.mp3")
-	faixa.loop = true
-	trote.stream = faixa
-	trote.volume_db = -8.0
-	add_child(trote)
-	trote.play()
+	var trote: AudioStreamPlayer = Som.laco("cavalo_trote", self)
 	var chegada := create_tween()
 	chegada.tween_property(tela, "color:a", 0.0, 1.0)
 	chegada.parallel().tween_property(_alexandre, "position:x", 680.0, 3.6)
@@ -54,14 +48,9 @@ func _rodar() -> void:
 		await get_tree().create_timer(0.14).timeout
 	_alexandre.frame = 0
 	_apollo.frame = 0
-	await create_tween().tween_property(trote, "volume_db", -60.0, 0.4).finished
-	trote.queue_free()
-	var bufo := AudioStreamPlayer.new()
-	bufo.stream = load("res://assets/sons/cavalo_bufo.mp3")
-	bufo.volume_db = -3.0
-	add_child(bufo)
-	bufo.play(7.75)
-	get_tree().create_timer(0.9).timeout.connect(bufo.queue_free)
+	Som.soltar(trote)
+	await get_tree().create_timer(0.4).timeout
+	Som.tocar("cavalo_bufo")
 	await get_tree().create_timer(0.4).timeout
 	# apeiam: os cavalos ficam parados na cerca e os dois descem do lado
 	_alexandre.visible = false
@@ -155,8 +144,7 @@ func _fim_do_tutorial(camada: CanvasLayer) -> void:
 
 
 func _rotulo(texto: String, tamanho: int, cor: Color, negrito: bool = false) -> Label:
-	var fonte := SystemFont.new()
-	fonte.font_names = PackedStringArray(["Arial"])
+	var fonte: Font = Fontes.normal()
 	if negrito:
 		fonte.font_weight = 700
 	var r := Label.new()

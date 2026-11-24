@@ -70,14 +70,12 @@ func _comer() -> void:
 	mesa.modulate.a = 0.0
 	camada.add_child(mesa)
 	var aviso := Label.new()
-	var fonte := SystemFont.new()
-	fonte.font_names = PackedStringArray(["Arial"])
-	fonte.font_weight = 700
+	var fonte: Font = Fontes.negrito()
 	aviso.add_theme_font_override("font", fonte)
 	aviso.add_theme_font_size_override("font_size", 26)
 	aviso.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
 	aviso.add_theme_color_override("font_outline_color", Color(0.2, 0.12, 0.07))
-	aviso.add_theme_constant_override("outline_size", 7)
+	aviso.add_theme_constant_override("outline_size", 3)
 	aviso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	aviso.size = Vector2(1280, 50)
 	aviso.position = Vector2(0, 640)

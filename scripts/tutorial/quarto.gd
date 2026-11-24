@@ -76,8 +76,7 @@ func _abertura_no_escuro() -> void:
 	piscar.tween_method(_abrir_olho, 0.6, 1.0, 1.2)
 	piscar.parallel().tween_property(nitido, "modulate:a", 1.0, 1.4)
 	var legenda := Label.new()
-	var fonte := SystemFont.new()
-	fonte.font_names = PackedStringArray(["Arial"])
+	var fonte: Font = Fontes.normal()
 	legenda.add_theme_font_override("font", fonte)
 	legenda.add_theme_font_size_override("font_size", 26)
 	legenda.add_theme_color_override("font_color", Color(0.95, 0.92, 0.85))
@@ -97,7 +96,7 @@ func _abertura_no_escuro() -> void:
 		await esperar(passo[0] - agora)
 		agora = passo[0]
 		if not String(passo[1]).is_empty():
-			tocar(passo[1])
+			som(passo[1])
 		if not String(passo[3]).is_empty():
 			var quem: String = Partida.nome_em(passo[2])
 			legenda.text = Partida.nome_em("%s: %s" % [quem, passo[3]])

@@ -65,9 +65,15 @@ var _bonus: Dictionary = {}
 ## Este lancamento tem beliscada falsa antes da mordida, e ela esta acontecendo.
 var _tem_falsa: bool = false
 var _beliscando: bool = false
+## Tempo ate o proximo "tec" da carretilha enquanto o jogador recolhe.
+var _carretilha: float = 0.0
 ## Numero do lancamento, para uma espera antiga nao mexer no lancamento seguinte.
 var _lance: int = 0
 var _saindo: bool = false
+## O jogador comecou a carregar o arremesso com um toque novo no ESPACO. Sem
+## isso, o ESPACO que fecha um dialogo (ou que vinha segurado do minijogo) ja
+## carregava a forca e lancava a vara sem querer.
+var _carregando: bool = false
 
 ## Equivale a expressao System.time do C3: segundos desde o inicio do layout.
 var _tempo: float = 0.0
@@ -100,17 +106,19 @@ func _ready() -> void:
 	_caixa = CaixaDialogo.new()
 	add_child(_caixa)
 	$UI.add_child(BarraEnergia.new())
+	Hud.vestir(_placar)
 	minijogo.zona_altura = Partida.ZONA_NORMAL
 	C3.set_altura(_zona_captura, minijogo.zona_altura)
 	# Marca na barra ate onde a vara deixa a forca chegar.
 	_limite_forca.position.y = TRILHA_BASE_Y - Partida.forca_maxima() / 100.0 * 240.0
 	_aviso.text = ""
 	Partida.cais_visitado = true
-	_ambiente()
 
 
 func _process(delta: float) -> void:
 	if _caixa.ocupada() or _saindo:
+		_carregando = false
+		forca = 0.0 if estado == 0 else forca
 		return
 
 	_quadro += 1
@@ -162,7 +170,7 @@ func _grupo_movimento() -> void:
 		_mover.enabled = false
 
 	# Carregando o arremesso na beira: trava o Player no lugar
-	if Input.is_action_pressed(ESPACO) and estado == 0 and perto_agua:
+	if _carregando and estado == 0 and perto_agua:
 		_mover.enabled = false
 
 	# Seta esquerda pressionada
@@ -185,8 +193,14 @@ func _grupo_lancamento(delta: float) -> void:
 	var maxima: float = Partida.forca_maxima()
 	var pode_lancar: bool = not Partida.cansado()
 
+	# So um toque novo no ESPACO, ja parado na beira, comeca a carregar.
+	if Input.is_action_just_pressed(ESPACO) and estado == 0 and perto_agua and pode_lancar:
+		_carregando = true
+	if not Input.is_action_pressed(ESPACO) and not Input.is_action_just_released(ESPACO):
+		_carregando = false
+
 	# Forca vai e volta enquanto segura ESPACO
-	if Input.is_action_pressed(ESPACO) and estado == 0 and perto_agua and pode_lancar:
+	if _carregando and Input.is_action_pressed(ESPACO) and estado == 0 and perto_agua and pode_lancar:
 		forca = clampf(forca + 90.0 * delta * direcao_forca, 0.0, maxima)
 
 		if forca >= maxima:
@@ -196,7 +210,7 @@ func _grupo_lancamento(delta: float) -> void:
 			direcao_forca = 1.0
 
 	# Soltou ESPACO com forca suficiente: arremessa
-	if Input.is_action_just_released(ESPACO) and estado == 0 and perto_agua and forca > 5.0:
+	if _carregando and Input.is_action_just_released(ESPACO) and estado == 0 and perto_agua and forca > 5.0:
 		estado = 1
 
 	# Soltou ESPACO sem arremessar: zera a barra de forca. O evento acima ja
@@ -205,6 +219,7 @@ func _grupo_lancamento(delta: float) -> void:
 	if Input.is_action_just_released(ESPACO) and estado == 0:
 		forca = 0.0
 		direcao_forca = 1.0
+		_carregando = false
 
 	# Entrou no Estado 1
 	if estado == 1 and _gatilho_unico(&"lancamento"):
@@ -223,7 +238,7 @@ func _grupo_lancamento(delta: float) -> void:
 		_linha.visible = true
 		_peixe.texture = SOMBRA_PEIXE
 		_aviso.text = ""
-		_som("lancamento")
+		Som.tocar("lancamento")
 		_depois_do_lancamento()
 
 
@@ -250,7 +265,7 @@ func _depois_do_lancamento() -> void:
 	await _esperar(0.5)
 	if estado == 1:
 		estado = 2
-		_som("isca_agua", -4.0)
+		Som.tocar("isca_agua")
 
 
 # --------------------------- Espera e fisgada ---------------------------
@@ -296,7 +311,7 @@ func _grupo_espera_e_fisgada(delta: float) -> void:
 	# Fisgou dentro da janela: comeca o minijogo
 	if Input.is_action_just_pressed(ESPACO) and estado == 3:
 		estado = 4
-		_som("fisgada")
+		Som.tocar("fisgada")
 		_peixe.flip_h = false  # foge para o fundo do açude
 		minijogo.iniciar(
 			especie.peso_de_luta(peso_peixe) if especie else peso_peixe,
@@ -312,6 +327,7 @@ func _depois_da_espera(segundos: float) -> void:
 		if estado != 2 or lance != _lance:
 			return
 		_beliscando = true
+		Som.tocar("mordida", 1.5, -8.0)  # a beliscada: o mesmo bloop, fraco e agudo
 		await _esperar(0.6)
 		_beliscando = false
 		if estado != 2 or lance != _lance:
@@ -321,6 +337,7 @@ func _depois_da_espera(segundos: float) -> void:
 		await _esperar(segundos)
 	if estado == 2 and lance == _lance:
 		estado = 3
+		Som.tocar("mordida")
 
 
 func _depois_da_fisgada() -> void:
@@ -340,7 +357,13 @@ func _grupo_minijogo(delta: float) -> void:
 	if estado != 4:
 		return
 
-	var resultado: Minijogo.Resultado = minijogo.passo(delta, Input.is_action_pressed(ESPACO))
+	var recolhendo: bool = Input.is_action_pressed(ESPACO)
+	var resultado: Minijogo.Resultado = minijogo.passo(delta, recolhendo)
+	# a carretilha estala enquanto recolhe, mais rapido quando o peixe vem
+	_carretilha -= delta
+	if recolhendo and _carretilha <= 0.0:
+		_carretilha = lerpf(0.11, 0.06, minijogo.progresso / 100.0)
+		Som.tocar("carretilha")
 	Partida.gastar_energia(Partida.ENERGIA_LUTA_POR_S * delta)
 
 	# A isca e o peixe na agua vem chegando conforme o progresso sobe.
@@ -367,8 +390,7 @@ func _grupo_resultado(delta: float) -> void:
 	if estado == 5 and _gatilho_unico(&"capturado"):
 		peixes += 1
 		total_kg = roundf((total_kg + peso_peixe) * 10.0) / 10.0
-		if especie:
-			_anunciar_captura()
+		Som.tocar("conquista" if especie and _anunciar_captura() else "captura")
 		_isca.visible = false
 		_linha.visible = false
 		_peixe.texture = _sprite_capturado()
@@ -388,6 +410,7 @@ func _grupo_resultado(delta: float) -> void:
 
 	# Entrou no Estado 6
 	if estado == 6 and _gatilho_unico(&"falhou"):
+		Som.tocar("escapou")
 		_peixe.flip_h = false
 		_depois_da_falha()
 
@@ -409,7 +432,9 @@ func _grupo_resultado(delta: float) -> void:
 		_peixe.texture = SOMBRA_PEIXE
 
 
-func _anunciar_captura() -> void:
+## Escreve o aviso da captura. Devolve true quando a captura merece festa
+## (especie nova, recorde, trofeu, peixe especial).
+func _anunciar_captura() -> bool:
 	var nova: bool = not Partida.colecao.has(especie.nome)
 	var recorde: bool = Partida.registrar_captura(especie, peso_peixe)
 	var texto: String = "%s, %s  (R$ %d)" % [especie.nome, Partida.texto_peso(peso_peixe), especie.valor_para(peso_peixe)]
@@ -430,6 +455,8 @@ func _anunciar_captura() -> void:
 	elif recorde:
 		texto += "\nNovo recorde!"
 	_aviso.text = Partida.nome_em(texto)
+	return nova or recorde or especie.e_trofeu(peso_peixe) \
+			or especie.raridade == Especie.Raridade.ESPECIAL
 
 
 ## Gancho para os pesqueiros com historia (scripts/pesqueiro.gd): roda depois
@@ -508,6 +535,7 @@ func _grupo_interface() -> void:
 		_placar.text += "\n" + "   ".join(bonus)
 
 	_dica.text = _texto_da_dica()
+	Hud.empilhar([_placar, _dica, _aviso])
 
 
 ## Tutorial pratico: no dia 1 cada passo tem uma dica; no dia 2 so a da
@@ -536,34 +564,6 @@ func _texto_da_dica() -> String:
 		4:
 			return "Segure ESPAÇO para subir a barra verde e solte para descer.\nMantenha o peixe dentro dela até a barra de captura encher."
 	return ""
-
-
-# --------------------------------- Sons ---------------------------------
-# Creditos e licencas em CREDITOS_SONS.md.
-
-const SONS: String = "res://assets/sons/"
-## Ambiente de lago (agua, passaros, vento) por baixo da musica, baixinho.
-const VOLUME_AMBIENTE_DB: float = -16.0
-
-
-func _som(nome: String, volume_db: float = 0.0) -> void:
-	var p := AudioStreamPlayer.new()
-	p.stream = load(SONS + nome + ".mp3")
-	p.volume_db = volume_db
-	add_child(p)
-	p.play()
-	p.finished.connect(p.queue_free)
-
-
-func _ambiente() -> void:
-	var faixa: AudioStreamMP3 = load(SONS + "ambiente_lago.mp3")
-	faixa.loop = true
-	var p := AudioStreamPlayer.new()
-	p.stream = faixa
-	p.volume_db = VOLUME_AMBIENTE_DB
-	add_child(p)
-	# comeca num ponto diferente a cada vez, para nao repetir o mesmo trecho
-	p.play(randf_range(0.0, 150.0))
 
 
 # --------------------------- Apoio do runtime ---------------------------

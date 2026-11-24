@@ -81,13 +81,8 @@ func _ready() -> void:
 
 
 func _ao_entrar() -> void:
-	var faixa: AudioStreamMP3 = load(SONS + "cavalo_trote.mp3")
-	faixa.loop = true
-	_trote = AudioStreamPlayer.new()
-	_trote.stream = faixa
+	_trote = Som.laco("cavalo_trote", self)
 	_trote.volume_db = -60.0
-	add_child(_trote)
-	_trote.play()
 	await escurecer(false, 0.8)
 	som("cavalo_bufo")
 	if _volta:
@@ -115,7 +110,7 @@ func _process(delta: float) -> void:
 		_quadro = 0
 	_player.frame = _quadro
 	if _trote:
-		var alvo: float = -6.0 if andou else -60.0
+		var alvo: float = Som.volume("cavalo_trote") if andou else -60.0
 		_trote.volume_db = move_toward(_trote.volume_db, alvo, delta * (90.0 if andou else 60.0))
 	if not (_ocupado or _caixa.ocupada() or _saindo):
 		_conferir_trechos()

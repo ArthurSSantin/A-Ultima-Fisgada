@@ -15,20 +15,11 @@ extends Node2D
 ## etiqueta, que fica escondida e so aparece quando o neto chega perto. E assim
 ## que os posteres mostram o nome sem precisar de letra legivel no desenho.
 
-const SONS: String = "res://assets/sons/"
 const BICHOS: String = "res://assets/sprites/tutorial/bichos/"
 const CORACAO: Texture2D = preload("res://assets/sprites/tutorial/bichos/coracao.png")
 
 ## Ate onde o neto anda nesta cena.
 @export var borda: Vector2 = Vector2(40.0, 1240.0)
-## Gravacoes longas (CREDITOS_SONS.md): de onde ate onde tocar cada uma,
-## [inicio em s, duracao em s, volume em dB].
-const TRECHOS: Dictionary = {
-	"latido": [10.9, 1.5, -2.0],        # dois latidos seguidos
-	"ronrom": [3.6, 2.4, 0.0],
-	"cavalo_bufo": [7.75, 0.9, -3.0],    # a bufada mais forte da gravacao
-}
-
 ## Distancia, em pixels de tela, para uma estacao valer.
 @export var alcance: float = 60.0
 
@@ -48,6 +39,8 @@ func _ready() -> void:
 	_caixa = CaixaDialogo.new()
 	add_child(_caixa)
 	add_child(QuadroObjetivos.new())
+	Hud.vestir(_prompt, 5.0, 16.0)
+	Hud.vestir(_dica, 6.0, 12.0)
 	for estacao in _estacoes.get_children():
 		var nome: Label = estacao.get_node_or_null("Nome")
 		if nome:
@@ -89,9 +82,11 @@ func _process(delta: float) -> void:
 	_prompt.visible = livre and _perto != null
 	if _prompt.visible:
 		_prompt.text = Partida.nome_em("[ESPAÇO] " + _acao(_perto.name))
+		Hud.no_rodape(_prompt)
 		if Input.is_action_just_pressed(&"espaco"):
 			_interagir_e_liberar(_perto.name)
 	_dica.text = Partida.nome_em(_dica_atual()) if livre else ""
+	Hud.no_canto(_dica)
 
 
 func _interagir_e_liberar(nome: StringName) -> void:
@@ -141,26 +136,9 @@ func esperar(segundos: float) -> void:
 	await get_tree().create_timer(segundos).timeout
 
 
-func tocar(som: String) -> void:
-	var p := AudioStreamPlayer.new()
-	p.stream = load(SONS + som + ".wav")
-	add_child(p)
-	p.play()
-	p.finished.connect(p.queue_free)
-
-
-## Toca so o trecho bom de uma gravacao longa (TRECHOS), com o fim suave.
+## Atalho para Som.tocar (os volumes ficam no CATALOGO de scripts/som.gd).
 func som(nome: String) -> void:
-	var t: Array = TRECHOS[nome]
-	var p := AudioStreamPlayer.new()
-	p.stream = load(SONS + nome + ".mp3")
-	p.volume_db = t[2]
-	add_child(p)
-	p.play(t[0])
-	var fim := create_tween()
-	fim.tween_interval(maxf(t[1] - 0.25, 0.0))
-	fim.tween_property(p, "volume_db", -40.0, 0.25)
-	fim.tween_callback(p.queue_free)
+	Som.tocar(nome)
 
 
 ## Balao de fala curto sobre um ponto da tela (o "rrrrr" do gato, o latido).
@@ -178,9 +156,7 @@ func balao(texto: String, ponto: Vector2, segundos: float = 1.6) -> void:
 	painel.add_theme_stylebox_override("panel", estilo)
 	var rotulo := Label.new()
 	rotulo.text = texto
-	var fonte := SystemFont.new()
-	fonte.font_names = PackedStringArray(["Arial"])
-	fonte.font_weight = 700
+	var fonte: Font = Fontes.negrito()
 	rotulo.add_theme_font_override("font", fonte)
 	rotulo.add_theme_font_size_override("font_size", 20)
 	rotulo.add_theme_color_override("font_color", Color(0.24, 0.17, 0.12))

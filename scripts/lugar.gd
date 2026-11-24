@@ -76,6 +76,11 @@ func _ready() -> void:
 	_caixa = CaixaDialogo.new()
 	add_child(_caixa)
 	$UI.add_child(BarraEnergia.new())
+	Hud.vestir(_hud)
+	Hud.vestir(_prompt, 5.0, 16.0)
+	if _objetivo:
+		Hud.vestir(_objetivo, 8.0, 12.0)
+		_objetivo.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	if e_a_rua:
 		_player.position.x = Partida.vila_x
 	elif abre_o_dia:
@@ -109,6 +114,7 @@ func _process(delta: float) -> void:
 	if not livre or _perto == null:
 		return
 	_prompt.text = Partida.nome_em("[ESPAÇO] " + ACOES[_perto.name])
+	Hud.no_rodape(_prompt)
 	if Input.is_action_just_pressed(&"espaco"):
 		_interagir(_perto.name)
 
@@ -253,6 +259,7 @@ func _fechar_fase() -> void:
 		"Enquanto os pedreiros tiram as últimas telhas velhas, {nome} encontra um embrulho de lona preso na viga.",
 		"É o caderno do avô. Nas páginas, pontos marcados rio abaixo, até o mar... e um nome sublinhado duas vezes: Arvoredo.",
 	])
+	Som.tocar("conquista")
 	await _caixa.falar("Dona Marlene", [
 		"Eu te prometi, lembra? Toma. A vara do {avo}.",
 		"Ela lança mais longe que qualquer uma do Seu Valdir. Se tu vai atrás desse caderno, vai com ela.",
@@ -305,6 +312,7 @@ func _marlene() -> void:
 			await _caixa.falar("Dona Marlene", [_conselho(), _o_que_falta()])
 		&"jundia":
 			Partida.entregar_jundia()
+			Som.tocar("conquista")
 			await _caixa.falar("Dona Marlene", [
 				"Que jundiá bonito! Igualzinho os que o {avo} trazia. Esse vai pro almoço da reabertura.",
 			])
@@ -317,6 +325,7 @@ func _marlene() -> void:
 func _pagar_obra(id: StringName) -> void:
 	var obra: Dictionary = Partida.OBRAS[id]
 	if Partida.pagar_obra(id):
+		Som.tocar("conquista")
 		if id == &"casa":
 			await _caixa.falar("Dona Marlene", [
 				"Vou chamar o pessoal hoje mesmo! Telhado novo, enfim.",
@@ -459,9 +468,11 @@ func _vender_para(id: StringName) -> void:
 	var linhas: PackedStringArray = []
 	var total: int = 0
 	for peixe in vendidos:
-		linhas.append("%s, %s ........ R$ %d" % [peixe.especie.nome, Partida.texto_peso(peixe.peso), peixe.pago])
+		# o tab cai na coluna dos precos da CaixaDialogo (COLUNA_TAB)
+		linhas.append("%s, %s\tR$ %d" % [peixe.especie.nome, Partida.texto_peso(peixe.peso), peixe.pago])
 		total += peixe.pago
-	linhas.append("Total: R$ %d" % total)
+	linhas.append("Total\tR$ %d" % total)
+	Som.tocar("moeda")
 	await _caixa.falar(dados.nome, [
 		"\n".join(linhas),
 		"Tá aqui teu dinheiro. Agora tu tem R$ %d." % Partida.dinheiro,
@@ -473,6 +484,7 @@ func _entregar_pedido(id: StringName) -> void:
 	var resultado: Dictionary = Partida.entregar_missao(id)
 	if resultado.nivel == 0:
 		return
+	Som.tocar("conquista")
 	var falas: PackedStringArray = [
 		"É isso aí! Toma R$ %d pelo trabalho." % resultado.premio,
 		"Subimos pro nível %d. Daqui pra frente eu te pago %d%% acima do normal." % [
@@ -530,9 +542,11 @@ func _comprar(tipo: StringName, id: StringName) -> void:
 		await _caixa.falar("Seu Valdir", ["Faltam R$ %d pra essa." % (dados.preco - Partida.dinheiro)])
 	elif tipo == &"vara":
 		Partida.comprar_vara(id)
+		Som.tocar("moeda")
 		await _caixa.falar("Seu Valdir", ["%s! Lança até %d de força. Boa pescaria." % [dados.nome, dados.forca]])
 	else:
 		Partida.comprar_item(id)
+		Som.tocar("moeda")
 		await _caixa.falar("Seu Valdir", ["%s. %s" % [dados.nome, dados.descricao]])
 
 
@@ -576,6 +590,8 @@ func _atualizar_interface() -> void:
 
 	if _objetivo:
 		_objetivo.text = Partida.nome_em(_texto_objetivos(casa_pronta))
+		Hud.no_canto(_objetivo)
+	Hud.empilhar([_hud])
 
 
 func _texto_objetivos(casa_pronta: bool) -> String:

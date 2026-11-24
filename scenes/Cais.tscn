@@ -9,10 +9,10 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/cais/cais.png" id="tex_cais"]
 [ext_resource type="Texture2D" path="res://assets/sprites/cais/barco.png" id="tex_barco"]
 [ext_resource type="Texture2D" path="res://assets/sprites/tiago/tiago.png" id="tex_player"]
+[ext_resource type="FontFile" path="res://assets/fontes/Jersey10.ttf" id="fonte_retro"]
 
-[sub_resource type="SystemFont" id="SystemFont_negrito"]
-font_names = PackedStringArray("Arial")
-font_weight = 700
+[sub_resource type="FontVariation" id="Fonte_negrito"]
+base_font = ExtResource("fonte_retro")
 
 [node name="Cais" type="Node2D"]
 script = ExtResource("script_cais")
@@ -50,8 +50,8 @@ offset_right = 24.0
 offset_bottom = 44.0
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 36
 text = "!"
 
@@ -62,8 +62,8 @@ offset_right = 174.0
 offset_bottom = 426.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 14
 text = "< Voltar à vila"
 
@@ -89,8 +89,8 @@ offset_right = 990.0
 offset_bottom = 80.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 16
 text = "Dia 1"
 horizontal_alignment = 1
@@ -103,8 +103,8 @@ offset_right = 990.0
 offset_bottom = 150.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.13, 0.28, 1)
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 autowrap_mode = 2

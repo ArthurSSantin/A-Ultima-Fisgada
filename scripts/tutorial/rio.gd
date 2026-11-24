@@ -48,14 +48,12 @@ func _ready() -> void:
 	quadro.a_direita = true
 	add_child(quadro)
 	_cafe = Label.new()
-	var fonte := SystemFont.new()
-	fonte.font_names = PackedStringArray(["Arial"])
-	fonte.font_weight = 700
+	var fonte: Font = Fontes.negrito()
 	_cafe.add_theme_font_override("font", fonte)
 	_cafe.add_theme_font_size_override("font_size", 17)
 	_cafe.add_theme_color_override("font_color", Color(1.0, 0.86, 0.6))
 	_cafe.add_theme_color_override("font_outline_color", Color(0.2, 0.1, 0.05))
-	_cafe.add_theme_constant_override("outline_size", 5)
+	_cafe.add_theme_constant_override("outline_size", 2)
 	_cafe.position = Vector2(1000, 670)
 	$UI.add_child(_cafe)
 	var sentado: Sprite2D = $Jogo/VoSentado
@@ -264,10 +262,3 @@ func _fim_da_pescaria() -> void:
 	elif _perguntou_casa:
 		await _caixa.falar("Vô", ["Só mais um, então."])
 
-
-func _tocar(som: String) -> void:
-	var p := AudioStreamPlayer.new()
-	p.stream = load("res://assets/sons/%s.wav" % som)
-	add_child(p)
-	p.play()
-	p.finished.connect(p.queue_free)

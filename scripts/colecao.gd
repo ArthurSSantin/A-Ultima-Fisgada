@@ -33,8 +33,8 @@ const LINHA_ALTURA: float = 104.0
 const CAIXA_PEIXE: Vector2 = Vector2(110.0, 64.0)
 
 var _fechando: bool = false
-var _fonte: SystemFont
-var _negrito: SystemFont
+var _fonte: Font
+var _negrito: Font
 
 
 static func abrir_em(dono: Node) -> void:
@@ -46,11 +46,9 @@ static func abrir_em(dono: Node) -> void:
 
 func _ready() -> void:
 	layer = 14
-	_fonte = SystemFont.new()
-	_fonte.font_names = PackedStringArray(["Arial"])
-	_negrito = SystemFont.new()
-	_negrito.font_names = PackedStringArray(["Arial"])
-	_negrito.font_weight = 700
+	Som.tocar("confirmar")
+	_fonte = Fontes.normal()
+	_negrito = Fontes.negrito()
 
 	var fundo := ColorRect.new()
 	fundo.color = COR_FUNDO
@@ -164,6 +162,7 @@ func _input(evento: InputEvent) -> void:
 			or evento.is_action_pressed(&"espaco"):
 		get_viewport().set_input_as_handled()
 		_fechando = true
+		Som.tocar("cursor")
 		# Um quadro de folga: sem isso o ESPACO que fechou a tela ainda conta
 		# como "acabou de apertar" na cena de baixo e ja interage com algo.
 		await get_tree().process_frame

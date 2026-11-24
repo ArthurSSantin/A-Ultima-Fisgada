@@ -21,20 +21,15 @@ var _painel: PanelContainer
 var _coluna: VBoxContainer
 var _linhas: Dictionary = {}
 var _faltam: Label
-var _fonte: SystemFont
+var _fonte: Font
 
 
 func _ready() -> void:
 	layer = 6
-	_fonte = SystemFont.new()
-	_fonte.font_names = PackedStringArray(["Arial"])
+	_fonte = Fontes.normal()
 	_painel = PanelContainer.new()
-	var estilo := StyleBoxFlat.new()
-	estilo.bg_color = Color(0.08, 0.06, 0.05, 0.72)
-	estilo.set_corner_radius_all(6)
-	estilo.set_content_margin_all(10)
-	_painel.add_theme_stylebox_override("panel", estilo)
-	_painel.position = Vector2(12, 12)
+	_painel.add_theme_stylebox_override("panel", Hud.faixa(8.0, 10.0))
+	_painel.position = Vector2(Hud.MARGEM, Hud.MARGEM)
 	_painel.custom_minimum_size = Vector2(LARGURA, 0)
 	_painel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_painel)
@@ -57,7 +52,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	_atualizar(true)
 	if a_direita:
-		_painel.position.x = 1280.0 - 12.0 - _painel.size.x
+		_painel.position.x = 1280.0 - Hud.MARGEM - _painel.size.x
 
 
 func _unhandled_input(evento: InputEvent) -> void:
@@ -97,15 +92,13 @@ func _rotulo(tamanho: int, cor: Color, negrito: bool = false) -> Label:
 	var r := Label.new()
 	var f: Font = _fonte
 	if negrito:
-		var nf := SystemFont.new()
-		nf.font_names = PackedStringArray(["Arial"])
-		nf.font_weight = 700
+		var nf: Font = Fontes.negrito()
 		f = nf
 	r.add_theme_font_override("font", f)
 	r.add_theme_font_size_override("font_size", tamanho)
 	r.add_theme_color_override("font_color", cor)
 	r.add_theme_color_override("font_outline_color", Color(0.05, 0.03, 0.02))
-	r.add_theme_constant_override("outline_size", 3)
+	r.add_theme_constant_override("outline_size", 2)
 	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return r
 

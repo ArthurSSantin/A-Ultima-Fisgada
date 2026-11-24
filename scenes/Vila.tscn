@@ -5,13 +5,13 @@
 [ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="script_visual_tiago"]
 [ext_resource type="Texture2D" path="res://assets/sprites/tiago/tiago.png" id="tex_player"]
 [ext_resource type="Texture2D" path="res://assets/sprites/vila/rua.png" id="tex_fundo"]
+[ext_resource type="FontFile" path="res://assets/fontes/Jersey10.ttf" id="fonte_retro"]
 
-[sub_resource type="SystemFont" id="SystemFont_negrito"]
-font_names = PackedStringArray("Arial")
-font_weight = 700
+[sub_resource type="FontVariation" id="Fonte_negrito"]
+base_font = ExtResource("fonte_retro")
 
-[sub_resource type="SystemFont" id="SystemFont_normal"]
-font_names = PackedStringArray("Arial")
+[sub_resource type="FontVariation" id="Fonte_normal"]
+base_font = ExtResource("fonte_retro")
 
 [node name="Vila" type="Node2D"]
 script = ExtResource("script_lugar")
@@ -35,8 +35,8 @@ offset_right = 110.0
 offset_bottom = -178.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 15
 text = "Casa do avô"
 horizontal_alignment = 1
@@ -52,8 +52,8 @@ offset_right = 110.0
 offset_bottom = -178.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 15
 text = "Venda do avô (ruínas)"
 horizontal_alignment = 1
@@ -69,8 +69,8 @@ offset_right = 110.0
 offset_bottom = -178.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 15
 text = "Venda do Seu Valdir"
 horizontal_alignment = 1
@@ -86,8 +86,8 @@ offset_right = 110.0
 offset_bottom = -178.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 15
 text = "Pescaria do Zeca"
 horizontal_alignment = 1
@@ -103,8 +103,8 @@ offset_right = 110.0
 offset_bottom = -178.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 15
 text = "Restaurante da D. Maria Ivone"
 horizontal_alignment = 1
@@ -114,18 +114,18 @@ autowrap_mode = 2
 position = Vector2(1196, 520.0)
 
 [node name="Nome" type="Label" parent="Estacoes/Cais"]
-offset_left = -110.0
-offset_top = -222.0
-offset_right = 110.0
-offset_bottom = -178.0
+offset_left = -60.0
+offset_top = -136.0
+offset_right = 60.0
+offset_bottom = -112.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 15
 text = "Cais >"
 horizontal_alignment = 1
-autowrap_mode = 2
+vertical_alignment = 1
 
 [node name="Player" type="Sprite2D" parent="."]
 position = Vector2(400, 472)
@@ -149,9 +149,9 @@ offset_right = 1260.0
 offset_bottom = 122.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_negrito")
-theme_override_font_sizes/font_size = 17
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
 [node name="Objetivo" type="Label" parent="UI"]
@@ -161,8 +161,8 @@ offset_right = 1260.0
 offset_bottom = 220.0
 theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = SubResource("SystemFont_normal")
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_normal")
 theme_override_font_sizes/font_size = 15
 horizontal_alignment = 2
 autowrap_mode = 2
@@ -174,8 +174,8 @@ offset_right = 940.0
 offset_bottom = 600.0
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = SubResource("SystemFont_negrito")
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = SubResource("Fonte_negrito")
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 autowrap_mode = 2

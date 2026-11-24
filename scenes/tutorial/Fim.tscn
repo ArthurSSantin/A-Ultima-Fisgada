@@ -9,10 +9,10 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/apollo_montado.png" id="r7"]
 [ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/neto.png" id="r8"]
 [ext_resource type="Texture2D" path="res://assets/sprites/tutorial/personagens/vo.png" id="r9"]
+[ext_resource type="FontFile" path="res://assets/fontes/Jersey10.ttf" id="fonte_retro"]
 
-[sub_resource type="SystemFont" id="negrito"]
-font_names = PackedStringArray("Arial")
-font_weight = 700
+[sub_resource type="FontVariation" id="negrito"]
+base_font = ExtResource("fonte_retro")
 
 [node name="Fim" type="Node2D"]
 script = ExtResource("r1")

@@ -34,11 +34,24 @@ var _selecionado: int = 0
 var _nome: Label
 var _descricao: Label
 var _fechando: bool = false
+var _titulo: String = ""
+var _dica: String = ""
 
 
 ## Abre o mapa como filho de `dono` e devolve o id escolhido, ou &"" se saiu.
 static func abrir_em(dono: Node) -> StringName:
+	return await abrir_com(dono, [])
+
+
+## O mesmo mapa com outra lista de lugares: o menu inicial mostra os lugares
+## por onde o neto ja passou (Partida.lugares_abertos()). Lista vazia usa os
+## pesqueiros do barco (Partida.locais_abertos()).
+static func abrir_com(dono: Node, locais: Array[Dictionary], titulo: String = "Para onde hoje?",
+		dica: String = "Setas escolhem   ESPAÇO embarca   ESC volta") -> StringName:
 	var mapa := MapaLocais.new()
+	mapa._locais = locais
+	mapa._titulo = titulo
+	mapa._dica = dica
 	dono.add_child(mapa)
 	var id: StringName = await mapa._escolheu
 	mapa.queue_free()
@@ -47,13 +60,11 @@ static func abrir_em(dono: Node) -> StringName:
 
 func _ready() -> void:
 	layer = 12
-	_locais = Partida.locais_abertos()
+	if _locais.is_empty():
+		_locais = Partida.locais_abertos()
 
-	var fonte := SystemFont.new()
-	fonte.font_names = PackedStringArray(["Arial"])
-	var negrito := SystemFont.new()
-	negrito.font_names = PackedStringArray(["Arial"])
-	negrito.font_weight = 700
+	var fonte: Font = Fontes.normal()
+	var negrito: Font = Fontes.negrito()
 
 	var fundo := ColorRect.new()
 	fundo.color = Color(0.04, 0.07, 0.14, 0.82)
@@ -66,7 +77,7 @@ func _ready() -> void:
 	add_child(folha)
 
 	var titulo := _label(negrito, 26, COR_TINTA)
-	titulo.text = "Para onde hoje?"
+	titulo.text = _titulo
 	titulo.position = ORIGEM + Vector2(24.0, 18.0)
 	add_child(titulo)
 
@@ -114,11 +125,11 @@ func _ready() -> void:
 	add_child(_descricao)
 
 	var dica := _label(fonte, 13, COR_PAPEL.darkened(0.25))
-	dica.text = "Setas escolhem   ESPAÇO embarca   ESC volta"
+	dica.text = _dica
 	dica.position = rodape.position + Vector2(MAPA.get_width() - 320.0, 60.0)
 	add_child(dica)
 
-	_selecionar(0)
+	_selecionar(0, false)
 
 
 func _input(evento: InputEvent) -> void:
@@ -143,7 +154,9 @@ func _clique_no_pino(evento: InputEvent, indice: int) -> void:
 		_confirmar()
 
 
-func _selecionar(indice: int) -> void:
+func _selecionar(indice: int, com_som: bool = true) -> void:
+	if com_som and indice != _selecionado:
+		Som.tocar("cursor")
 	if _locais.is_empty():
 		_nome.text = "Nenhum lugar no mapa"
 		_descricao.text = "O caderno do avô ainda não marcou ponto nenhum."
@@ -166,6 +179,7 @@ func _fechar(id: StringName) -> void:
 	if _fechando:
 		return
 	_fechando = true
+	Som.tocar("confirmar" if not id.is_empty() else "cursor")
 	_escolheu.emit(id)
 
 

@@ -80,4 +80,5 @@ func _input(evento: InputEvent) -> void:
 	if _pronta and evento.is_action_pressed(&"espaco"):
 		get_viewport().set_input_as_handled()
 		_pronta = false
+		Som.tocar("confirmar")
 		get_tree().change_scene_to_file.call_deferred(CENA_INICIO)

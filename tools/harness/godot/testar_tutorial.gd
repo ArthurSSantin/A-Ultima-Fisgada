@@ -12,6 +12,10 @@ var _falhas: int = 0
 
 
 func _initialize() -> void:
+	# o texto sai inteiro: cada ESPACO do teste vale uma pagina
+	Engine.set_meta(&"texto_instantaneo", true)
+	# nada de gravar no save de quem joga nesta maquina
+	Engine.set_meta(&"sem_save", true)
 	_rodar.call_deferred()
 
 

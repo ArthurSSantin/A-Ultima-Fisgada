@@ -3,7 +3,7 @@ extends SceneTree
 ## Toca um som e imprime o volume (RMS) a cada 100 ms, para achar onde estao
 ## os latidos, a bufada etc. dentro de uma gravacao longa.
 ##
-## Uso (precisa de janela, para o audio rodar): godot --path . -s tools/harness/godot/envelope_som.gd -- res://assets/sons/latido.mp3
+## Uso (precisa de janela, para o audio rodar): godot --path . -s tools/harness/godot/envelope_som.gd -- res://assets/sons/latido.ogg
 
 func _initialize() -> void:
 	_rodar.call_deferred()

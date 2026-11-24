@@ -6,9 +6,10 @@ açude de interior.
 
 ## Rodando
 
-Abra a pasta do projeto no Godot 4.7 e aperte F5. O jogo começa no hub da
-tela inicial (`scenes/Inicio.tscn`), onde se escolhe o nome do personagem e o
-do avô. Dali a história começa na casa do avô e se abre na rua da vila
+Abra a pasta do projeto no Godot 4.7 e aperte F5. O jogo começa no menu
+inicial (`scenes/Inicio.tscn`). Sem partida salva, "Começar" pede o nome do
+personagem e o do avô e abre a Fase 1 no quarto do neto. Dali a história segue
+para a casa do avô e se abre na rua da vila
 (`scenes/Vila.tscn`), que liga os quatro interiores, e no fim da rua está o
 cais (`scenes/Cais.tscn`). Pelo barco se chega ao pesqueiro escolhido no mapa:
 o açude (`scenes/Acude.tscn`) desde o começo, e depois da casa a Foz e Vila
@@ -24,6 +25,25 @@ No hub, espaço fala com quem estiver perto. Nas listas, as setas para cima e
 para baixo escolhem e o ESC sai. A partir da Fase 2, a tecla C abre a coleção
 (`scripts/colecao.gd`): todas as espécies do jogo, com quantidade e recorde, e
 as que faltam só como sombra.
+
+Fora de uma lista, o ESC pausa o jogo (`scripts/pausa.gd`): continuar, coleção,
+configurações ou voltar ao menu.
+
+## Menu, save e configurações
+
+O menu inicial tem Começar (Continuar, quando há save), Novo jogo, Coleção,
+Configurações e Sair. Com save, Continuar abre o mapa com os lugares da Fase 2
+por onde o neto já passou (a vila, o açude, a Foz e o Arvoredo), e o jogador
+escolhe onde retomar. Lugar ainda não visitado não aparece no mapa.
+
+Só a Fase 2 salva, em `user://save.json`: ao entrar em cada cena, ao dormir, ao
+pagar uma obra, ao voltar ao menu e ao fechar a janela. A Fase 1 é curta e
+recomeça do quarto. Novo jogo pede confirmação e só apaga o save quando os
+nomes são confirmados.
+
+As configurações (volume geral, música, efeitos e ambiente, tela cheia ou
+janela, e resolução da janela de 1280x720 a 1920x1080) ficam em
+`user://config.cfg` e valem na hora (`scripts/config.gd`).
 
 ## Fase 1: o tutorial
 
@@ -120,7 +140,7 @@ uma.
 
 ## Estrutura
 
-    scenes/Inicio.tscn        título e escolha dos nomes
+    scenes/Inicio.tscn        menu inicial e escolha dos nomes
     scenes/Vila.tscn          a rua da vila, que liga tudo
     scenes/CasaAvo.tscn       casa do avô: cama, Dona Marlene e as obras
     scenes/Venda.tscn         venda do Seu Valdir: varas e consumíveis
@@ -129,13 +149,19 @@ uma.
     scenes/Cais.tscn          o cais: ponto de partida, com o barco
     scenes/Acude.tscn         o açude, onde se pesca
     scripts/lugar.gd          a rua e todos os interiores (um script só)
-    scripts/inicio.gd         tela inicial
+    scripts/inicio.gd         menu inicial, mapa de continuar e nomes
+    scripts/pausa.gd          menu de pausa do ESC (autoload Pausa)
+    scripts/config.gd         volume e tela, em user://config.cfg (autoload Config)
+    scripts/tela_config.gd    tela de configurações
+    scripts/lista_opcoes.gd   lista de opções dos menus
     scripts/cais.gd           o cais e o embarque
     scripts/acude.gd          lógica de pesca e interface
-    scripts/mapa_locais.gd    mapa de escolher o pesqueiro
+    scripts/mapa_locais.gd    mapa de escolher o pesqueiro (e o lugar, no menu)
     scripts/minijogo.gd       minijogo de captura e perfis de briga
-    scripts/partida.gd        estado da partida e economia (autoload Partida)
+    scripts/partida.gd        estado da partida, economia e save (autoload Partida)
     scripts/caixa_dialogo.gd  caixa de diálogo e de escolha
+    scripts/hud.gd            posição dos textos fixos da tela (placar, objetivos, avisos)
+    scripts/som.gd            música, ambientes e efeitos (autoload Som)
     scripts/dados/especie.gd  formato dos dados de cada espécie
     dados/especies/           as espécies da Fase 1
     scripts/eight_dir.gd      movimento do jogador
@@ -149,3 +175,22 @@ uma.
 A arte é desenhada em uma base de 320x180 e exportada em 4x, que é a resolução
 do viewport (1280x720). Na prática: personagem de 16x24 vira arquivo de 64x96,
 tile de 16x16 vira 64x64. O projeto usa filtro nearest, sem suavização.
+
+## Fonte
+
+Diálogos e textos usam a **Jersey 10** (The Soft Type Project Authors, SIL Open
+Font License 1.1, licença em `assets/fontes/OFL.txt`). O arquivo do jogo é a
+fonte ampliada em 4/3 (`unitsPerEm` de 1400 para 1050) para ocupar o mesmo
+espaço da Arial que o jogo usava; ver `scripts/fontes.gd`.
+
+## Som
+
+Tudo passa pelo autoload `Som` (`scripts/som.gd`): a música de fundo, que baixa
+um pouco enquanto alguém fala, o ambiente de cada lugar (lago no açude e no rio,
+mar no cais, na Foz e no Arvoredo, chuva no temporal), trocado em fusão quando a
+cena muda, e os efeitos, com o volume de cada um num catálogo só. O texto dos
+diálogos aparece letra a letra, com um tic no tom de quem fala.
+
+Os arquivos de `assets/sons/` saem de `tools/sons/gerar_sons.py`
+(`pip install numpy soundfile`): ele corta e nivela as gravações de
+`tools/sons/originais/` e sintetiza o resto. Créditos em `CREDITOS_SONS.md`.

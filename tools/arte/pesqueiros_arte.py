@@ -9,6 +9,7 @@ barranco (80x92) e estrutura (80x76), com o piso da estrutura na linha 44.
 - Foz e Vila: onde o rio encontra o mar. Areia e pedra no lugar da terra
   vermelha, a vila de pescadores na outra margem e o mar aberto ao fundo.
   Agua salobra, mais azul que a do acude e sem aguape.
+- O Velho Juca, sentado no trapiche da Foz remendando rede.
 - Arvoredo: mar aberto, as ilhas do caderno do avo com o farol, e uma laje
   de granito no lugar do trapiche.
 
@@ -343,7 +344,85 @@ def estrutura_arvoredo():
     t.salvar(f"{_pasta('arvoredo')}/estrutura.png")
 
 
+# ------------------------------------------------------------ VELHO JUCA
+
+def juca():
+    """O Velho Juca, sentado num caixote na ponta do trapiche da Foz,
+    remendando rede. Mesmo tamanho do Tiago (16x24 nativo, 64x96 em 4x),
+    ancorado pelos pes na linha de baixo. Olha para a esquerda, para quem
+    chega pelo trapiche."""
+    t = Tela(16, 24)
+    PELE, PELE_SOMBRA = "#b97f55", "#96603d"
+    BARBA, BARBA_SOMBRA = "#ece8dc", "#c4bdae"
+    GORRO, GORRO_LUZ = "#2f3e5c", "#46598a"
+    CAMISA, CAMISA_SOMBRA, CAMISA_LUZ = "#5d8296", "#47677a", "#79a0b2"
+    CALCA, CALCA_SOMBRA = "#7a6550", "#5e4d3d"
+    BOTA = "#2a221d"
+    MADEIRA, MADEIRA_LUZ, MADEIRA_SOMBRA = "#9a6a3c", "#b9844e", "#6e4826"
+    REDE, REDE_LUZ = "#4f8a5b", "#6fae78"
+
+    # caixote de peixe, atras das pernas
+    t.rect(7, 15, 7, 8, MADEIRA)
+    t.hline(7, 13, 15, MADEIRA_LUZ)
+    t.hline(7, 13, 18, MADEIRA_SOMBRA)
+    t.hline(7, 13, 21, MADEIRA_SOMBRA)
+    t.vline(13, 16, 22, MADEIRA_SOMBRA)
+    t.put(10, 19, MADEIRA_SOMBRA)
+
+    # tronco, um pouco curvado para a frente
+    t.rect(7, 10, 5, 6, CAMISA)
+    t.vline(11, 10, 15, CAMISA_SOMBRA)
+    t.put(7, 10, CAMISA_LUZ)
+    t.put(9, 12, CAMISA_SOMBRA)  # botao
+    t.put(9, 14, CAMISA_SOMBRA)
+
+    # coxas para a frente e canelas descendo
+    t.rect(3, 15, 6, 2, CALCA)
+    t.hline(3, 8, 16, CALCA_SOMBRA)
+    t.rect(3, 17, 2, 4, CALCA)
+    t.vline(4, 17, 20, CALCA_SOMBRA)
+    t.rect(1, 21, 4, 2, BOTA)
+
+    # braco: do ombro ate as maos no colo, segurando a rede
+    t.vline(6, 11, 13, CAMISA_SOMBRA)
+    t.hline(4, 6, 14, CAMISA_SOMBRA)
+    t.put(3, 14, PELE)
+    t.put(3, 13, PELE_SOMBRA)
+
+    # a rede no colo, caindo ate o chao: trama de pontos
+    for y in range(13, 23):
+        for x in range(0, 4 if y < 17 else 2):
+            if (x + y) % 2 == 0:
+                t.put(x, y, REDE if y % 3 else REDE_LUZ)
+    t.put(2, 22, REDE)
+    t.put(0, 23, REDE_LUZ)
+    t.put(5, 15, REDE)  # ponta da rede sobre a coxa
+    t.put(6, 15, REDE_LUZ)
+
+    # cabeca: perfil para a esquerda, barba branca cheia
+    t.rect(6, 5, 5, 3, PELE)
+    t.vline(10, 5, 7, PELE_SOMBRA)
+    t.put(5, 7, PELE)                # nariz
+    t.put(7, 6, "#2b1d12")           # olho
+    t.hline(6, 8, 5, BARBA_SOMBRA)   # sobrancelha branca
+    for y in range(8, 11):
+        for x in range(5, 11):
+            if not (y == 10 and x in (5, 10)):
+                t.put(x, y, BARBA if x < 9 else BARBA_SOMBRA)
+
+    # gorro de la, dobrado
+    t.rect(6, 2, 5, 3, GORRO)
+    t.hline(5, 11, 4, GORRO_LUZ)
+    t.put(8, 1, GORRO)
+    t.put(9, 1, GORRO)
+    t.put(11, 5, BARBA_SOMBRA)       # cabelo branco na nuca
+
+    t.contorno("#2b1d12")
+    t.salvar(f"{_pasta('foz')}/juca.png")
+    return t
+
+
 if __name__ == "__main__":
-    ceu_foz(); agua_foz(); barranco_foz(); estrutura_foz()
+    ceu_foz(); agua_foz(); barranco_foz(); estrutura_foz(); juca()
     ceu_arvoredo(); agua_arvoredo(); barranco_arvoredo(); estrutura_arvoredo()
     print("ok")

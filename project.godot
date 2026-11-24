@@ -18,13 +18,19 @@ config/icon="res://icon.png"
 [autoload]
 
 Partida="*res://scripts/partida.gd"
-Musica="*res://scripts/musica.gd"
+Som="*res://scripts/som.gd"
+Config="*res://scripts/config.gd"
+Pausa="*res://scripts/pausa.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
+
+[gui]
+
+theme/custom_font="res://assets/fontes/Jersey10.ttf"
 
 [input]
 

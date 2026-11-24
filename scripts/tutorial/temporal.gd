@@ -17,6 +17,14 @@ var _chuva: _Chuva
 var _clarao: ColorRect
 
 
+func _enter_tree() -> void:
+	Som.temporal_entrou()
+
+
+func _exit_tree() -> void:
+	Som.temporal_saiu()
+
+
 func _ready() -> void:
 	var escuro := CanvasModulate.new()
 	escuro.color = COR_CENA
@@ -35,6 +43,7 @@ func _ready() -> void:
 
 
 func relampago() -> void:
+	Som.tocar("trovao")
 	var tween := create_tween()
 	tween.tween_property(_clarao, "color:a", 0.75, 0.05)
 	tween.tween_property(_clarao, "color:a", 0.0, 0.12)

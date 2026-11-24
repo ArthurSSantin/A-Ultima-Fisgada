@@ -154,6 +154,134 @@ def placa(t, cx, y, largura, cor="#d9b06a"):
     t.put(d - 2, y - 2, "#6b4325")
 
 
+def telhas(t, x0, x1, base, altura, cor, luz, sombra, beiral=3):
+    """Telhado de duas aguas de telha colonial: fiadas a cada 3 linhas, canais
+    desencontrados, a agua da esquerda pega luz e o beiral faz sombra na parede."""
+    meio = (x0 + x1) / 2.0
+    for i in range(altura):
+        y = base - i
+        recuo = int(round(i * (x1 - x0) / (2.0 * altura)))
+        e, d = x0 + recuo, x1 - recuo
+        for x in range(e, d + 1):
+            esq = x < meio
+            if i % 3 == 0:
+                c = sombra
+            elif (x + (i // 3) * 2) % 4 == 0:
+                c = cor if esq else sombra
+            else:
+                c = luz if esq else cor
+            t.put(x, y, c)
+        t.put(e, y, OL)
+        t.put(d, y, OL)
+    topo = base - altura
+    t.hline(int(meio) - 1, int(meio) + 1, topo, OL)
+    t.put(int(meio), topo - 1, OL)
+    t.hline(x0 - beiral, x1 + beiral, base, luz)
+    t.hline(x0 - beiral, x1 + beiral, base + 1, sombra)
+    t.hline(x0 - beiral, x1 + beiral, base + 2, OL)
+    for x in range(x0 + 1, x1):  # sombra do beiral na parede
+        t.mix(x, base + 3, "#000000", 0.28)
+        t.mix(x, base + 4, "#000000", 0.14)
+
+
+def parede_nova(t, R, x0, x1, topo, cor, luz, sombra, tipo="reboco"):
+    """Parede com textura: reboco (pintas), tabuas (lambri na horizontal) ou
+    tijolo. Quina da esquerda clara, da direita escura, rodape sujo de terra."""
+    for x in range(x0, x1 + 1):
+        for y in range(topo, CHAO):
+            c = cor
+            if tipo == "tabuas":
+                k = (y - topo) % 4
+                c = sombra if k == 3 else (luz if k == 0 else cor)
+                if (x * 7 + (y - topo) // 4 * 13) % 23 == 0 and k != 3:
+                    c = sombra  # emenda das tabuas
+            elif tipo == "tijolo":
+                fiada = (y - topo) // 3
+                if (y - topo) % 3 == 2 or (x + (fiada % 2) * 3) % 6 == 0:
+                    c = sombra
+            t.put(x, y, c)
+    if tipo == "reboco":
+        for _ in range((x1 - x0) * (CHAO - topo) // 14):
+            x, y = R.randrange(x0 + 1, x1), R.randrange(topo, CHAO)
+            t.put(x, y, R.choice((luz, sombra)))
+    for y in range(topo, CHAO):
+        t.put(x0 + 1, y, luz)
+        t.put(x1 - 1, y, sombra)
+        for x in range(x1 - 5, x1 - 1):
+            t.mix(x, y, "#000000", 0.10)
+    for x in range(x0, x1 + 1):
+        for y in range(CHAO - 4, CHAO):
+            t.mix(x, y, "#5c3a1c", 0.30)
+    t.vline(x0, topo, CHAO - 1, OL)
+    t.vline(x1, topo, CHAO - 1, OL)
+    t.hline(x0, x1, CHAO - 1, "#4a3018")
+
+
+def janela_nova(t, cx, cy, w=7, h=6, vidro="#9fd0ea", moldura="#efe6d2",
+                veneziana=None, floreira=False, quebrada=False):
+    e, d = cx - w // 2, cx + w // 2
+    t.rect(e, cy, w, h, vidro)
+    for x in range(e, d + 1):  # vidro mais claro em cima
+        t.mix(x, cy, "#ffffff", 0.45)
+        t.mix(x, cy + 1, "#ffffff", 0.2)
+    for k in range(min(w, h) - 1):  # reflexo diagonal
+        t.mix(e + 1 + k, cy + h - 2 - k, "#ffffff", 0.35)
+    t.vline(cx, cy, cy + h - 1, moldura)
+    t.hline(e, d, cy + h // 2, moldura)
+    if quebrada:
+        for k in range(4):
+            t.put(e + 1 + k, cy + 1 + k % 2 + k, "#2b3b44")
+            t.put(d - 1 - k // 2, cy + k + 1, "#2b3b44")
+    t.hline(e - 1, d + 1, cy - 1, OL)
+    t.vline(e - 1, cy - 1, cy + h, OL)
+    t.vline(d + 1, cy - 1, cy + h, OL)
+    t.hline(e - 2, d + 2, cy + h, moldura)      # peitoril
+    t.hline(e - 2, d + 2, cy + h + 1, "#5c3a1c")
+    if veneziana:
+        for lado in (e - 1 - (w // 2 + 1), d + 2):
+            for y in range(cy - 1, cy + h):  # palhetas: linha clara, linha escura
+                for x in range(lado, lado + w // 2 + 1):
+                    t.put(x, y, veneziana)
+                    if (y - cy) % 2 == 0:
+                        t.mix(x, y, "#000000", 0.25)
+            t.vline(lado, cy - 1, cy + h - 1, OL)
+            t.vline(lado + w // 2, cy - 1, cy + h - 1, OL)
+    if floreira:
+        t.rect(e - 1, cy + h + 2, w + 2, 3, "#8a5a33")
+        t.hline(e - 1, d + 1, cy + h + 4, "#5a3a22")
+        for x in range(e - 1, d + 2):
+            t.put(x, cy + h + 1, "#4f8a45")
+            if x % 2 == 0:
+                t.put(x, cy + h, "#d9473b" if x % 4 else "#f0d08a")
+
+
+def porta_nova(t, cx, altura=16, larg=9, cor="#6b4325", luz="#8a5a33", sombra="#4a2c16"):
+    e, d = cx - larg // 2, cx + larg // 2
+    topo = CHAO - altura
+    t.rect(e, topo, larg, altura - 1, cor)
+    for px0, px1 in ((e + 1, cx - 1), (cx + 1, d - 1)):  # duas almofadas
+        t.caixa(px0, topo + 2, px1 - px0 + 1, altura // 2 - 2, cor, sombra)
+        t.caixa(px0, topo + altura // 2 + 1, px1 - px0 + 1, altura // 2 - 4, cor, sombra)
+        t.hline(px0 + 1, px1 - 1, topo + 3, luz)
+    t.vline(cx, topo, CHAO - 2, sombra)
+    t.vline(e - 1, topo - 1, CHAO - 2, OL)
+    t.vline(d + 1, topo - 1, CHAO - 2, OL)
+    t.hline(e - 1, d + 1, topo - 1, OL)
+    t.hline(e - 2, d + 2, topo - 2, "#efe6d2")   # verga
+    t.put(d - 2, CHAO - 8, "#e8c06a")             # maçaneta
+    t.hline(e - 2, d + 2, CHAO - 1, "#a39a8a")    # degrau de pedra
+    t.hline(e - 2, d + 2, CHAO, "#6e655a")
+
+
+def mato(t, R, x0, x1, n=10):
+    """Tufos de capim no pe da parede."""
+    for _ in range(n):
+        x = R.randrange(x0, x1)
+        alt = R.randint(2, 4)
+        t.vline(x, CHAO - alt, CHAO - 1, "#4f8a45")
+        t.put(x + 1, CHAO - alt + 1, "#6fa84f")
+
+
 # ------------------------------------------------------------------- A RUA
 
 def rua():
@@ -162,93 +290,188 @@ def rua():
     ceu_da_vila(t)
     chao_de_terra(t, R)
 
-    # --- casa do avo, detonada: parede manchada, lona e telhado faltando ---
-    parede(t, 12, 58, 86, "#c9b188", "#ab9068")
-    for i in range(10):  # telhado so pela metade
+    # --- casa do avo, detonada: reboco manchado, meio telhado, lona e caibros ---
+    parede_nova(t, R, 12, 58, 86, "#cdb68e", "#ddc8a2", "#a98f68")
+    t.rect(17, 70, 6, 12, "#a5533c")  # chamine sem o topo
+    t.vline(17, 70, 81, OL)
+    t.vline(22, 70, 81, OL)
+    for x in range(17, 23):
+        t.put(x, 70 - (x % 2), OL)
+    for y in range(72, 82, 3):
+        t.hline(18, 21, y, "#8a3f2c")
+    for i in range(10):  # telhas so ate a metade, com a borda comida
         y = 86 - i
         recuo = int(i * 46 / 20.0)
-        for x in range(12 + recuo, 36 - recuo // 2):
-            t.put(x, y, "#9c4b36" if x % 4 else "#8a3f2c")
+        fim = 36 - recuo // 2 - (2 if i % 3 == 1 else 0)
+        for x in range(12 + recuo, fim):
+            c = "#8a3f2c" if i % 3 == 0 else ("#b05a40" if (x + (i // 3) * 2) % 4 else "#9c4b36")
+            t.put(x, y, c)
         t.put(12 + recuo, y, OL)
+        t.put(fim, y, OL)
     for x in range(36, 60):  # lona azul no lugar do resto do telhado
         for y in range(78, 88):
             if y > 78 + (x - 36) // 6:
                 t.put(x, y, "#3f6f9c" if (x + y) % 3 else "#4d82b4")
-    t.hline(36, 59, 78, "#2d5275")
-    for _ in range(40):  # manchas de enchente na parede
-        x, y = R.randrange(13, 58), R.randrange(100, CHAO - 1)
+                if (x - 36) % 8 == 0:
+                    t.put(x, y, "#2d5275")  # dobra da lona
+    for x in (38, 46, 54):  # caibros aparecendo por cima da lona
+        for k in range(4):
+            t.put(x + k, 77 + (x - 36) // 6 - k, "#6b4325")
+    for x in (40, 56):  # pedras segurando a lona
+        t.hline(x, x + 2, 79 + (x - 36) // 6, "#9a958c")
+        t.put(x + 1, 78 + (x - 36) // 6, "#c2b8a8")
+    t.hline(9, 61, 87, "#9c4b36")
+    t.hline(9, 61, 88, OL)
+    for x in range(13, 58):  # sombra do beiral
+        t.mix(x, 89, "#000000", 0.25)
+    for _ in range(60):  # manchas de enchente
+        x, y = R.randrange(13, 58), R.randrange(108, CHAO - 4)
         t.put(x, y, "#9c8460")
-    t.hline(13, 57, 112, "#a08866")  # marca d'agua
-    porta(t, 35)
-    janela(t, 20, 96, 7, 6, "#5f7f8f")
-    for x in range(44, 56, 3):  # tabuas pregadas na janela quebrada
+    t.hline(13, 57, 108, "#8f7a5a")  # marca d'agua
+    for x in range(13, 58):
+        if x % 3:
+            t.mix(x, 109, "#5c4a30", 0.35)
+    for k in range(9):  # rachadura descendo da janela
+        t.put(25 + k // 3, 103 + k, "#7a6448")
+    porta_nova(t, 35, 16, 9, "#6b4325", "#7d5434", "#4a2c16")
+    janela_nova(t, 20, 96, 7, 6, "#5f7f8f", "#d8ccb0", quebrada=True)
+    janela_nova(t, 50, 96, 9, 7, "#3a4a52", "#d8ccb0")
+    for x in range(45, 56, 3):  # tabuas pregadas na janela da direita
         t.vline(x, 94, 104, "#8a5a33")
+        t.vline(x + 1, 94, 104, "#6b4325")
+        t.put(x, 96, "#c2b8a8")
+        t.put(x, 102, "#c2b8a8")
     placa(t, 35, 90, 26, "#b89a63")
+    mato(t, R, 13, 58, 12)
 
-    # --- ruina da venda do avo: meia parede e o balcao sob a lona ---
+    # --- ruina da venda do avo: tijolo exposto, viga queimada e o balcao na lona ---
     for x in range(68, 102):
         altura = 104 + int(6 * math.sin((x - 68) / 5.0)) + (10 if x > 88 else 0)
         for y in range(altura, CHAO):
-            t.put(x, y, "#b9a179" if x % 5 else "#9c8460")
+            fiada = (y - 100) // 3
+            tijolo = (y - 100) % 3 == 2 or (x + (fiada % 2) * 3) % 6 == 0
+            c = "#8a5a44" if tijolo else ("#b9a179" if y > altura + 4 or x % 7 else "#a5533c")
+            if y > altura + 4 and (x * 3 + y) % 11 == 0:
+                c = "#b06a4e"  # reboco caido mostrando tijolo
+            t.put(x, y, c)
         t.put(x, altura, OL)
-    for _ in range(26):  # entulho no chao
+        t.put(x, altura + 1, "#7a4c3a")
+    for k in range(26):  # viga queimada atravessada
+        x, y = 72 + k, 100 + k // 2
+        t.put(x, y, "#3a2a22")
+        t.put(x, y + 1, "#2b1d12")
+        if k % 5 == 0:
+            t.put(x, y - 1, "#5a4034")
+    for _ in range(34):  # entulho no chao
         x, y = R.randrange(66, 104), R.randrange(CHAO, CHAO + 8)
-        t.hline(x, x + R.randint(1, 3), y, R.choice(("#a89070", "#8a5a33", "#b9a179")))
+        t.hline(x, x + R.randint(1, 3), y, R.choice(("#a89070", "#8a5a33", "#b9a179", "#a5533c")))
     for x in range(70, 92):  # lona cinza cobrindo o balcao
         for y in range(112, 124):
             if y > 112 + abs(x - 81) // 3:
                 t.put(x, y, "#8e9299" if (x + y) % 3 else "#a3a7ad")
     t.hline(70, 91, 112, "#5f6368")
-    t.rect(94, 118, 8, 12, "#7a4c2b")  # mourão de pé, sozinho
+    for x in (71, 90):  # corda amarrando a lona
+        t.vline(x, 116, 124, "#c9b27a")
+    t.rect(94, 118, 8, 12, "#7a4c2b")  # mourao de pe, sozinho
     t.vline(94, 118, 129, OL)
+    t.hline(94, 101, 118, "#9c6c3c")
+    for k in range(14):  # tabuleta velha caida, encostada no mourao
+        t.put(82 + k, 126 - k // 4, "#b89a63")
+        t.put(82 + k, 127 - k // 4, "#8a6a3a")
+    mato(t, R, 67, 103, 14)
 
-    # --- venda do Seu Valdir: casa de madeira com varanda ---
-    parede(t, 112, 158, 84, "#c08a4e", "#a3713c", tabuas=True)
-    telhado(t, 110, 160, 84, 12, "#8a3f2c", "#a84f36")
-    porta(t, 136)
-    janela(t, 120, 94)
-    janela(t, 152, 94)
+    # --- venda do Seu Valdir: lambri de madeira, alpendre e mercadoria na porta ---
+    parede_nova(t, R, 112, 158, 84, "#c08a4e", "#d29c5e", "#a3713c", "tabuas")
+    telhas(t, 110, 160, 84, 12, "#9c4b36", "#b8604a", "#7a3526")
+    janela_nova(t, 120, 106, 7, 7, "#9fd0ea", "#efe6d2", veneziana="#4f7a4a")
+    janela_nova(t, 152, 106, 7, 7, "#9fd0ea", "#efe6d2", veneziana="#4f7a4a")
+    porta_nova(t, 136, 17, 9, "#7a4c2b", "#9c6c3c", "#55351d")
     placa(t, 136, 88, 34, "#d9b06a")
-    t.caixa(114, 120, 9, 9, "#b07c45", "#5a3a22")
-    t.caixa(148, 122, 8, 7, "#9c6c3c", "#5a3a22")
-    t.hline(149, 154, 124, "#7a4c2b")
+    for x in range(107, 166):  # alpendre: telhadinho na frente da venda
+        for y in range(98, 101):
+            t.put(x, y, "#9c4b36" if y == 98 else ("#b8604a" if (x // 3) % 2 else "#9c4b36"))
+        t.put(x, 101, OL)
+        t.mix(x, 102, "#000000", 0.25)
+    for x in (108, 164):  # esteios
+        t.rect(x - 1, 102, 3, CHAO - 102, "#8a5a33")
+        t.vline(x - 1, 102, CHAO - 1, OL)
+        t.vline(x + 1, 102, CHAO - 1, "#5a3a22")
+    t.caixa(113, 120, 9, 10, "#9c6c3c", "#5a3a22")  # barril
+    t.hline(113, 121, 122, "#5a3a22")
+    t.hline(113, 121, 127, "#5a3a22")
+    t.hline(114, 120, 120, "#c9955a")
+    for cx in (147, 153):  # sacos de farinha
+        t.disco(cx, 125, 3.5, "#e8dcc0", sy=1.2)
+        t.put(cx, 121, "#b89a63")
+        t.mix(cx + 2, 126, "#000000", 0.2)
+    t.vline(158, 112, CHAO - 1, "#c9a86a")  # vassoura encostada
+    t.hline(157, 159, 127, "#d9c27a")
+    t.hline(156, 160, 128, "#b8a060")
 
-    # --- pescaria do Zeca: alvenaria clara, toldo listrado e caixa de gelo ---
-    parede(t, 166, 210, 88, "#d8dfe2", "#bcc5c9")
-    telhado(t, 164, 212, 88, 10, "#3f6f9c", "#5188b4")
-    for x in range(164, 213):  # toldo listrado
-        t.put(x, 100, "#2f5f8a" if (x // 4) % 2 else "#f0f3f5")
-        t.put(x, 101, "#2f5f8a" if (x // 4) % 2 else "#dde4e8")
-        t.put(x, 102, "#24455f")
-    porta(t, 189, 16, "#5a7f99")
-    janela(t, 174, 108, 9, 8, "#8fd0d8")
-    janela(t, 204, 108, 9, 8, "#8fd0d8")
+    # --- pescaria do Zeca: alvenaria clara, barra de azulejo, toldo e gelo ---
+    parede_nova(t, R, 166, 210, 88, "#dfe5e7", "#f0f3f5", "#bcc5c9")
+    for x in range(167, 210):  # barra de azulejo azul e branco
+        for y in range(118, CHAO - 1):
+            t.put(x, y, "#7aa6cc" if (x // 2 + y // 2) % 2 else "#e8f0f2")
+    t.hline(167, 209, 117, "#2f5f8a")
+    telhas(t, 164, 212, 88, 10, "#3f6f9c", "#5188b4", "#2d5275")
+    for x in range(163, 214):  # toldo listrado com a barra em ondinha
+        listra = (x // 4) % 2
+        for y in range(100, 103):
+            t.put(x, y, "#2f5f8a" if listra else "#f0f3f5")
+        if (x % 4) in (1, 2):
+            t.put(x, 103, "#2f5f8a" if listra else "#dde4e8")
+        t.put(x, 99, "#24455f")
+        t.mix(x, 104, "#000000", 0.2)
+    porta_nova(t, 189, 16, 9, "#5a7f99", "#7aa0b8", "#3f5f75")
+    janela_nova(t, 174, 107, 9, 8, "#8fd0d8", "#f4f7f8")
+    janela_nova(t, 204, 107, 9, 8, "#8fd0d8", "#f4f7f8")
     placa(t, 189, 92, 30, "#9fc9dd")
     t.caixa(168, 118, 11, 11, "#9fb6c2", "#4a5058")  # caixa de gelo
     t.hline(169, 177, 120, "#dceef5")
     for x in range(170, 177, 2):
         t.put(x, 122, "#6fb7cf")
-    for i, x in enumerate((206, 209)):  # dois peixes pendurados
+    for x in (206, 209):  # dois peixes pendurados
         t.vline(x, 104, 108, "#8a7340")
         t.disco(x, 112, 3.0, "#6f8a9c", sy=0.7)
         t.put(x - 3, 112, "#55707f")
+    for y in range(106, 116):  # rede secando na quina
+        for x in range(196, 201):
+            if (x + y) % 3 == 0 or (x - y) % 3 == 0:
+                t.put(x, y, "#8a7a5a")
+    t.disco(199, 120, 2.5, "#e8743b")  # boia
+    t.put(198, 119, "#f4a070")
 
-    # --- restaurante da Dona Maria Ivone: reboco rosa e mesinhas na calcada ---
-    parede(t, 218, 272, 82, "#e8b9a8", "#cf9a88")
-    telhado(t, 216, 274, 82, 13, "#9c4b36", "#bd6048")
-    porta(t, 245, 16, "#7a4c2b")
-    janela(t, 228, 100, 11, 10, "#ffe8b8")
-    janela(t, 262, 100, 11, 10, "#ffe8b8")
+    # --- restaurante da Dona Maria Ivone: reboco rosa, cimalha e janelas floridas ---
+    parede_nova(t, R, 218, 272, 82, "#e8b9a8", "#f2cbbb", "#cf9a88")
+    t.hline(219, 271, 85, "#f4ead8")  # cimalha creme
+    t.hline(219, 271, 86, "#d8c4a4")
+    for y in range(87, CHAO - 4, 4):  # cunhais nas quinas
+        for x0 in (219, 268):
+            t.hline(x0, x0 + 3 - (y // 4) % 2, y, "#f4ead8")
+            t.hline(x0, x0 + 3 - (y // 4) % 2, y + 1, "#f4ead8")
+    telhas(t, 216, 274, 82, 13, "#9c4b36", "#bd6048", "#7a3526")
+    janela_nova(t, 230, 99, 9, 10, "#ffe8b8", "#f4ead8", veneziana="#3f7d5c", floreira=True)
+    janela_nova(t, 260, 99, 9, 10, "#ffe8b8", "#f4ead8", veneziana="#3f7d5c", floreira=True)
+    porta_nova(t, 245, 17, 9, "#7a4c2b", "#9c6c3c", "#55351d")
     placa(t, 245, 86, 40, "#f0d08a")
-    for cx in (223, 268):  # mesinhas com toalha xadrez
+    t.vline(252, 106, 108, "#2b1d12")  # lampiao ao lado da porta
+    t.rect(251, 109, 3, 4, "#f0d08a")
+    t.put(252, 110, "#fff4c8")
+    for dx in range(-3, 4):
+        t.mix(252 + dx, 111, "#fff0b0", 0.18)
+    for cx in (223, 267):  # mesinhas com toalha xadrez
         t.vline(cx, 122, CHAO - 1, "#6b4325")
         t.rect(cx - 4, 119, 9, 3, "#f4f0e4")
         for x in range(cx - 4, cx + 5, 2):
             t.put(x, 120, "#c9503a")
         t.put(cx - 5, 121, "#d8d4c6")
         t.put(cx + 5, 121, "#d8d4c6")
-    t.rect(238, 118, 3, 4, "#6fa84f")  # vaso na porta
+        t.put(cx, 118, "#e8c06a")  # vela
+    t.rect(238, 118, 3, 4, "#a5533c")  # vaso na porta
     t.disco(239, 116, 3.0, "#4f8a45", sy=0.9)
+    t.put(238, 114, "#d9473b")
+    mato(t, R, 219, 236, 4)
 
     # --- fim da rua: placa e o caminho descendo pro cais ---
     # O caminho desce da rua para o cais, com uma nesga de mar ao fundo.
