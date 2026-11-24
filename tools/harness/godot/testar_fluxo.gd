@@ -172,6 +172,27 @@ func _rodar() -> void:
 	_conferir(not casa._concluida, "o jogo segue depois da casa")
 	_conferir(casa.get_node("UI/Objetivo").text.contains("Foz"), "os objetivos passam a ser o caderno")
 
+	# Venda do avo: paga, aparece reformada na rua e da para entrar
+	partida.dinheiro = partida.OBRAS[&"venda"].preco
+	await _ir_e_apertar(casa, "Marlene")
+	await _apertar(&"ui_down")
+	await _apertar(&"espaco")      # pagar a venda
+	await _fechar_dialogos(casa)
+	_conferir(partida.obra_paga(&"venda"), "pagou a obra da venda do avo")
+	vila = await _ir_para(casa, "Saida", "Vila")
+	_conferir(vila != null and vila.get_node("Fundo").texture.resource_path.ends_with("rua_venda.png"),
+		"a rua mostra a venda do avo reformada")
+	_conferir(vila != null and vila.get_node("Estacoes/RuinaVenda/Nome").text == "Venda do avô",
+		"a placa da rua tira o (ruinas)")
+	var venda_avo: Node = await _ir_para(vila, "RuinaVenda", "VendaAvo")
+	_conferir(venda_avo != null, "entrou na venda do avo")
+	if venda_avo:
+		await _ir_e_apertar(venda_avo, "Balcao")
+		await _fechar_dialogos(venda_avo)
+		vila = await _ir_para(venda_avo, "Saida", "Vila")
+		_conferir(vila != null, "voltou da venda do avo para a rua")
+		casa = await _ir_para(vila, "PortaCasa", "CasaAvo")
+
 	# Sorteio: com a fibra no dia 3 aparecem carpa e jundia
 	partida.dia = 3
 	var vistos: Dictionary = {}

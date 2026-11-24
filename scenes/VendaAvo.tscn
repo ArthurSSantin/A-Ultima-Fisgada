@@ -1,0 +1,118 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/lugar.gd" id="script_lugar"]
+[ext_resource type="Script" path="res://scripts/eight_dir.gd" id="script_oito_direcoes"]
+[ext_resource type="Script" path="res://scripts/visual_tiago.gd" id="script_visual_tiago"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiago/tiago.png" id="tex_player"]
+[ext_resource type="Texture2D" path="res://assets/sprites/interior/venda_avo.png" id="tex_fundo"]
+[ext_resource type="FontFile" path="res://assets/fontes/Jersey10.ttf" id="fonte_retro"]
+
+[sub_resource type="FontVariation" id="Fonte_negrito"]
+base_font = ExtResource("fonte_retro")
+
+[sub_resource type="FontVariation" id="Fonte_normal"]
+base_font = ExtResource("fonte_retro")
+
+[node name="VendaAvo" type="Node2D"]
+script = ExtResource("script_lugar")
+borda = Vector2(60.0, 1180.0)
+e_a_rua = false
+abre_o_dia = false
+
+[node name="Fundo" type="Sprite2D" parent="."]
+texture = ExtResource("tex_fundo")
+centered = false
+
+[node name="Estacoes" type="Node2D" parent="."]
+
+[node name="Saida" type="Node2D" parent="Estacoes"]
+position = Vector2(140, 520.0)
+
+[node name="Nome" type="Label" parent="Estacoes/Saida"]
+offset_left = -110.0
+offset_top = -222.0
+offset_right = 110.0
+offset_bottom = -178.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
+theme_override_font_sizes/font_size = 15
+text = "< Rua da vila"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Mural" type="Node2D" parent="Estacoes"]
+position = Vector2(424, 520.0)
+
+[node name="Nome" type="Label" parent="Estacoes/Mural"]
+offset_left = -110.0
+offset_top = -424.0
+offset_right = 110.0
+offset_bottom = -390.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Mural de peixes"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Balcao" type="Node2D" parent="Estacoes"]
+position = Vector2(800, 520.0)
+
+[node name="Nome" type="Label" parent="Estacoes/Balcao"]
+offset_left = -110.0
+offset_top = -222.0
+offset_right = 110.0
+offset_bottom = -178.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
+theme_override_font_sizes/font_size = 15
+text = "Balcão do avô"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Player" type="Sprite2D" parent="."]
+position = Vector2(200, 472)
+texture = ExtResource("tex_player")
+
+[node name="OitoDirecoes" type="Node" parent="Player"]
+script = ExtResource("script_oito_direcoes")
+max_speed = 260.0
+acceleration = 900.0
+deceleration = 900.0
+
+[node name="Visual" type="Node" parent="Player"]
+script = ExtResource("script_visual_tiago")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 96.0
+offset_right = 1260.0
+offset_bottom = 122.0
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("Fonte_negrito")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+
+[node name="Prompt" type="Label" parent="UI"]
+offset_left = 340.0
+offset_top = 560.0
+offset_right = 940.0
+offset_bottom = 600.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.12, 0.07, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = SubResource("Fonte_negrito")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+autowrap_mode = 2

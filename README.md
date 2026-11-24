@@ -144,6 +144,7 @@ uma.
     scenes/Vila.tscn          a rua da vila, que liga tudo
     scenes/CasaAvo.tscn       casa do avô: cama, Dona Marlene e as obras
     scenes/Venda.tscn         venda do Seu Valdir: varas e consumíveis
+    scenes/VendaAvo.tscn      venda do avô reaberta, depois da obra: mural (coleção) e balcão
     scenes/Pescaria.tscn      pescaria do Zeca: compra peixe
     scenes/Restaurante.tscn   restaurante da Dona Maria Ivone: compra peixe
     scenes/Cais.tscn          o cais: ponto de partida, com o barco

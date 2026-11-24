@@ -10,9 +10,10 @@ extends Node2D
 ## pendurar algo novo numa cena, basta criar o no com um nome conhecido.
 ##
 ##   Rua da vila   PortaCasa, PortaVenda, PortaPescaria, PortaRestaurante,
-##                 RuinaVenda, Cais
+##                 RuinaVenda (vira porta depois da obra), Cais
 ##   Casa do avo   Cama, Marlene, Saida
 ##   Venda         Valdir, Saida
+##   Venda do avo  Mural, Balcao, Saida
 ##   Pescaria      Zeca, Saida
 ##   Restaurante   Ivone, Saida
 ##
@@ -21,6 +22,9 @@ extends Node2D
 
 const CENA_VILA: String = "res://scenes/Vila.tscn"
 const CENA_CAIS: String = "res://scenes/Cais.tscn"
+const CENA_VENDA_AVO: String = "res://scenes/VendaAvo.tscn"
+## A rua com a venda do avo de pe, no lugar da ruina (tools/arte/venda_avo_arte.py).
+const RUA_COM_A_VENDA: String = "res://assets/sprites/vila/rua_venda.png"
 
 const ALCANCE: float = 80.0
 
@@ -45,6 +49,8 @@ const ACOES: Dictionary = {
 	&"PortaRestaurante": "Entrar no restaurante da Dona Maria Ivone",
 	&"RuinaVenda": "Olhar a venda do {avo}",
 	&"Cais": "Seguir para o cais",
+	&"Mural": "Ver o mural de peixes",
+	&"Balcao": "Olhar o balcão do {avo}",
 }
 
 ## Ate onde o Player anda nesta cena.
@@ -83,6 +89,8 @@ func _ready() -> void:
 		_objetivo.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	if e_a_rua:
 		_player.position.x = Partida.vila_x
+		if Partida.obra_paga(&"venda"):
+			_mostrar_venda_de_pe()
 	elif abre_o_dia:
 		_player.position.x = Partida.hub_x
 		Partida.hub_x = 640.0
@@ -113,7 +121,7 @@ func _process(delta: float) -> void:
 		return
 	if not livre or _perto == null:
 		return
-	_prompt.text = Partida.nome_em("[ESPAÇO] " + ACOES[_perto.name])
+	_prompt.text = Partida.nome_em("[ESPAÇO] " + _acao(_perto.name))
 	Hud.no_rodape(_prompt)
 	if Input.is_action_just_pressed(&"espaco"):
 		_interagir(_perto.name)
@@ -134,7 +142,14 @@ func _interagir(estacao: StringName) -> void:
 		&"Valdir":
 			await _valdir()
 		&"RuinaVenda":
-			await _ruina_da_venda()
+			if Partida.obra_paga(&"venda"):
+				_entrar(CENA_VENDA_AVO)
+			else:
+				await _ruina_da_venda()
+		&"Mural":
+			await _mural()
+		&"Balcao":
+			await _balcao_do_avo()
 		&"Cais":
 			await _ir_ao_cais()
 		&"Saida":
@@ -145,6 +160,22 @@ func _interagir(estacao: StringName) -> void:
 	_ocupado = false
 	if Partida.fase_concluida() and not Partida.caderno_achado and not _concluida and abre_o_dia:
 		_fechar_fase()
+
+
+func _acao(estacao: StringName) -> String:
+	if estacao == &"RuinaVenda" and Partida.obra_paga(&"venda"):
+		return "Entrar na venda do {avo}"
+	return ACOES[estacao]
+
+
+## Depois da obra, a rua troca a ruina pela venda reformada.
+func _mostrar_venda_de_pe() -> void:
+	var fundo: Sprite2D = get_node_or_null("Fundo")
+	if fundo:
+		fundo.texture = load(RUA_COM_A_VENDA)
+	var nome: Label = get_node_or_null("Estacoes/RuinaVenda/Nome")
+	if nome:
+		nome.text = "Venda do avô"
 
 
 func _abrir_colecao() -> void:
@@ -371,6 +402,31 @@ func _ruina_da_venda() -> void:
 			"O que sobrou da venda do {avo}: meia parede e o balcão debaixo da lona.",
 			"Uma coisa de cada vez. Primeiro a casa.",
 		])
+
+
+# ---------------------------- Venda do avo ----------------------------
+
+## O mural da venda e a colecao: cada peixe pescado ganha um retrato na parede.
+func _mural() -> void:
+	await _caixa.falar("", [
+		"O mural do {avo}. Cada peixe que {nome} pesca ganha um retrato aqui, com o peso do maior.",
+	])
+	await Colecao.abrir_em(self)
+
+
+func _balcao_do_avo() -> void:
+	var linhas: Array = [
+		"O balcão do {avo}, lixado e envernizado. O rádio de pilha voltou pro canto de sempre.",
+	]
+	if Partida.velho_pescado and not Partida.velho_devolvido:
+		linhas.append("Na parede, a foto do Velho do Arvoredo. A vila inteira já passou aqui pra ver.")
+	elif Partida.velho_pescado:
+		linhas.append("Em cima do balcão, a ponta da linha que {nome} cortou rente ao anzol do Velho.")
+	elif Partida.boia_achada:
+		linhas.append("A boia do {avo}, achada na foz, fica do lado do caderno. Falta pouco pro último ponto.")
+	elif Partida.caderno_achado:
+		linhas.append("O caderno do {avo} fica aberto em cima do balcão, na página da Foz.")
+	await _caixa.falar("", linhas)
 
 
 # ---------------------------- Compradores ----------------------------

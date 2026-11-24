@@ -212,6 +212,7 @@ const LUGAR_DA_CENA: Dictionary = {
 	"res://scenes/Vila.tscn": &"vila",
 	"res://scenes/CasaAvo.tscn": &"vila",
 	"res://scenes/Venda.tscn": &"vila",
+	"res://scenes/VendaAvo.tscn": &"vila",
 	"res://scenes/Pescaria.tscn": &"vila",
 	"res://scenes/Restaurante.tscn": &"vila",
 	"res://scenes/Cais.tscn": &"vila",
