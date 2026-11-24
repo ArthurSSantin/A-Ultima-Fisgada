@@ -15,6 +15,23 @@ cais (`scenes/Cais.tscn`). Pelo barco se chega ao pesqueiro escolhido no mapa:
 o açude (`scenes/Acude.tscn`) desde o começo, e depois da casa a Foz e Vila
 (`scenes/Foz.tscn`) e o Arvoredo (`scenes/Arvoredo.tscn`).
 
+## Executáveis
+
+Há três presets de exportação para Windows (`export_presets.cfg`), todos em
+`build/`:
+
+- **Windows Desktop** (`AUltimaFisgada.exe`): o jogo inteiro, do quarto ao Velho
+  do Arvoredo.
+- **Windows Fase 1** (`AUltimaFisgada-Fase1.exe`, feature `so_tutorial`): só a
+  manhã com o vô.
+- **Windows Final** (`AUltimaFisgada-Final.exe`, feature `demo_final`): para
+  mostrar o final sem jogar tudo. O menu abre com uma partida pronta para o
+  Arvoredo (casa paga, jundiá entregue, caderno, boia, vara do avô, a Foz
+  conhecida e 3 peixes da ilha). Em Continuar, escolha o Arvoredo e lance com
+  força 80 ou mais: o rádio toca na chegada e o Velho pode morder. O save é
+  outro (`user://save_demo_final.json`), e depois de ver o final o menu prepara
+  a partida de novo.
+
 ## Controles
 
 As setas esquerda e direita andam. O espaço faz o resto: segure para carregar o

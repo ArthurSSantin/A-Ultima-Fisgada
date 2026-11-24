@@ -192,6 +192,17 @@ const ORDEM_COLECAO: Array[StringName] = [&"rio", &"acude", &"foz", &"arvoredo"]
 ## comeca de novo pelo quarto.
 const ARQUIVO_SAVE: String = "user://save.json"
 const VERSAO_SAVE: int = 1
+## O build de demonstracao do final (export "Windows Final", feature
+## demo_final) usa outro save, para nao mexer na partida de verdade.
+const ARQUIVO_SAVE_DEMO: String = "user://save_demo_final.json"
+## Na demonstracao a colecao ja tem estas especies: a Foz inteira e 3 do
+## Arvoredo, o bastante para o Velho morder. Peso do recorde de cada uma.
+const COLECAO_DEMO: Dictionary = {
+	"Lambari": 0.06, "Cará": 0.2, "Joaninha": 0.25, "Jundiá filhote": 0.2,
+	"Tilápia": 1.0, "Cascudo": 1.6, "Carpa": 4.2, "Jundiá": 5.1,
+	"Tainha": 1.2, "Bagre": 1.9, "Corvina": 2.4, "Linguado": 3.1, "Robalo": 5.6,
+	"Pampo": 1.1, "Anchova": 2.8, "Olho-de-boi": 7.5,
+}
 
 ## Lugares do mapa do menu inicial. So aparecem os que o neto ja visitou na
 ## partida salva; escolher um leva direto para a cena dele. Os pesqueiros usam
@@ -291,6 +302,8 @@ var _cena_atual: Node = null
 
 func _ready() -> void:
 	inicio_ms = Time.get_ticks_msec()
+	if demo_final():
+		arquivo_save = ARQUIVO_SAVE_DEMO
 	carregar_especies()
 
 
@@ -879,6 +892,40 @@ func entrar_em(lugar: StringName) -> String:
 	if LOCAIS.has(lugar):
 		local = lugar
 	return LUGARES[lugar].cena
+
+
+static func demo_final() -> bool:
+	return OS.has_feature("demo_final")
+
+
+## A partida da demonstracao: a casa de pe, o jundia entregue, o caderno, a
+## boia e a vara do avo, com a Foz conhecida e 3 peixes do Arvoredo. Falta so o
+## Arvoredo: o radio toca na chegada e o Velho ja pode morder. A venda do avo
+## fica por pagar, com dinheiro de sobra, para mostrar a obra extra.
+func preparar_demo_final() -> void:
+	comecar_tutorial()
+	definir_nome("", "")
+	iniciar_fase(2)
+	dia = 6
+	dinheiro = 1500
+	varas_compradas.assign([&"bambu", &"fibra"])
+	ganhar_vara(&"vo")
+	estoque[&"camarao"] = 10
+	obras_pagas.assign([&"casa"])
+	jundia_entregue = true
+	relacao = {&"zeca": 2, &"ivone": 2}
+	prologo_visto = true
+	caderno_achado = true
+	juca_conhecido = true
+	boia_achada = true
+	tomou_cafe = true
+	teimoso_solto = true
+	for nome_especie: String in COLECAO_DEMO:
+		colecao[nome_especie] = {"quantidade": 3, "recorde_kg": COLECAO_DEMO[nome_especie]}
+	total_peixes = 48
+	total_vendido = 2900
+	lugares_visitados.assign([&"vila", &"acude", &"foz", &"arvoredo"])
+	local = &"arvoredo"
 
 
 func tem_save() -> bool:

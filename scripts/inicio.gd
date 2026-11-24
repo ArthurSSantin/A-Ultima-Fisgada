@@ -41,6 +41,11 @@ var _saindo: bool = false
 func _ready() -> void:
 	get_tree().paused = false
 	_tem_save = Partida.carregar()
+	if Partida.demo_final() and (not _tem_save or Partida.velho_pescado):
+		# Demonstracao do final: toda vez que o menu abre sem partida (ou
+		# depois de ver o final), a historia volta pronta para o Arvoredo.
+		Partida.preparar_demo_final()
+		_tem_save = Partida.salvar()
 	if not _tem_save:
 		# Sem save, o que ficou na memoria e uma manha com o vo pela metade.
 		Partida.comecar_tutorial()
@@ -131,6 +136,8 @@ func _texto_do_resumo() -> String:
 	var resumo: String = "%s  •  Dia %d  •  R$ %d" % [Partida.nome, Partida.dia, Partida.dinheiro]
 	if Partida.velho_pescado:
 		resumo += "  •  história concluída"
+	if Partida.demo_final():
+		resumo += "\nDemonstração do final: Continuar → Arvoredo e lance com força 80 ou mais"
 	return resumo
 
 
